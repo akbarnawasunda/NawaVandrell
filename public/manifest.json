@@ -1,0 +1,33 @@
+{
+  "name": "NawaVandrell — Neuro Core Digital Arsenal",
+  "short_name": "NawaVandrell",
+  "description": "Kumpulan tools dan game yang beneran gampang dipakai. Offline-first, tanpa iklan.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a0b",
+  "theme_color": "#10b981",
+  "lang": "id",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "games"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Bikin QR", "url": "/tools/qr-code" },
+    { "name": "Semua Game", "url": "/games" },
+    { "name": "Papan Peringkat", "url": "/leaderboard" }
+  ]
+}
