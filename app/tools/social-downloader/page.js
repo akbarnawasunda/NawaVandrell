@@ -12,6 +12,15 @@ export default function SocialDownloaderPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const detectPlatform = (inputUrl) => {
+    if (inputUrl.includes('twitter.com') || inputUrl.includes('x.com')) return 'twitter';
+    if (inputUrl.includes('tiktok.com')) return 'tiktok';
+    if (inputUrl.includes('instagram.com')) return 'instagram';
+    if (inputUrl.includes('facebook.com') || inputUrl.includes('fb.watch')) return 'facebook';
+    if (inputUrl.includes('pinterest.com') || inputUrl.includes('pin.it')) return 'pinterest';
+    return 'generic';
+  };
+
   const processUrl = async (inputUrl) => {
     const cleanUrl = (inputUrl || url).trim();
     if (!cleanUrl) {
@@ -19,24 +28,53 @@ export default function SocialDownloaderPage() {
       return;
     }
 
+    const platform = detectPlatform(cleanUrl);
+
     setLoading(true);
     setError('');
     setData(null);
 
-    try {
-      const res = await fetch(`/api/tool-proxy?path=social&url=${encodeURIComponent(cleanUrl)}`);
-      const json = await res.json();
-      if (!res.ok || !json.status) {
-        setError(json.error || 'Gagal mengambil media dari server.');
-        return;
+    // Kalo Twitter atau TikTok -> Coba Direct MP4 Stream dulu!
+    if (platform === 'twitter' || platform === 'tiktok') {
+      try {
+        const res = await fetch(`/api/tool-proxy?path=social&url=${encodeURIComponent(cleanUrl)}`);
+        const json = await res.json();
+        if (res.ok && json.status) {
+          setData({
+            type: 'direct',
+            platform,
+            downloadUrl: json.result.downloadUrl,
+            thumbnail: json.result.thumbnail,
+            title: json.result.title || 'Video Download',
+            filename: json.result.filename || 'video.mp4',
+          });
+          addToast('Media berhasil ditemukan! 🚀', 'success');
+          setLoading(false);
+          return;
+        }
+      } catch {
+        /* fallback ke gateway jika direct fail */
       }
-      setData(json.result);
-      addToast('Media berhasil ditemukan! 🚀', 'success');
-    } catch {
-      setError('Koneksi bermasalah. Coba lagi.');
-    } finally {
-      setLoading(false);
     }
+
+    // Kalo Instagram, Facebook, Pinterest -> Pake Smart Gateway Card (100% Bebas Error)
+    setTimeout(() => {
+      setData({
+        type: 'gateway',
+        platform,
+        rawUrl: cleanUrl,
+      });
+      addToast('Gateway pengunduh siap! 📋', 'success');
+      setLoading(false);
+    }, 400);
+  };
+
+  const openGateway = (targetUrl, siteName) => {
+    if (url && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).catch(() => {});
+      addToast(`Link tercopy! Tinggal paste di ${siteName} 📋`, 'info', 3000);
+    }
+    window.open(targetUrl, '_blank', 'noopener,noreferrer');
   };
 
   const handleNativePaste = (e) => {
@@ -69,23 +107,15 @@ export default function SocialDownloaderPage() {
     }
   };
 
-  const openFallback = (gatewayUrl) => {
-    if (url && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(url).catch(() => {});
-      addToast('Link tercopy! Tinggal paste di web tujuan 📋', 'info', 3000);
-    }
-    window.open(gatewayUrl, '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <ToolShell
       title="Download Sosmed"
-      desc="Download video & foto dari Instagram, Twitter/X, Facebook, Pinterest, Reddit, SoundCloud."
+      desc="Download video & foto dari Instagram, Twitter/X, Facebook, Pinterest, TikTok, SoundCloud."
       icon="📲"
     >
       <div className="panel">
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-          {['📸 Instagram', '🐤 Twitter/X', '📘 Facebook', '📌 Pinterest', '🤖 Reddit', '🎵 SoundCloud'].map((tag) => (
+          {['📸 Instagram', '🐤 Twitter/X', '📘 Facebook', '📌 Pinterest', '🎵 TikTok'].map((tag) => (
             <span key={tag} className="chip" style={{ fontSize: 11.5, padding: '4px 10px', pointerEvents: 'none' }}>
               {tag}
             </span>
@@ -106,7 +136,7 @@ export default function SocialDownloaderPage() {
             }}
             onPaste={handleNativePaste}
             onKeyDown={(e) => e.key === 'Enter' && processUrl()}
-            placeholder="Tempel link IG Reel / Twitter / Pinterest di sini..."
+            placeholder="Tempel link IG Reel / Twitter / FB / Pinterest di sini..."
             inputMode="url"
             spellCheck={false}
           />
@@ -120,7 +150,7 @@ export default function SocialDownloaderPage() {
             onClick={() => processUrl()}
             disabled={loading}
           >
-            {loading ? 'Memproses...' : 'Ambil Media'}
+            {loading ? 'Memproses...' : 'Cari Media'}
           </button>
           <button type="button" className="btn btn-ghost" onClick={pasteButton}>
             📋 Tempel
@@ -133,54 +163,19 @@ export default function SocialDownloaderPage() {
           </div>
         ) : null}
 
-        {error ? (
-          <div className="result" style={{ borderColor: 'var(--danger)' }}>
-            <p className="err" style={{ marginTop: 0, marginBottom: 10 }}>
-              {error}
-            </p>
+        {error ? <p className="err">{error}</p> : null}
 
-            <p style={{ fontSize: 13, color: 'var(--text-dim)', marginBottom: 10 }}>
-              💡 Atau gunakan Gateway Cadangan 1-Click di bawah:
-            </p>
-
-            <div style={{ display: 'grid', gap: 8 }}>
-              <button
-                type="button"
-                className="btn btn-primary btn-full"
-                onClick={() => openFallback(`https://cobalt.tools/#${url}`)}
-              >
-                ✨ Download via Cobalt Web UI
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-ghost btn-full"
-                onClick={() => openFallback('https://fastdl.app/')}
-              >
-                📸 Download via FastDL (Instagram)
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-ghost btn-full btn-sm"
-                onClick={() => openFallback('https://twitsave.com/')}
-              >
-                🐤 Download via TwitSave (Twitter/X)
-              </button>
-            </div>
-          </div>
-        ) : null}
-
-        {data ? (
+        {/* HASIL 1: DIRECT DOWNLOAD (TWITTER & TIKTOK) */}
+        {data && data.type === 'direct' ? (
           <div className="result">
             <div className="result-head">
-              <span>Media Siap Diunduh</span>
+              <span>Media Ditemukan (Direct MP4)</span>
             </div>
 
             {data.thumbnail ? (
               <img
                 src={data.thumbnail}
-                alt="Preview Media"
+                alt="Preview"
                 referrerPolicy="no-referrer"
                 style={{
                   width: '100%',
@@ -190,51 +185,108 @@ export default function SocialDownloaderPage() {
                   marginBottom: 12,
                   border: '1px solid var(--border)',
                 }}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
               />
             ) : null}
 
-            <p style={{ margin: '0 0 12px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
-              {data.filename}
+            <p style={{ margin: '0 0 12px', fontSize: 14, color: 'var(--text)', fontWeight: 600 }}>
+              {data.title}
             </p>
 
-            {data.downloadUrl ? (
-              <a
-                href={data.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary btn-full"
-                download
-              >
-                📥 Download File (Langsung)
-              </a>
-            ) : null}
+            <a
+              href={data.downloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn btn-primary btn-full"
+              download
+            >
+              📥 Download File MP4 (Langsung)
+            </a>
+          </div>
+        ) : null}
 
-            {data.picker && data.picker.length > 0 ? (
-              <div style={{ display: 'grid', gap: 8, marginTop: 8 }}>
-                {data.picker.map((item, idx) => (
-                  <a
-                    key={idx}
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-ghost btn-full"
-                    download
+        {/* HASIL 2: SMART GATEWAY CARD (INSTAGRAM, FACEBOOK, PINTEREST) */}
+        {data && data.type === 'gateway' ? (
+          <div className="result">
+            <div className="result-head">
+              <span>Pengunduh Siap ({data.platform.toUpperCase()})</span>
+            </div>
+
+            <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
+              Link berhasil dideteksi & tercopy ke clipboard!
+            </p>
+            <p className="hint" style={{ marginTop: 0, marginBottom: 14 }}>
+              Klik salah satu server spesialis di bawah (link otomatis terisi):
+            </p>
+
+            <div style={{ display: 'grid', gap: 9 }}>
+              {data.platform === 'instagram' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full"
+                    onClick={() => openGateway('https://fastdl.app/', 'FastDL')}
                   >
-                    📥 Download Slide/File #{idx + 1}
-                  </a>
-                ))}
-              </div>
-            ) : null}
+                    📸 Unduh via FastDL (Instagram HD)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-full"
+                    onClick={() => openGateway('https://snapinsta.app/', 'SnapInsta')}
+                  >
+                    ⚡ Unduh via SnapInsta
+                  </button>
+                </>
+              ) : data.platform === 'facebook' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full"
+                    onClick={() => openGateway('https://fdownloader.net/', 'FDownloader')}
+                  >
+                    📘 Unduh via FDownloader (Facebook HD)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-full"
+                    onClick={() => openGateway('https://snapsave.app/', 'SnapSave')}
+                  >
+                    ⚡ Unduh via SnapSave
+                  </button>
+                </>
+              ) : data.platform === 'pinterest' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full"
+                    onClick={() => openGateway('https://pinterestvideodownloader.com/', 'PinterestDownloader')}
+                  >
+                    📌 Unduh via PinterestDownloader
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-full"
+                    onClick={() => openGateway('https://printdwn.com/', 'PrintDwn')}
+                  >
+                    ⚡ Unduh via PrintDwn
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway(`https://cobalt.tools/#${data.rawUrl}`, 'Cobalt')}
+                >
+                  ✨ Unduh via Cobalt Web UI
+                </button>
+              )}
+            </div>
           </div>
         ) : null}
 
         <p className="hint">
-          💡 <strong>Tips Instan:</strong> Tinggal paste link dari keyboard HP kamu, foto/video bakal otomatis terdeteksi tanpa watermark!
+          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung, sementara Instagram/FB/Pinterest ter-copy otomatis untuk diunduh via server HD spesialis!
         </p>
       </div>
     </ToolShell>
   );
-} 
+}
