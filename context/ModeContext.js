@@ -1,51 +1,101 @@
+// context/ModeContext.js
+
 'use client';
 
-/**
- * Simple Mode (default) vs Pro Mode.
- * Mode disimpan di localStorage `nawa_mode` dan ditulis ke
- * <html data-mode="..."> supaya CSS variables yang ganti tema.
- */
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+const MODE_KEY = 'nawa_mode';
+const VALID_MODES = new Set(['simple', 'pro']);
 
-const ModeContext = createContext({ mode: 'simple', setMode: () => {}, isPro: false });
+const ModeContext = createContext(null);
 
-const STORAGE_KEY = 'nawa_mode';
+function getInitialMode() {
+  // SSR-safe default. Jangan baca localStorage di sini biar gak hydration mismatch.
+  return 'simple';
+}
+
+function applyModeToDom(mode) {
+  if (typeof document === 'undefined') return;
+  document.documentElement.dataset.mode = mode;
+}
+
+function persistMode(mode) {
+  try {
+    localStorage.setItem(MODE_KEY, mode);
+  } catch {
+    // localStorage bisa gagal di private browsing atau storage full.
+    // Mode tetep jalan, cuma gak persist.
+  }
+}
 
 export function ModeProvider({ children }) {
-  const [mode, setModeState] = useState('simple');
+  const [mode, setModeState] = useState(getInitialMode);
+  const [hydrated, setHydrated] = useState(false);
 
+  // Hydration: baca localStorage sekali di client, sinkronin sama inline script di layout.js
   useEffect(() => {
-    let saved = null;
+    setHydrated(true);
+
+    let stored = null;
     try {
-      saved = localStorage.getItem(STORAGE_KEY);
+      stored = localStorage.getItem(MODE_KEY);
     } catch {
-      /* storage diblokir */
+      // ignore
     }
-    if (saved === 'pro' || saved === 'simple') {
-      setModeState(saved);
-      document.documentElement.dataset.mode = saved;
-    } else {
-      document.documentElement.dataset.mode = 'simple';
-    }
+
+    const resolved = VALID_MODES.has(stored) ? stored : 'simple';
+
+    setModeState(resolved);
+    applyModeToDom(resolved);
   }, []);
 
   const setMode = useCallback((next) => {
-    const value = next === 'pro' ? 'pro' : 'simple';
-    setModeState(value);
-    document.documentElement.dataset.mode = value;
-    try {
-      localStorage.setItem(STORAGE_KEY, value);
-    } catch {
-      /* ignore */
-    }
+    const clean = VALID_MODES.has(next) ? next : 'simple';
+
+    setModeState(clean);
+    applyModeToDom(clean);
+    persistMode(clean);
   }, []);
 
-  const value = useMemo(() => ({ mode, setMode, isPro: mode === 'pro' }), [mode, setMode]);
+  const toggle = useCallback(() => {
+    setModeState((prev) => {
+      const next = prev === 'pro' ? 'simple' : 'pro';
+      applyModeToDom(next);
+      persistMode(next);
+      return next;
+    });
+  }, []);
+
+  const value = useMemo(
+    () => ({
+      mode,
+      setMode,
+      toggle,
+      isPro: mode === 'pro',
+      isSimple: mode === 'simple',
+      hydrated,
+    }),
+    [mode, setMode, toggle, hydrated]
+  );
 
   return <ModeContext.Provider value={value}>{children}</ModeContext.Provider>;
 }
 
 export function useMode() {
-  return useContext(ModeContext);
+  const ctx = useContext(ModeContext);
+
+  if (!ctx) {
+    throw new Error('useMode() harus dipake di dalam <ModeProvider>');
+  }
+
+  return ctx;
 }
+
+export default ModeProvider;
