@@ -1,8 +1,8 @@
 {
   "name": "nawavandrell",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "NawaVandrell 2.0 - NEURO CORE DIGITAL ARSENAL. Super-app tools + games + AI.",
+  "description": "NawaVandrell 3.0 - NEURO CORE DIGITAL ARSENAL. Super-app tools + games + AI.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -22,5 +22,6 @@
     "tailwindcss": "^3.4.14"
   },
   "engines": {
-  "node": ">=20.0.0 <21.0.0"
+    "node": ">=20.0.0 <21.0.0"
+  }
 }
