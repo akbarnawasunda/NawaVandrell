@@ -13,15 +13,15 @@ export default function SocialDownloaderPage() {
   const [error, setError] = useState('');
 
   const detectPlatform = (inputUrl) => {
-    const u = inputUrl.toLowerCase();
-    if (u.includes('twitter.com') || u.includes('x.com')) return 'twitter';
-    if (u.includes('tiktok.com')) return 'tiktok';
-    if (u.includes('instagram.com')) return 'instagram';
-    if (u.includes('facebook.com') || u.includes('fb.watch')) return 'facebook';
-    if (u.includes('pinterest.com') || u.includes('pin.it')) return 'pinterest';
-    if (u.includes('soundcloud.com')) return 'soundcloud';
-    if (u.includes('spotify.com')) return 'spotify';
-    if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
+    if (inputUrl.includes('twitter.com') || inputUrl.includes('x.com')) return 'twitter';
+    if (inputUrl.includes('tiktok.com')) return 'tiktok';
+    if (inputUrl.includes('instagram.com')) return 'instagram';
+    if (inputUrl.includes('facebook.com') || inputUrl.includes('fb.watch')) return 'facebook';
+    if (inputUrl.includes('pinterest.com') || inputUrl.includes('pin.it')) return 'pinterest';
+    if (inputUrl.includes('soundcloud.com')) return 'soundcloud';
+    if (inputUrl.includes('spotify.com')) return 'spotify';
+    if (inputUrl.includes('reddit.com')) return 'reddit';
+    if (inputUrl.includes('youtube.com') || inputUrl.includes('youtu.be')) return 'youtube';
     return 'generic';
   };
 
@@ -38,7 +38,7 @@ export default function SocialDownloaderPage() {
     setError('');
     setData(null);
 
-    // Kalo Twitter atau TikTok -> Coba Direct MP4 Stream dulu!
+    // Kalo Twitter atau TikTok -> Direct MP4 Stream
     if (platform === 'twitter' || platform === 'tiktok') {
       try {
         const res = await fetch(`/api/tool-proxy?path=social&url=${encodeURIComponent(cleanUrl)}`);
@@ -61,14 +61,14 @@ export default function SocialDownloaderPage() {
       }
     }
 
-    // Kalo FB, IG, Pinterest, SoundCloud, Spotify, YT -> Pake Gateway Pilihan Terbaik
+    // Kalo IG, FB, Pinterest, SoundCloud, Spotify, Reddit, YouTube -> Curated Clean Gateway
     setTimeout(() => {
       setData({
         type: 'gateway',
         platform,
         rawUrl: cleanUrl,
       });
-      addToast('Gateway pengunduh siap! 📋', 'success');
+      addToast('Pengunduh spesialis siap! 📋', 'success');
       setLoading(false);
     }, 300);
   };
@@ -76,7 +76,7 @@ export default function SocialDownloaderPage() {
   const openGateway = (targetUrl, siteName) => {
     if (url && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(url).catch(() => {});
-      addToast(`Link tercopy ke clipboard! Paste di ${siteName} ya 📋`, 'info', 3000);
+      addToast(`Link tercopy ke clipboard! Tinggal paste di ${siteName} 📋`, 'info', 3500);
     }
     window.open(targetUrl, '_blank', 'noopener,noreferrer');
   };
@@ -114,14 +114,13 @@ export default function SocialDownloaderPage() {
   return (
     <ToolShell
       title="Download Sosmed"
-      desc="Download video & audio dari IG, FB, Pinterest, TikTok, Twitter, SoundCloud, Spotify, YouTube."
+      desc="Download video & foto dari Instagram, TikTok, Twitter, Facebook, Pinterest, SoundCloud, Spotify, Reddit."
       icon="📲"
     >
       <div className="panel">
-        {/* PLATFORM BADGES */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-          {['📸 Instagram', '📘 Facebook', '📌 Pinterest', '🎵 TikTok', '🐤 Twitter/X', '☁️ SoundCloud', '🎧 Spotify', '▶️ YouTube'].map((tag) => (
-            <span key={tag} className="chip" style={{ fontSize: 11, padding: '4px 9px', pointerEvents: 'none' }}>
+          {['📸 Instagram', '🎵 TikTok', '🐤 Twitter/X', '📘 Facebook', '📌 Pinterest', '☁️ SoundCloud', '🎧 Spotify', '🤖 Reddit'].map((tag) => (
+            <span key={tag} className="chip" style={{ fontSize: 11.5, padding: '4px 10px', pointerEvents: 'none' }}>
               {tag}
             </span>
           ))}
@@ -129,7 +128,7 @@ export default function SocialDownloaderPage() {
 
         <div className="field">
           <label className="label" htmlFor="social-url">
-            Link postingan sosmed / lagu
+            Link postingan sosmed / musik
           </label>
           <input
             id="social-url"
@@ -141,7 +140,7 @@ export default function SocialDownloaderPage() {
             }}
             onPaste={handleNativePaste}
             onKeyDown={(e) => e.key === 'Enter' && processUrl()}
-            placeholder="Tempel link IG / FB / Pinterest / Spotify / SoundCloud / YT di sini..."
+            placeholder="Tempel link IG / TikTok / FB / Spotify / Pinterest di sini..."
             inputMode="url"
             spellCheck={false}
           />
@@ -155,7 +154,7 @@ export default function SocialDownloaderPage() {
             onClick={() => processUrl()}
             disabled={loading}
           >
-            {loading ? 'Memproses...' : 'Proses Link'}
+            {loading ? 'Memproses...' : 'Cari Media'}
           </button>
           <button type="button" className="btn btn-ghost" onClick={pasteButton}>
             📋 Tempel
@@ -170,11 +169,11 @@ export default function SocialDownloaderPage() {
 
         {error ? <p className="err">{error}</p> : null}
 
-        {/* HASIL 1: DIRECT DOWNLOAD (TWITTER & TIKTOK) */}
+        {/* DIRECT DOWNLOAD (TIKTOK & TWITTER) */}
         {data && data.type === 'direct' ? (
           <div className="result">
             <div className="result-head">
-              <span>Media Ditemukan (Direct File)</span>
+              <span>Media Ditemukan (Direct MP4)</span>
             </div>
 
             {data.thumbnail ? (
@@ -209,112 +208,84 @@ export default function SocialDownloaderPage() {
           </div>
         ) : null}
 
-        {/* HASIL 2: HIGH-QUALITY GATEWAY CARD */}
+        {/* CURATED CLEAN GATEWAYS (FASTDL & DOWNLOADER.ASIA) */}
         {data && data.type === 'gateway' ? (
           <div className="result">
             <div className="result-head">
-              <span>Server Pengunduh Siap ({data.platform.toUpperCase()})</span>
+              <span>Pengunduh Siap ({data.platform.toUpperCase()})</span>
             </div>
 
-            <p style={{ margin: '0 0 6px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
-              Link terdeteksi & otomatis tercopy ke clipboard!
+            <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
+              Link berhasil dideteksi & tercopy ke clipboard!
             </p>
             <p className="hint" style={{ marginTop: 0, marginBottom: 14 }}>
-              Klik server rekomendasi di bawah (link langsung terisi otomatis):
+              Klik server spesialis pilihan di bawah (tanpa iklan / bersih):
             </p>
 
             <div style={{ display: 'grid', gap: 9 }}>
-              {data.platform === 'facebook' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://downloader.asia/dl/facebook/', 'Downloader.asia FB')}
-                  >
-                    📘 Unduh via Downloader.asia (FB Video/Audio)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-full"
-                    onClick={() => openGateway('https://fdownloader.net/', 'FDownloader')}
-                  >
-                    ⚡ Unduh via FDownloader (HD MP4)
-                  </button>
-                </>
-              ) : data.platform === 'instagram' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://fastdl.app/', 'FastDL')}
-                  >
-                    📸 Unduh via FastDL (Instagram Reel/Post)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-full"
-                    onClick={() => openGateway('https://snapinsta.app/', 'SnapInsta')}
-                  >
-                    ⚡ Unduh via SnapInsta
-                  </button>
-                </>
-              ) : data.platform === 'pinterest' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://downloader.asia/dl/pinterest/', 'Downloader.asia Pinterest')}
-                  >
-                    📌 Unduh via Downloader.asia (Pinterest)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-full"
-                    onClick={() => openGateway('https://printdwn.com/', 'PrintDwn')}
-                  >
-                    ⚡ Unduh via PrintDwn
-                  </button>
-                </>
-              ) : data.platform === 'soundcloud' ? (
-                <button
-                  type="button"
-                  className="btn btn-primary btn-full"
-                  onClick={() => openGateway('https://downloader.asia/dl/soundcloud/', 'Downloader.asia SoundCloud')}
-                >
-                  ☁️ Unduh via Downloader.asia (SoundCloud MP3)
-                </button>
-              ) : data.platform === 'spotify' ? (
-                <button
-                  type="button"
-                  className="btn btn-primary btn-full"
-                  onClick={() => openGateway('https://downloader.asia/dl/spotify/', 'Downloader.asia Spotify')}
-                >
-                  🎧 Unduh via Downloader.asia (Spotify Song/Album)
-                </button>
-              ) : data.platform === 'youtube' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://downloader.asia/dl/youtube/', 'Downloader.asia YouTube')}
-                  >
-                    ▶️ Unduh via Downloader.asia (YouTube MP4/MP3)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-full"
-                    onClick={() => openGateway('https://yt5s.biz/enwr200/', 'yt5s')}
-                  >
-                    🚀 Unduh via yt5s
-                  </button>
-                </>
-              ) : (
+              {data.platform === 'instagram' ? (
                 <button
                   type="button"
                   className="btn btn-primary btn-full"
                   onClick={() => openGateway('https://fastdl.app/', 'FastDL')}
                 >
-                  ✨ Unduh via FastDL Universal
+                  📸 Unduh via FastDL (Instagram HD)
+                </button>
+              ) : data.platform === 'facebook' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/facebook/', 'Downloader Asia FB')}
+                >
+                  📘 Unduh via Downloader Asia (Facebook Video & Audio)
+                </button>
+              ) : data.platform === 'pinterest' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/pinterest/', 'Downloader Asia Pinterest')}
+                >
+                  📌 Unduh via Downloader Asia (Pinterest Video & Gambar)
+                </button>
+              ) : data.platform === 'soundcloud' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/soundcloud/', 'Downloader Asia SoundCloud')}
+                >
+                  ☁️ Unduh via Downloader Asia (SoundCloud MP3)
+                </button>
+              ) : data.platform === 'spotify' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/spotify/', 'Downloader Asia Spotify')}
+                >
+                  🎧 Unduh via Downloader Asia (Spotify Music)
+                </button>
+              ) : data.platform === 'reddit' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/reddit/', 'Downloader Asia Reddit')}
+                >
+                  🤖 Unduh via Downloader Asia (Reddit Video & GIF)
+                </button>
+              ) : data.platform === 'youtube' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/youtube/', 'Downloader Asia YouTube')}
+                >
+                  ▶️ Unduh via Downloader Asia (YouTube MP4 & MP3)
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/', 'Downloader Asia')}
+                >
+                  ✨ Unduh via Downloader Asia (All-In-One)
                 </button>
               )}
             </div>
@@ -322,7 +293,7 @@ export default function SocialDownloaderPage() {
         ) : null}
 
         <p className="hint">
-          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung di web, sedangkan Facebook, IG, Pinterest, SoundCloud, Spotify & YouTube menggunakan gateway server bersih tanpa iklan!
+          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung, sementara IG/FB/Spotify/Pinterest/SoundCloud/Reddit dialihkan ke server spesialis terpercaya dengan link ter-copy otomatis!
         </p>
       </div>
     </ToolShell>
