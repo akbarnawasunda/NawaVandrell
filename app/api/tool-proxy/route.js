@@ -1,13 +1,12 @@
 /**
  * GET /api/tool-proxy?path=<action>&...params
  *
- * ALL-IN-ONE TOOL PROXY ROUTE (COMPLETE EDITION)
+ * ALL-IN-ONE DIRECT MEDIA DOWNLOADER PROXY (100% DIRECT CDN EDITION)
  * Handle lokal: alay, roasting, funfact, lorem
- * Handle jaringan: waifu, tiktok (TikWM + Btch), youtube, social (BTCH Downloader Native)
+ * Handle jaringan: waifu, tiktok (TikWM), twitter (FxTwitter), instagram (VKR/SnapInsta), facebook (VKR FB), pinterest (v1.pinimg)
  */
 
 import { toAlay, roast, funfact, loremIpsum } from '@/lib/funTools';
-import { igdl, twitter, pinterest, facebook, tiktok, capcut } from 'btch-downloader';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,7 +52,7 @@ function fail(message, status = 400) {
   return Response.json({ status: false, error: message }, { status });
 }
 
-async function fetchWithTimeout(url, ms = 10000, init = {}) {
+async function fetchWithTimeout(url, ms = 12000, init = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
   try {
@@ -112,7 +111,7 @@ export async function GET(request) {
       }
     }
 
-    // ------------------------ TIKTOK DOWNLOADER ------------------------
+    // ------------------------ TIKTOK DOWNLOADER (TikWM API) ------------------------
     case 'tiktok':
     case 'tiktokdl': {
       const url = searchParams.get('url') || '';
@@ -120,7 +119,6 @@ export async function GET(request) {
         return fail('Link TikTok tidak valid.');
       }
 
-      // LAYER 1: TikWM API
       try {
         const tikwmRes = await fetchWithTimeout(
           `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
@@ -151,31 +149,10 @@ export async function GET(request) {
         console.error('[TikWM Error]', err.message);
       }
 
-      // LAYER 2: BTCH Downloader Fallback
-      try {
-        const ttData = await tiktok(url);
-        if (ttData && (ttData.video || ttData.nowm || ttData.url)) {
-          return Response.json(
-            {
-              status: true,
-              result: {
-                play: ttData.video || ttData.nowm || ttData.url,
-                title: ttData.title || 'TikTok Video',
-                author: ttData.author || 'TikTok User',
-              },
-              source: 'btch-tiktok',
-            },
-            { headers: { 'Cache-Control': 'no-store' } }
-          );
-        }
-      } catch (err) {
-        console.error('[Btch TikTok Error]', err.message);
-      }
-
       return fail('Gagal mengambil video TikTok. Coba lagi nanti.', 502);
     }
 
-    // ------------------------ ALL-IN-ONE SOCIAL DOWNLOADER (BTCH ENGINE) ------------------------
+    // ------------------------ ALL-IN-ONE DIRECT SOCIAL DOWNLOADER ------------------------
     case 'social':
     case 'cobalt': {
       const url = searchParams.get('url') || '';
@@ -183,123 +160,126 @@ export async function GET(request) {
 
       const cleanUrl = url.trim();
 
-      // 1. INSTAGRAM (BTCH igdl)
-      if (cleanUrl.includes('instagram.com')) {
+      // 1. TWITTER / X (FxTwitter Direct API)
+      const twMatch = cleanUrl.match(/(?:twitter\.com|x\.com)\/([a-zA-Z0-9_]+)\/status\/([0-9]+)/i);
+      if (twMatch) {
+        const tweetId = twMatch[2];
         try {
-          const igData = await igdl(cleanUrl);
-          if (Array.isArray(igData) && igData.length > 0) {
-            const mainMedia = igData[0];
-            return Response.json(
-              {
-                status: true,
-                result: {
-                  downloadUrl: mainMedia.url || mainMedia.path,
-                  thumbnail: mainMedia.thumbnail || generateSmartThumbnail(cleanUrl),
-                  filename: 'instagram-media.mp4',
-                  picker: igData.length > 1 ? igData.map((m) => ({ url: m.url || m.path })) : null,
+          const fxRes = await fetchWithTimeout(`https://api.fxtwitter.com/status/${tweetId}`, 8000);
+          if (fxRes.ok) {
+            const fxData = await fxRes.json();
+            const video = fxData.tweet?.media?.videos?.[0];
+            if (video?.url) {
+              return Response.json(
+                {
+                  status: true,
+                  result: {
+                    downloadUrl: video.url,
+                    thumbnail: video.thumbnail_url || fxData.tweet?.media?.photos?.[0]?.url || `https://vxtwitter.com/render/video/status/${tweetId}.jpg`,
+                    title: fxData.tweet?.text || 'Twitter/X Video',
+                    author: fxData.tweet?.author?.name || 'Twitter User',
+                    filename: `twitter-${tweetId}.mp4`,
+                  },
+                  source: 'fxtwitter',
                 },
-                source: 'btch-ig',
-              },
-              { headers: { 'Cache-Control': 'no-store' } }
-            );
+                { headers: { 'Cache-Control': 'no-store' } }
+              );
+            }
           }
         } catch (err) {
-          console.error('[Btch IG Error]', err.message);
+          console.error('[FxTwitter Error]', err.message);
         }
       }
 
-      // 2. TWITTER / X (BTCH twitter)
-      if (cleanUrl.includes('twitter.com') || cleanUrl.includes('x.com')) {
-        try {
-          const twData = await twitter(cleanUrl);
-          if (twData && (twData.url || twData.HD || twData.SD)) {
-            const videoUrl = twData.HD || twData.url || twData.SD;
-            return Response.json(
-              {
-                status: true,
-                result: {
-                  downloadUrl: videoUrl,
-                  thumbnail: twData.thumb || generateSmartThumbnail(cleanUrl),
-                  title: twData.desc || 'Twitter Video',
-                  filename: 'twitter-video.mp4',
-                },
-                source: 'btch-twitter',
-              },
-              { headers: { 'Cache-Control': 'no-store' } }
-            );
-          }
-        } catch (err) {
-          console.error('[Btch Twitter Error]', err.message);
-        }
-      }
-
-      // 3. PINTEREST (BTCH pinterest)
-      if (cleanUrl.includes('pinterest.com') || cleanUrl.includes('pin.it')) {
-        try {
-          const pinData = await pinterest(cleanUrl);
-          if (pinData && (pinData.result || pinData.url)) {
-            const mediaUrl = pinData.result || pinData.url;
-            return Response.json(
-              {
-                status: true,
-                result: {
-                  downloadUrl: typeof mediaUrl === 'string' ? mediaUrl : mediaUrl[0],
-                  thumbnail: generateSmartThumbnail(cleanUrl),
-                  filename: 'pinterest-media.mp4',
-                },
-                source: 'btch-pinterest',
-              },
-              { headers: { 'Cache-Control': 'no-store' } }
-            );
-          }
-        } catch (err) {
-          console.error('[Btch Pinterest Error]', err.message);
-        }
-      }
-
-      // 4. FACEBOOK (BTCH facebook)
+      // 2. FACEBOOK (VKR FB Direct API - Direct FB CDN MP4)
       if (cleanUrl.includes('facebook.com') || cleanUrl.includes('fb.watch')) {
         try {
-          const fbData = await facebook(cleanUrl);
-          if (fbData && (fbData.HD || fbData.SD || fbData.url)) {
-            return Response.json(
-              {
-                status: true,
-                result: {
-                  downloadUrl: fbData.HD || fbData.url || fbData.SD,
-                  filename: 'facebook-video.mp4',
+          const fbRes = await fetchWithTimeout(`https://api.vkrdown.com/fb/?url=${encodeURIComponent(cleanUrl)}`, 10000);
+          if (fbRes.ok) {
+            const fbJson = await fbRes.json();
+            const videoUrl = fbJson.data?.hd || fbJson.data?.sd || fbJson.data?.video;
+            if (videoUrl) {
+              return Response.json(
+                {
+                  status: true,
+                  result: {
+                    downloadUrl: videoUrl,
+                    thumbnail: fbJson.data?.thumbnail || null,
+                    title: fbJson.data?.title || 'Facebook Video',
+                    filename: 'facebook-video.mp4',
+                  },
+                  source: 'vkr-fb',
                 },
-                source: 'btch-facebook',
-              },
-              { headers: { 'Cache-Control': 'no-store' } }
-            );
+                { headers: { 'Cache-Control': 'no-store' } }
+              );
+            }
           }
         } catch (err) {
-          console.error('[Btch FB Error]', err.message);
+          console.error('[VKR FB Error]', err.message);
         }
       }
 
-      // 5. CAPCUT (BTCH capcut)
-      if (cleanUrl.includes('capcut.com')) {
+      // 3. INSTAGRAM (VKR IG Direct API - Direct Instagram CDN MP4)
+      if (cleanUrl.includes('instagram.com')) {
+        const shortcodeMatch = cleanUrl.match(/instagram\.com\/(?:reel|p|tv)\/([a-zA-Z0-9_-]+)/i);
+        const shortcode = shortcodeMatch ? shortcodeMatch[1] : 'media';
+
         try {
-          const ccData = await capcut(cleanUrl);
-          if (ccData && (ccData.originalVideoUrl || ccData.url)) {
-            return Response.json(
-              {
-                status: true,
-                result: {
-                  downloadUrl: ccData.originalVideoUrl || ccData.url,
-                  thumbnail: ccData.coverUrl || null,
-                  title: ccData.title || 'CapCut Template',
-                  filename: 'capcut-video.mp4',
+          const igRes = await fetchWithTimeout(`https://api.vkrdown.com/ig/?url=${encodeURIComponent(cleanUrl)}`, 10000);
+          if (igRes.ok) {
+            const igJson = await igRes.json();
+            const videoUrl = igJson.data?.video || igJson.data?.url || igJson.data?.[0]?.url;
+            if (videoUrl) {
+              return Response.json(
+                {
+                  status: true,
+                  result: {
+                    downloadUrl: videoUrl,
+                    thumbnail: igJson.data?.thumbnail || `https://www.instagram.com/p/${shortcode}/media/?size=l`,
+                    title: `Instagram Reel (${shortcode})`,
+                    filename: `instagram-${shortcode}.mp4`,
+                  },
+                  source: 'vkr-ig',
                 },
-                source: 'btch-capcut',
-              },
-              { headers: { 'Cache-Control': 'no-store' } }
-            );
+                { headers: { 'Cache-Control': 'no-store' } }
+              );
+            }
           }
         } catch (err) {
-          console.error('[Btch CapCut Error]', err.message);
+          console.error('[VKR IG Error]', err.message);
+        }
+      }
+
+      // 4. PINTEREST (Direct v1.pinimg CDN Video Extractor)
+      if (cleanUrl.includes('pinterest.com') || cleanUrl.includes('pin.it')) {
+        try {
+          const pinRes = await fetchWithTimeout(cleanUrl, 8000, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+          });
+          if (pinRes.ok) {
+            const html = await pinRes.text();
+            const mp4Match = html.match(/https:\/\/[^"]+v1\.pinimg\.com\/videos\/[^"]+\.mp4/i) || html.match(/<meta\s+property="og:video"\s+content="([^"]+)"/i);
+            const thumbMatch = html.match(/<meta\s+property="og:image"\s+content="([^"]+)"/i);
+
+            if (mp4Match?.[0] || mp4Match?.[1]) {
+              const videoUrl = (mp4Match[1] || mp4Match[0]).replace(/&amp;/g, '&');
+              return Response.json(
+                {
+                  status: true,
+                  result: {
+                    downloadUrl: videoUrl,
+                    thumbnail: thumbMatch?.[1]?.replace(/&amp;/g, '&') || generateSmartThumbnail(cleanUrl),
+                    title: 'Pinterest Video',
+                    filename: 'pinterest-video.mp4',
+                  },
+                  source: 'pinterest-direct',
+                },
+                { headers: { 'Cache-Control': 'no-store' } }
+              );
+            }
+          }
+        } catch (err) {
+          console.error('[Pinterest Error]', err.message);
         }
       }
 
@@ -307,9 +287,6 @@ export async function GET(request) {
     }
 
     default:
-      return fail(
-        `Action "${action || '(kosong)'}" tidak dikenal. Pilihan: alay, roasting, funfact, lorem, waifu, tiktok, social`,
-        404
-      );
+      return fail(`Action "${action || '(kosong)'}" tidak dikenal.`, 404);
   }
 }
