@@ -1,39 +1,81 @@
+// components/SearchHome.js
+
 'use client';
 
 import Link from 'next/link';
 import { useDeferredValue, useMemo, useState } from 'react';
 import { getToolHref, toolCategories } from '@/data/featuredTools';
+import Icon, { getToolIconName, iconNames } from './icons';
 
 /**
- * Search + filter kategori.
- * Klik chip SELALU memberi feedback terlihat:
- *  - chip aktif berubah warna (aria-pressed -> CSS)
- *  - baris status di atas grid menyebut filter aktif + jumlah hasil
+ * Render icon card tool.
+ * Prioritas:
+ * 1. nama icon valid dari icons.js
+ * 2. fallback berdasarkan slug tool
+ * 3. emoji lama kalau masih ada
+ */
+function ToolCardIcon({ tool, size = 28 }) {
+  const iconName = getToolIconName(tool);
+
+  if (iconNames.includes(iconName)) {
+    return (
+      <span
+        className="card-icon"
+        aria-hidden="true"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--accent-soft)',
+          marginBottom: 12,
+        }}
+      >
+        <Icon name={iconName} size={size} />
+      </span>
+    );
+  }
+
+  return (
+    <span className="card-icon" aria-hidden="true">
+      {typeof tool?.icon === 'string' ? tool.icon : '✨'}
+    </span>
+  );
+}
+
+/**
+ * Search + filter kategori homepage.
  */
 export default function SearchHome({ tools }) {
+  const safeTools = Array.isArray(tools) ? tools : [];
+
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
   const deferred = useDeferredValue(query);
 
   const counts = useMemo(() => {
-    const map = { all: tools.length };
+    const map = { all: safeTools.length };
+
     for (const cat of toolCategories) {
       if (cat.id === 'all') continue;
-      map[cat.id] = tools.filter((t) => t.group?.includes(cat.id)).length;
+      map[cat.id] = safeTools.filter((t) => t.group?.includes(cat.id)).length;
     }
+
     return map;
-  }, [tools]);
+  }, [safeTools]);
 
   const results = useMemo(() => {
     const q = deferred.trim().toLowerCase();
-    return tools.filter((tool) => {
+
+    return safeTools.filter((tool) => {
       const inCategory = category === 'all' || tool.group?.includes(category);
       if (!inCategory) return false;
+
       if (!q) return true;
+
       const haystack = `${tool.title} ${tool.desc} ${tool.keywords || ''}`.toLowerCase();
       return q.split(/\s+/).every((word) => haystack.includes(word));
     });
-  }, [tools, deferred, category]);
+  }, [safeTools, deferred, category]);
 
   const activeLabel = toolCategories.find((c) => c.id === category)?.label || 'Semua';
   const filtering = category !== 'all' || query.trim().length > 0;
@@ -41,9 +83,18 @@ export default function SearchHome({ tools }) {
   return (
     <>
       <div className="search-wrap">
-        <span className="search-icon" aria-hidden="true">
-          🔎
+        <span
+          className="search-icon"
+          aria-hidden="true"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon name="search" size={18} />
         </span>
+
         <input
           className="search-input"
           type="search"
@@ -75,9 +126,11 @@ export default function SearchHome({ tools }) {
           <h2 style={{ fontSize: 17 }}>
             {filtering ? `Hasil: ${activeLabel}` : 'Semua Tools'}
           </h2>
+
           <span aria-live="polite">
             {results.length} tool{results.length === 1 ? '' : 's'}
             {query.trim() ? ` untuk "${query.trim()}"` : ''}
+
             {filtering ? (
               <>
                 {' · '}
@@ -106,20 +159,31 @@ export default function SearchHome({ tools }) {
 
         {results.length === 0 ? (
           <div className="empty">
-            <p style={{ margin: '0 0 6px', fontSize: 15, color: 'var(--text-dim)' }}>
-              Gak ada tool yang cocok 🤔
+            <p
+              style={{
+                margin: '0 auto 10px',
+                width: 'fit-content',
+                color: 'var(--text-faint)',
+              }}
+            >
+              <Icon name="search" size={26} />
             </p>
+
+            <p style={{ margin: '0 0 6px', fontSize: 15, color: 'var(--text-dim)' }}>
+              Gak ada tool yang cocok
+            </p>
+
             <p style={{ margin: 0 }}>Coba kata lain, atau klik chip “Semua”.</p>
           </div>
         ) : (
           <div className="grid-cards">
             {results.map((tool) => (
               <Link key={tool.slug} href={getToolHref(tool)} className="card">
-                <span className="card-icon" aria-hidden="true">
-                  {tool.icon}
-                </span>
+                <ToolCardIcon tool={tool} size={28} />
+
                 <h3>{tool.title}</h3>
                 <p>{tool.desc}</p>
+
                 {tool.group?.includes('populer') ? (
                   <span className="card-tag">Populer</span>
                 ) : null}
