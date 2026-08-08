@@ -1,7 +1,6 @@
 /**
  * Master tool registry.
- * `group` drives the 4 home chips: populer | kerja | fun
- * Every tool below has a real working page under /tools/<slug>.
+ * `group` drives the home chips: populer | kerja | fun
  */
 export const featuredTools = [
   {
@@ -152,9 +151,25 @@ export const featuredTools = [
     slug: 'tiktok-downloader',
     title: 'Download TikTok',
     desc: 'Ambil video TikTok tanpa watermark.',
-    icon: '⬇️',
+    icon: '🎵',
     group: ['populer', 'fun'],
     keywords: 'tiktok download downloader video nowatermark tt save',
+  },
+  {
+    slug: 'youtube-downloader',
+    title: 'Download YouTube',
+    desc: 'Download video MP4 & convert MP3 YouTube.',
+    icon: '▶️',
+    group: ['populer', 'fun', 'kerja'],
+    keywords: 'youtube yt download mp3 mp4 video lagu musik convert',
+  },
+  {
+    slug: 'social-downloader',
+    title: 'Download Sosmed',
+    desc: 'Download video & foto dari IG, Twitter, FB, Pinterest, Reddit.',
+    icon: '📲',
+    group: ['populer', 'fun', 'kerja'],
+    keywords: 'instagram ig twitter x facebook fb pinterest reddit reel story download',
   },
   {
     slug: 'games',
