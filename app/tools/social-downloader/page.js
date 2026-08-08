@@ -61,24 +61,34 @@ export default function SocialDownloaderPage() {
       }
     }
 
-    // Kalo IG, FB, Pinterest, SoundCloud, Spotify, Reddit, YouTube -> Curated Clean Gateway
+    // Kalo IG, FB, Pinterest, SoundCloud, Spotify, Reddit, YouTube -> Auto-Query Parameter Gateway
     setTimeout(() => {
       setData({
         type: 'gateway',
         platform,
         rawUrl: cleanUrl,
       });
-      addToast('Pengunduh spesialis siap! 📋', 'success');
+      addToast('Gateway pengunduh siap! 📋', 'success');
       setLoading(false);
     }, 300);
   };
 
-  const openGateway = (targetUrl, siteName) => {
-    if (url && navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(url).catch(() => {});
-      addToast(`Link tercopy ke clipboard! Tinggal paste di ${siteName} 📋`, 'info', 3500);
+  // AUTO-FILL VIA QUERY PARAMETER ?url=
+  const openGateway = (baseUrl, siteName) => {
+    const clean = url.trim();
+    
+    // Auto-copy sebagai backup
+    if (clean && navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(clean).catch(() => {});
     }
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+
+    // Bikin link Query Parameter ?url= biar web tujuan AUTO-FILL!
+    const targetWithParam = baseUrl.includes('?')
+      ? `${baseUrl}&url=${encodeURIComponent(clean)}`
+      : `${baseUrl}?url=${encodeURIComponent(clean)}`;
+
+    addToast(`Membuka ${siteName}... 🚀`, 'info', 2500);
+    window.open(targetWithParam, '_blank', 'noopener,noreferrer');
   };
 
   const handleNativePaste = (e) => {
@@ -208,7 +218,7 @@ export default function SocialDownloaderPage() {
           </div>
         ) : null}
 
-        {/* CURATED CLEAN GATEWAYS (FASTDL & DOWNLOADER.ASIA) */}
+        {/* AUTO-FILL QUERY PARAMETER GATEWAYS */}
         {data && data.type === 'gateway' ? (
           <div className="result">
             <div className="result-head">
@@ -216,10 +226,10 @@ export default function SocialDownloaderPage() {
             </div>
 
             <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
-              Link berhasil dideteksi & tercopy ke clipboard!
+              Link berhasil dideteksi!
             </p>
             <p className="hint" style={{ marginTop: 0, marginBottom: 14 }}>
-              Klik server spesialis pilihan di bawah (tanpa iklan / bersih):
+              Klik tombol di bawah untuk membuka pengunduh spesialis (link terisi otomatis):
             </p>
 
             <div style={{ display: 'grid', gap: 9 }}>
@@ -293,7 +303,7 @@ export default function SocialDownloaderPage() {
         ) : null}
 
         <p className="hint">
-          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung, sementara IG/FB/Spotify/Pinterest/SoundCloud/Reddit dialihkan ke server spesialis terpercaya dengan link ter-copy otomatis!
+          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung, sementara IG/FB/Spotify/Pinterest/SoundCloud dialihkan dengan link yang otomatis terisi!
         </p>
       </div>
     </ToolShell>
