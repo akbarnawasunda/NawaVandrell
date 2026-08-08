@@ -13,11 +13,15 @@ export default function SocialDownloaderPage() {
   const [error, setError] = useState('');
 
   const detectPlatform = (inputUrl) => {
-    if (inputUrl.includes('twitter.com') || inputUrl.includes('x.com')) return 'twitter';
-    if (inputUrl.includes('tiktok.com')) return 'tiktok';
-    if (inputUrl.includes('instagram.com')) return 'instagram';
-    if (inputUrl.includes('facebook.com') || inputUrl.includes('fb.watch')) return 'facebook';
-    if (inputUrl.includes('pinterest.com') || inputUrl.includes('pin.it')) return 'pinterest';
+    const u = inputUrl.toLowerCase();
+    if (u.includes('twitter.com') || u.includes('x.com')) return 'twitter';
+    if (u.includes('tiktok.com')) return 'tiktok';
+    if (u.includes('instagram.com')) return 'instagram';
+    if (u.includes('facebook.com') || u.includes('fb.watch')) return 'facebook';
+    if (u.includes('pinterest.com') || u.includes('pin.it')) return 'pinterest';
+    if (u.includes('soundcloud.com')) return 'soundcloud';
+    if (u.includes('spotify.com')) return 'spotify';
+    if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
     return 'generic';
   };
 
@@ -57,7 +61,7 @@ export default function SocialDownloaderPage() {
       }
     }
 
-    // Kalo Instagram, Facebook, Pinterest -> Pake Smart Gateway Card (100% Bebas Error)
+    // Kalo FB, IG, Pinterest, SoundCloud, Spotify, YT -> Pake Gateway Pilihan Terbaik
     setTimeout(() => {
       setData({
         type: 'gateway',
@@ -66,13 +70,13 @@ export default function SocialDownloaderPage() {
       });
       addToast('Gateway pengunduh siap! 📋', 'success');
       setLoading(false);
-    }, 400);
+    }, 300);
   };
 
   const openGateway = (targetUrl, siteName) => {
     if (url && navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(url).catch(() => {});
-      addToast(`Link tercopy! Tinggal paste di ${siteName} 📋`, 'info', 3000);
+      addToast(`Link tercopy ke clipboard! Paste di ${siteName} ya 📋`, 'info', 3000);
     }
     window.open(targetUrl, '_blank', 'noopener,noreferrer');
   };
@@ -110,13 +114,14 @@ export default function SocialDownloaderPage() {
   return (
     <ToolShell
       title="Download Sosmed"
-      desc="Download video & foto dari Instagram, Twitter/X, Facebook, Pinterest, TikTok, SoundCloud."
+      desc="Download video & audio dari IG, FB, Pinterest, TikTok, Twitter, SoundCloud, Spotify, YouTube."
       icon="📲"
     >
       <div className="panel">
+        {/* PLATFORM BADGES */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-          {['📸 Instagram', '🐤 Twitter/X', '📘 Facebook', '📌 Pinterest', '🎵 TikTok'].map((tag) => (
-            <span key={tag} className="chip" style={{ fontSize: 11.5, padding: '4px 10px', pointerEvents: 'none' }}>
+          {['📸 Instagram', '📘 Facebook', '📌 Pinterest', '🎵 TikTok', '🐤 Twitter/X', '☁️ SoundCloud', '🎧 Spotify', '▶️ YouTube'].map((tag) => (
+            <span key={tag} className="chip" style={{ fontSize: 11, padding: '4px 9px', pointerEvents: 'none' }}>
               {tag}
             </span>
           ))}
@@ -124,7 +129,7 @@ export default function SocialDownloaderPage() {
 
         <div className="field">
           <label className="label" htmlFor="social-url">
-            Link postingan sosmed
+            Link postingan sosmed / lagu
           </label>
           <input
             id="social-url"
@@ -136,7 +141,7 @@ export default function SocialDownloaderPage() {
             }}
             onPaste={handleNativePaste}
             onKeyDown={(e) => e.key === 'Enter' && processUrl()}
-            placeholder="Tempel link IG Reel / Twitter / FB / Pinterest di sini..."
+            placeholder="Tempel link IG / FB / Pinterest / Spotify / SoundCloud / YT di sini..."
             inputMode="url"
             spellCheck={false}
           />
@@ -150,7 +155,7 @@ export default function SocialDownloaderPage() {
             onClick={() => processUrl()}
             disabled={loading}
           >
-            {loading ? 'Memproses...' : 'Cari Media'}
+            {loading ? 'Memproses...' : 'Proses Link'}
           </button>
           <button type="button" className="btn btn-ghost" onClick={pasteButton}>
             📋 Tempel
@@ -169,7 +174,7 @@ export default function SocialDownloaderPage() {
         {data && data.type === 'direct' ? (
           <div className="result">
             <div className="result-head">
-              <span>Media Ditemukan (Direct MP4)</span>
+              <span>Media Ditemukan (Direct File)</span>
             </div>
 
             {data.thumbnail ? (
@@ -204,29 +209,46 @@ export default function SocialDownloaderPage() {
           </div>
         ) : null}
 
-        {/* HASIL 2: SMART GATEWAY CARD (INSTAGRAM, FACEBOOK, PINTEREST) */}
+        {/* HASIL 2: HIGH-QUALITY GATEWAY CARD */}
         {data && data.type === 'gateway' ? (
           <div className="result">
             <div className="result-head">
-              <span>Pengunduh Siap ({data.platform.toUpperCase()})</span>
+              <span>Server Pengunduh Siap ({data.platform.toUpperCase()})</span>
             </div>
 
-            <p style={{ margin: '0 0 8px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
-              Link berhasil dideteksi & tercopy ke clipboard!
+            <p style={{ margin: '0 0 6px', fontSize: 14, color: 'var(--accent-soft)', fontWeight: 600 }}>
+              Link terdeteksi & otomatis tercopy ke clipboard!
             </p>
             <p className="hint" style={{ marginTop: 0, marginBottom: 14 }}>
-              Klik salah satu server spesialis di bawah (link otomatis terisi):
+              Klik server rekomendasi di bawah (link langsung terisi otomatis):
             </p>
 
             <div style={{ display: 'grid', gap: 9 }}>
-              {data.platform === 'instagram' ? (
+              {data.platform === 'facebook' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full"
+                    onClick={() => openGateway('https://downloader.asia/dl/facebook/', 'Downloader.asia FB')}
+                  >
+                    📘 Unduh via Downloader.asia (FB Video/Audio)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-full"
+                    onClick={() => openGateway('https://fdownloader.net/', 'FDownloader')}
+                  >
+                    ⚡ Unduh via FDownloader (HD MP4)
+                  </button>
+                </>
+              ) : data.platform === 'instagram' ? (
                 <>
                   <button
                     type="button"
                     className="btn btn-primary btn-full"
                     onClick={() => openGateway('https://fastdl.app/', 'FastDL')}
                   >
-                    📸 Unduh via FastDL (Instagram HD)
+                    📸 Unduh via FastDL (Instagram Reel/Post)
                   </button>
                   <button
                     type="button"
@@ -236,31 +258,14 @@ export default function SocialDownloaderPage() {
                     ⚡ Unduh via SnapInsta
                   </button>
                 </>
-              ) : data.platform === 'facebook' ? (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://fdownloader.net/', 'FDownloader')}
-                  >
-                    📘 Unduh via FDownloader (Facebook HD)
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-ghost btn-full"
-                    onClick={() => openGateway('https://snapsave.app/', 'SnapSave')}
-                  >
-                    ⚡ Unduh via SnapSave
-                  </button>
-                </>
               ) : data.platform === 'pinterest' ? (
                 <>
                   <button
                     type="button"
                     className="btn btn-primary btn-full"
-                    onClick={() => openGateway('https://pinterestvideodownloader.com/', 'PinterestDownloader')}
+                    onClick={() => openGateway('https://downloader.asia/dl/pinterest/', 'Downloader.asia Pinterest')}
                   >
-                    📌 Unduh via PinterestDownloader
+                    📌 Unduh via Downloader.asia (Pinterest)
                   </button>
                   <button
                     type="button"
@@ -270,13 +275,46 @@ export default function SocialDownloaderPage() {
                     ⚡ Unduh via PrintDwn
                   </button>
                 </>
+              ) : data.platform === 'soundcloud' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/soundcloud/', 'Downloader.asia SoundCloud')}
+                >
+                  ☁️ Unduh via Downloader.asia (SoundCloud MP3)
+                </button>
+              ) : data.platform === 'spotify' ? (
+                <button
+                  type="button"
+                  className="btn btn-primary btn-full"
+                  onClick={() => openGateway('https://downloader.asia/dl/spotify/', 'Downloader.asia Spotify')}
+                >
+                  🎧 Unduh via Downloader.asia (Spotify Song/Album)
+                </button>
+              ) : data.platform === 'youtube' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-full"
+                    onClick={() => openGateway('https://downloader.asia/dl/youtube/', 'Downloader.asia YouTube')}
+                  >
+                    ▶️ Unduh via Downloader.asia (YouTube MP4/MP3)
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-full"
+                    onClick={() => openGateway('https://yt5s.biz/enwr200/', 'yt5s')}
+                  >
+                    🚀 Unduh via yt5s
+                  </button>
+                </>
               ) : (
                 <button
                   type="button"
                   className="btn btn-primary btn-full"
-                  onClick={() => openGateway(`https://cobalt.tools/#${data.rawUrl}`, 'Cobalt')}
+                  onClick={() => openGateway('https://fastdl.app/', 'FastDL')}
                 >
-                  ✨ Unduh via Cobalt Web UI
+                  ✨ Unduh via FastDL Universal
                 </button>
               )}
             </div>
@@ -284,7 +322,7 @@ export default function SocialDownloaderPage() {
         ) : null}
 
         <p className="hint">
-          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung, sementara Instagram/FB/Pinterest ter-copy otomatis untuk diunduh via server HD spesialis!
+          💡 <strong>Tips Instan:</strong> Twitter & TikTok ter-download langsung di web, sedangkan Facebook, IG, Pinterest, SoundCloud, Spotify & YouTube menggunakan gateway server bersih tanpa iklan!
         </p>
       </div>
     </ToolShell>
