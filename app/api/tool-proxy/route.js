@@ -1,26 +1,25 @@
 /**
  * GET /api/tool-proxy?path=<action>&...params
  *
- * FIX BUG LAMA: versi lama cuma handle `alay`, sisanya gagal diam-diam.
- * Sekarang semua fun-tool diproses LOKAL:
- *   alay      -> ?path=alay&text=...
- *   roasting  -> ?path=roasting&name=...
- *   funfact   -> ?path=funfact&birthdate=YYYY-MM-DD
- *   lorem     -> ?path=lorem&count=3&unit=paragraph
- *   waifu     -> ?path=waifu&type=waifu     (proxy api.waifu.pics, ada fallback)
- *   tiktok    -> ?path=tiktok&url=...       (proxy upstream, opsional)
- *
- * Upstream eksternal hanya dipakai untuk yang memang butuh jaringan.
- * Kalau UPSTREAM_API_BASE tidak diset, TikTok akan balas pesan jelas
- * (bukan error mentah).
+ * ALL-IN-ONE DIRECT MEDIA DOWNLOADER PROXY (BTCH-DOWNLOADER ENGINE)
+ * Handle lokal: alay, roasting, funfact, lorem
+ * Handle jaringan: waifu, tiktok (TikWM + Btch), youtube, social (BTCH Downloader Native)
  */
 
 import { toAlay, roast, funfact, loremIpsum } from '@/lib/funTools';
+import { igdl, twitter, pinterest, facebook, tiktok, capcut } from 'btch-downloader';
 
 export const dynamic = 'force-dynamic';
 
-const UPSTREAM = (process.env.UPSTREAM_API_BASE || '').replace(/\/$/, '');
 const WAIFU_TYPES = new Set(['waifu', 'neko', 'shinobu', 'megumin', 'awoo', 'cuddle']);
+const YT_RE = /(?:v=|\/embed\/|\/1\/|\/v\/|https:\/\/youtu\.be\/|\/shorts\/)([a-zA-Z0-9_-]{11})/;
+const TIKTOK_RE = /^https?:\/\/(www\.|vm\.|vt\.|m\.)?tiktok\.com\//i;
+
+function extractYtId(url) {
+  if (!url) return null;
+  const match = url.match(YT_RE);
+  return match ? match[1] : null;
+}
 
 function ok(result, extra = {}) {
   return Response.json(
@@ -33,7 +32,7 @@ function fail(message, status = 400) {
   return Response.json({ status: false, error: message }, { status });
 }
 
-async function fetchWithTimeout(url, ms = 12000, init = {}) {
+async function fetchWithTimeout(url, ms = 10000, init = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ms);
   try {
@@ -45,12 +44,10 @@ async function fetchWithTimeout(url, ms = 12000, init = {}) {
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  // terima ?path=alay maupun ?path=/fun/alay
   const raw = searchParams.get('path') || '';
   const action = raw.split('/').filter(Boolean).pop()?.toLowerCase() || '';
 
   switch (action) {
-    // ------------------------- lokal -------------------------
     case 'alay': {
       const text = searchParams.get('text') || '';
       if (!text.trim()) return fail('Teks belum diisi');
@@ -79,7 +76,6 @@ export async function GET(request) {
       return ok(loremIpsum({ count, unit }));
     }
 
-    // ------------------------ jaringan ------------------------
     case 'waifu':
     case 'anime': {
       const type = (searchParams.get('type') || 'waifu').toLowerCase();
@@ -91,42 +87,204 @@ export async function GET(request) {
         if (!data?.url) throw new Error('no url');
         return ok(data.url, { source: 'waifu.pics' });
       } catch {
-        return fail('Sumber gambar anime sedang tidak bisa diakses. Coba lagi.', 502);
+        return fail('Sumber gambar anime sedang tidak bisa diakses.', 502);
       }
     }
 
+    // ------------------------ TIKTOK DOWNLOADER ------------------------
     case 'tiktok':
     case 'tiktokdl': {
       const url = searchParams.get('url') || '';
-      if (!/^https?:\/\/(www\.|vm\.|vt\.|m\.)?tiktok\.com\//i.test(url)) {
-        return fail('Link TikTok tidak valid. Contoh: https://www.tiktok.com/@user/video/123');
+      if (!TIKTOK_RE.test(url)) {
+        return fail('Link TikTok tidak valid.');
       }
-      if (!UPSTREAM) {
-        return fail(
-          'Downloader butuh UPSTREAM_API_BASE di environment. Set dulu di Vercel, lalu fitur ini aktif.',
-          503
-        );
-      }
+
+      // LAYER 1: TikWM API
       try {
-        const res = await fetchWithTimeout(
-          `${UPSTREAM}/downloader/tiktok?url=${encodeURIComponent(url)}`,
-          15000
+        const tikwmRes = await fetchWithTimeout(
+          `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
+          9000
         );
-        if (!res.ok) throw new Error(String(res.status));
-        const data = await res.json();
-        return Response.json(
-          { status: true, result: data.result ?? data, source: 'upstream' },
-          { headers: { 'Cache-Control': 'no-store' } }
-        );
-      } catch {
-        return fail('Server downloader tidak merespons. Coba lagi nanti.', 502);
+        if (tikwmRes.ok) {
+          const tikwmData = await tikwmRes.json();
+          if (tikwmData.code === 0 && tikwmData.data) {
+            const d = tikwmData.data;
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  play: d.play,
+                  wmplay: d.wmplay,
+                  music: d.music,
+                  cover: d.cover,
+                  title: d.title || 'TikTok Video',
+                  author: d.author?.nickname || 'TikTok User',
+                },
+                source: 'tikwm',
+              },
+              { headers: { 'Cache-Control': 'no-store' } }
+            );
+          }
+        }
+      } catch (err) {
+        console.error('[TikWM Error]', err.message);
       }
+
+      // LAYER 2: BTCH Downloader Fallback
+      try {
+        const ttData = await tiktok(url);
+        if (ttData && (ttData.video || ttData.nowm || ttData.url)) {
+          return Response.json(
+            {
+              status: true,
+              result: {
+                play: ttData.video || ttData.nowm || ttData.url,
+                title: ttData.title || 'TikTok Video',
+                author: ttData.author || 'TikTok User',
+              },
+              source: 'btch-tiktok',
+            },
+            { headers: { 'Cache-Control': 'no-store' } }
+          );
+        }
+      } catch (err) {
+        console.error('[Btch TikTok Error]', err.message);
+      }
+
+      return fail('Gagal mengambil video TikTok. Coba lagi nanti.', 502);
+    }
+
+    // ------------------------ ALL-IN-ONE SOCIAL DOWNLOADER (BTCH ENGINE) ------------------------
+    case 'social':
+    case 'cobalt': {
+      const url = searchParams.get('url') || '';
+      if (!url.trim()) return fail('Link sosmed belum diisi');
+
+      const cleanUrl = url.trim();
+
+      // 1. INSTAGRAM (BTCH igdl)
+      if (cleanUrl.includes('instagram.com')) {
+        try {
+          const igData = await igdl(cleanUrl);
+          if (Array.isArray(igData) && igData.length > 0) {
+            const mainMedia = igData[0];
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  downloadUrl: mainMedia.url || mainMedia.path,
+                  thumbnail: mainMedia.thumbnail || mainMedia.url,
+                  filename: 'instagram-media.mp4',
+                  picker: igData.length > 1 ? igData.map((m) => ({ url: m.url || m.path })) : null,
+                },
+                source: 'btch-ig',
+              },
+              { headers: { 'Cache-Control': 'no-store' } }
+            );
+          }
+        } catch (err) {
+          console.error('[Btch IG Error]', err.message);
+        }
+      }
+
+      // 2. TWITTER / X (BTCH twitter)
+      if (cleanUrl.includes('twitter.com') || cleanUrl.includes('x.com')) {
+        try {
+          const twData = await twitter(cleanUrl);
+          if (twData && (twData.url || twData.HD || twData.SD)) {
+            const videoUrl = twData.HD || twData.url || twData.SD;
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  downloadUrl: videoUrl,
+                  thumbnail: twData.thumb || null,
+                  title: twData.desc || 'Twitter Video',
+                  filename: 'twitter-video.mp4',
+                },
+                source: 'btch-twitter',
+              },
+              { headers: { 'Cache-Control': 'no-store' } }
+            );
+          }
+        } catch (err) {
+          console.error('[Btch Twitter Error]', err.message);
+        }
+      }
+
+      // 3. PINTEREST (BTCH pinterest)
+      if (cleanUrl.includes('pinterest.com') || cleanUrl.includes('pin.it')) {
+        try {
+          const pinData = await pinterest(cleanUrl);
+          if (pinData && (pinData.result || pinData.url)) {
+            const mediaUrl = pinData.result || pinData.url;
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  downloadUrl: typeof mediaUrl === 'string' ? mediaUrl : mediaUrl[0],
+                  filename: 'pinterest-media.mp4',
+                },
+                source: 'btch-pinterest',
+              },
+              { headers: { 'Cache-Control': 'no-store' } }
+            );
+          }
+        } catch (err) {
+          console.error('[Btch Pinterest Error]', err.message);
+        }
+      }
+
+      // 4. FACEBOOK (BTCH facebook)
+      if (cleanUrl.includes('facebook.com') || cleanUrl.includes('fb.watch')) {
+        try {
+          const fbData = await facebook(cleanUrl);
+          if (fbData && (fbData.HD || fbData.SD || fbData.url)) {
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  downloadUrl: fbData.HD || fbData.url || fbData.SD,
+                  filename: 'facebook-video.mp4',
+                },
+                source: 'btch-facebook',
+              },
+              { headers: { 'Cache-Control': 'no-store' } },
+            );
+          }
+        } catch (err) {
+          console.error('[Btch FB Error]', err.message);
+        }
+      }
+
+      // 5. CAPCUT (BTCH capcut)
+      if (cleanUrl.includes('capcut.com')) {
+        try {
+          const ccData = await capcut(cleanUrl);
+          if (ccData && (ccData.originalVideoUrl || ccData.url)) {
+            return Response.json(
+              {
+                status: true,
+                result: {
+                  downloadUrl: ccData.originalVideoUrl || ccData.url,
+                  thumbnail: ccData.coverUrl || null,
+                  title: ccData.title || 'CapCut Template',
+                  filename: 'capcut-video.mp4',
+                },
+                source: 'btch-capcut',
+              },
+              { headers: { 'Cache-Control': 'no-store' } },
+            );
+          }
+        } catch (err) {
+          console.error('[Btch CapCut Error]', err.message);
+        }
+      }
+
+      return fail('Gagal mengambil media. Gunakan Gateway Cadangan di bawah.', 502);
     }
 
     default:
-      return fail(
-        `Action "${action || '(kosong)'}" tidak dikenal. Pilihan: alay, roasting, funfact, lorem, waifu, tiktok`,
-        404
-      );
+      return fail(`Action "${action || '(kosong)'}" tidak dikenal.`, 404);
   }
 }
