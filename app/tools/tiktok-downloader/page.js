@@ -14,10 +14,10 @@ export default function TiktokDownloaderPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const submit = async () => {
-    const clean = url.trim();
+  const processUrl = async (inputUrl) => {
+    const clean = (inputUrl || url).trim();
     if (!clean) {
-      addToast('Tempel link TikTok-nya dulu', 'warning');
+      addToast('Isi link TikTok-nya dulu', 'warning');
       return;
     }
     if (!TIKTOK_RE.test(clean)) {
@@ -38,7 +38,7 @@ export default function TiktokDownloaderPage() {
         return;
       }
       setData(json.result);
-      addToast('Video ditemukan', 'success');
+      addToast('Video berhasil ditemukan! 🎬', 'success');
     } catch {
       setError('Koneksi bermasalah. Coba lagi.');
     } finally {
@@ -46,19 +46,36 @@ export default function TiktokDownloaderPage() {
     }
   };
 
-  const paste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      if (text) {
-        setUrl(text.trim());
-        setError('');
-      }
-    } catch {
-      addToast('Gak bisa akses clipboard, tempel manual ya', 'warning');
+  const handleNativePaste = (e) => {
+    const pastedText = e.clipboardData?.getData('text') || '';
+    const clean = pastedText.trim();
+    if (clean && TIKTOK_RE.test(clean)) {
+      setUrl(clean);
+      addToast('Link terdeteksi, mengambil video... 🚀', 'info');
+      processUrl(clean);
     }
   };
 
-  // upstream bisa balas bentuk yang beda-beda, jadi kumpulkan link video apa pun yang ada
+  const pasteButton = async () => {
+    try {
+      if (!navigator.clipboard?.readText) {
+        addToast('Gunakan fitur Tempel dari Keyboard HP kamu!', 'info');
+        return;
+      }
+      const text = await navigator.clipboard.readText();
+      const clean = (text || '').trim();
+      if (clean) {
+        setUrl(clean);
+        addToast('Link terdeteksi, mengambil video... 🚀', 'info');
+        processUrl(clean);
+      } else {
+        addToast('Clipboard kamu kosong euy', 'warning');
+      }
+    } catch {
+      addToast('Gunakan saran "Tempel" dari Keyboard HP kamu ya!', 'info');
+    }
+  };
+
   const videoLinks = data
     ? [
         { label: 'Tanpa Watermark', href: data.play || data.nowatermark || data.video || data.hdplay },
@@ -68,7 +85,7 @@ export default function TiktokDownloaderPage() {
     : [];
 
   return (
-    <ToolShell title="Download TikTok" desc="Tempel link video TikTok, ambil versi tanpa watermark." icon="⬇️">
+    <ToolShell title="Download TikTok" desc="Tempel link video TikTok, langsung otomatis terdownload tanpa watermark." icon="⬇️">
       <div className="panel">
         <div className="field">
           <label className="label" htmlFor="tt-url">
@@ -82,18 +99,19 @@ export default function TiktokDownloaderPage() {
               setUrl(e.target.value);
               setError('');
             }}
-            onKeyDown={(e) => e.key === 'Enter' && submit()}
-            placeholder="https://www.tiktok.com/@user/video/..."
+            onPaste={handleNativePaste}
+            onKeyDown={(e) => e.key === 'Enter' && processUrl()}
+            placeholder="Tempel / Paste link di sini..."
             inputMode="url"
             spellCheck={false}
           />
         </div>
 
         <div className="btn-row">
-          <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={submit} disabled={loading}>
+          <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={() => processUrl()} disabled={loading}>
             {loading ? 'Mencari...' : 'Ambil Video'}
           </button>
-          <button type="button" className="btn btn-ghost" onClick={paste}>
+          <button type="button" className="btn btn-ghost" onClick={pasteButton}>
             📋 Tempel
           </button>
         </div>
@@ -109,7 +127,7 @@ export default function TiktokDownloaderPage() {
         {data ? (
           <div className="result">
             <div className="result-head">
-              <span>Hasil</span>
+              <span>Hasil Video</span>
             </div>
 
             {data.cover || data.origin_cover ? (
@@ -132,7 +150,7 @@ export default function TiktokDownloaderPage() {
             ) : null}
 
             {data.author?.nickname || data.author ? (
-              <p className="hint" style={{ marginTop: 0 }}>
+              <p className="hint" style={{ marginTop: 0, marginBottom: 12 }}>
                 oleh {data.author?.nickname || String(data.author)}
               </p>
             ) : null}
@@ -161,8 +179,7 @@ export default function TiktokDownloaderPage() {
         ) : null}
 
         <p className="hint">
-          Fitur ini butuh server pihak ketiga (env <code>UPSTREAM_API_BASE</code>) karena TikTok
-          tidak bisa diakses langsung dari browser. Tool lain di NawaVandrell jalan tanpa internet.
+          💡 <strong>Tips Instan:</strong> Tinggal tempel link dari keyboard HP kamu, video bakal otomatis terdeteksi tanpa watermark!
         </p>
       </div>
     </ToolShell>
