@@ -48,8 +48,8 @@ export default function QuizEngine({ cat }) {
     setPhase('loading');
     try {
       const ex = excludeRef.current.slice(-60).join(',');
-      const res = await fetch(`/api/quiz?cat=${cat}&diff=${d}&exclude=${ex}`);
-      if (!res.ok) throw new Error('x');
+      const res = await fetch(`/api/quiz?cat=${cat}&diff=${d}&exclude=${ex}&_t=${Date.now()}`, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const q = await res.json();
       excludeRef.current.push(q.id);
       setCurrent(q);
@@ -59,7 +59,7 @@ export default function QuizEngine({ cat }) {
       setHintShown(false);
       setPhase('question');
     } catch {
-      addToast('Gagal ambil soal. Cek koneksi / kategori.', 'error');
+      addToast(`Gagal: ${err.message} | cat=${cat}`, 'error');
       setPhase('pick');
     }
   };
