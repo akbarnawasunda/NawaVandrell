@@ -22,6 +22,16 @@ const CAT_LABEL = {
   kata: 'Kata',
 };
 
+const GAME_ICON_MAP = {
+  'angka-enigma': 'angka',
+  'emoji-story': 'emoji',
+  'kata-sambung': 'word',
+  'logic-gate': 'logic',
+  'math-rush': 'math',
+  'memory-matrix': 'memory',
+  'typing-blitz': 'typing',
+};
+
 function catOf(slug) {
   const s = String(slug || '');
   if (s.includes('kuis') || s.includes('quiz') || s.includes('tebak')) return 'kuis';
@@ -39,24 +49,26 @@ function catOf(slug) {
 }
 
 function iconFor(slug) {
-  const s = String(slug || '');
-  const map = {
-    'angka-enigma': 'angka',
-    'emoji-story': 'emoji',
-    'kata-sambung': 'word',
-    'logic-gate': 'logic',
-    'math-rush': 'math',
-    'memory-matrix': 'memory',
-    'typing-blitz': 'typing',
-  };
+  const s = String(slug || '').toLowerCase();
 
-  if (map[s]) return map[s];
+  if (GAME_ICON_MAP[s]) return GAME_ICON_MAP[s];
 
-  const c = catOf(s);
-  if (c === 'logika') return 'logic';
-  if (c === 'speed') return 'math';
-  if (c === 'kata') return 'word';
-  return 'quiz';
+  if (s.includes('kimia') || s.includes('chem')) return 'flask';
+  if (s.includes('lirik') || s.includes('lagu') || s.includes('musi')) return 'music';
+  if (s.includes('islamic') || s.includes('islam') || s.includes('quran') || s.includes('ngaji')) return 'moon';
+  if (s.includes('siapakah') || s.includes('profesi') || s.includes('tokoh')) return 'user';
+  if (s.includes('asah') || s.includes('otak') || s.includes('brain') || s.includes('pola')) return 'bulb';
+  if (s.includes('teka') || s.includes('teki') || s.includes('puzzle')) return 'puzzle';
+  if (s.includes('tebakan') || s.includes('receh') || s.includes('lucu') || s.includes('joke')) return 'emoji';
+  if (s.includes('logic') || s.includes('logika') || s.includes('gate')) return 'logic';
+  if (s.includes('memory') || s.includes('memori')) return 'memory';
+  if (s.includes('typing') || s.includes('ketik')) return 'typing';
+  if (s.includes('math') || s.includes('hitung') || s.includes('angka')) return 'math';
+  if (s.includes('kata') || s.includes('word') || s.includes('sambung')) return 'word';
+  if (s.includes('emoji')) return 'emoji';
+  if (s.includes('kuis') || s.includes('quiz') || s.includes('tebak')) return 'quiz';
+
+  return 'gamepad';
 }
 
 export default function GamesCatalogPage() {

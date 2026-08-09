@@ -456,3 +456,49 @@ export function PlatformIcon({ platform = 'generic', size = 18, className = '' }
 }
 
 export default Icon;
+
+// ===== icon game tambahan =====
+icons.puzzle = (
+  <Svg>
+    <path d="M10 3.5a1.5 1.5 0 0 1 3 0V5h3a2 2 0 0 1 2 2v3h1.5a1.5 1.5 0 0 1 0 3H18v3a2 2 0 0 1-2 2h-3v1.5a1.5 1.5 0 0 1-3 0V18H7a2 2 0 0 1-2-2v-3H3.5a1.5 1.5 0 0 1 0-3H5V7a2 2 0 0 1 2-2h3V3.5Z" />
+  </Svg>
+);
+
+icons.flask = (
+  <Svg>
+    <path d="M10 3v6L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V3" />
+    <path d="M8.5 3h7" />
+    <path d="M7 15h10" />
+  </Svg>
+);
+
+icons.music = (
+  <Svg>
+    <path d="M9 18V6l10-2v12" />
+    <circle cx="6.5" cy="18" r="2.5" />
+    <circle cx="16.5" cy="16" r="2.5" />
+  </Svg>
+);
+
+icons.user = (
+  <Svg>
+    <circle cx="12" cy="8" r="4" />
+    <path d="M5 20a7 7 0 0 1 14 0" />
+  </Svg>
+);
+
+icons.bulb = (
+  <Svg>
+    <path d="M9 18h6" />
+    <path d="M10 21h4" />
+    <path d="M12 3a6 6 0 0 0-3.5 10.9c.8.6 1.5 1.6 1.5 2.6V17h4v-.5c0-1 .7-2 1.5-2.6A6 6 0 0 0 12 3Z" />
+  </Svg>
+);
+
+icons.moon = (
+  <Svg>
+    <path d="M20 12.5A8 8 0 1 1 11.5 4a6.5 6.5 0 0 0 8.5 8.5Z" />
+  </Svg>
+);
+
+iconNames.push('puzzle', 'flask', 'music', 'user', 'bulb', 'moon');
