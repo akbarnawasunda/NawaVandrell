@@ -117,3 +117,4 @@ export function getToolHref(tool) {
 export function findTool(slug) {
   return featuredTools.find((t) => t.slug === slug) || null;
 }
+ 
