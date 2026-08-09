@@ -60,6 +60,7 @@ export default function RootLayout({ children }) {
             <TopBar />
             <main>{children}</main>
             <CommandPalette />
+            <MicroAudioController />
             <footer className="footer">
               <p style={{ margin: '0 0 6px' }}>
                 <strong>NawaVandrell 3.0</strong> — Neuro Core Digital Arsenal
