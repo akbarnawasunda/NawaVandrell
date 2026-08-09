@@ -1,24 +1,18 @@
-import { readdir } from 'fs/promises';
-import { join } from 'path';
+import { chunks } from '@/data/quiz/index';
 
 export const dynamic = 'force-dynamic';
 
 let cache = null;
-async function loadCategories() {
+function loadCategories() {
   if (cache) return cache;
-  const dir = join(process.cwd(), 'data/quiz');
-  const files = (await readdir(dir)).filter(f => f.endsWith('.js') && !f.startsWith('_'));
   cache = {};
-  for (const f of files) {
-    try {
-      const mod = await import(`@/data/quiz/${f.replace('.js', '')}`);
-      if (mod.category) {
-        if (!cache[mod.category]) {
-          cache[mod.category] = { category: mod.category, displayName: mod.displayName, questions: [] };
-        }
-        cache[mod.category].questions.push(...(mod.questions || []));
+  for (const mod of chunks) {
+    if (mod.category) {
+      if (!cache[mod.category]) {
+        cache[mod.category] = { category: mod.category, displayName: mod.displayName, questions: [] };
       }
-    } catch {}
+      cache[mod.category].questions.push(...(mod.questions || []));
+    }
   }
   return cache;
 }
@@ -30,7 +24,7 @@ export async function GET(req) {
   const exclude = (url.searchParams.get('exclude') || '').split(',').filter(Boolean);
   const list = url.searchParams.get('list');
 
-  const categories = await loadCategories();
+  const categories = loadCategories();
 
   if (list === '1') {
     const summary = Object.values(categories).map(c => ({
@@ -62,7 +56,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   const { id, cat } = await req.json().catch(() => ({}));
-  const categories = await loadCategories();
+  const categories = loadCategories();
   if (!cat || !categories[cat]) return Response.json({ error: 'Kategori tidak ada' }, { status: 404 });
   const q = categories[cat].questions.find(x => x.id === id);
   if (!q) return Response.json({ error: 'Soal tidak ada' }, { status: 404 });
