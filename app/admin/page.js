@@ -1,5 +1,3 @@
-// app/admin/page.js
-
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
@@ -126,6 +124,51 @@ function RowEditor({ row, onSave }) {
   );
 }
 
+function AddPlayerForm({ onAdd }) {
+  const [name, setName] = useState('');
+  const [score, setScore] = useState('0');
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!name.trim() || busy) return;
+    setBusy(true);
+    await onAdd(name.trim(), Number(score) || 0);
+    setName(''); setScore('0'); setBusy(false);
+  };
+
+  return (
+    <form className="panel" onSubmit={submit} style={{ marginBottom: 14 }}>
+      <div className="result-head" style={{ marginBottom: 10 }}>
+        <span>Suntik Player Baru</span>
+      </div>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <input 
+          className="input" 
+          placeholder="Nama player" 
+          value={name} 
+          onChange={(e) => setName(e.target.value)} 
+          maxLength={24}
+          style={{ flex: '1 1 140px' }}
+          required 
+        />
+        <input 
+          className="input" 
+          placeholder="Skor" 
+          type="number" 
+          inputMode="numeric"
+          value={score} 
+          onChange={(e) => setScore(e.target.value)} 
+          style={{ flex: '0 1 100px' }}
+        />
+        <button type="submit" className="btn btn-primary" disabled={busy} style={{ flexShrink: 0 }}>
+          {busy ? '...' : '+ Tambah'}
+        </button>
+      </div>
+    </form>
+  );
+}
+
 function Dashboard({ token, onLogout }) {
   const { addToast } = useToast();
   const [stats, setStats] = useState(null);
@@ -167,7 +210,6 @@ function Dashboard({ token, onLogout }) {
     } finally {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   useEffect(() => {
@@ -188,6 +230,21 @@ function Dashboard({ token, onLogout }) {
     }
   };
 
+  const addPlayer = async (name, score) => {
+    const res = await fetch('/api/admin/player', {
+      method: 'POST',
+      headers: { ...authHeaders, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, score }),
+    });
+    if (res.ok) {
+      addToast(`${name} disuntikkan`, 'success');
+      load();
+    } else {
+      const j = await res.json().catch(() => ({}));
+      addToast(j.message || 'Gagal nambah', 'error');
+    }
+  };
+
   const removePlayer = async () => {
     if (!toDelete) return;
     const res = await fetch(`/api/admin/player?name=${encodeURIComponent(toDelete)}`, {
@@ -195,7 +252,7 @@ function Dashboard({ token, onLogout }) {
       headers: authHeaders,
     });
     if (res.ok) {
-      addToast(`${toDelete} dihapus`, 'success');
+      addToast(`${toDelete} dihapus permanen`, 'success');
       load();
     } else {
       addToast('Gagal hapus player', 'error');
@@ -246,6 +303,8 @@ function Dashboard({ token, onLogout }) {
             </div>
           ) : null}
 
+          <AddPlayerForm onAdd={addPlayer} />
+
           <div className="panel">
             <div className="result-head">
               <span>Leaderboard</span>
@@ -255,7 +314,7 @@ function Dashboard({ token, onLogout }) {
             </div>
 
             {rows.length === 0 ? (
-              <p className="empty">Belum ada player.</p>
+              <p className="empty">Belum ada player. Suntik manual di atas!</p>
             ) : (
               <div className="admin-rows">
                 {rows.map((row, i) => (
@@ -285,8 +344,8 @@ function Dashboard({ token, onLogout }) {
         isOpen={!!toDelete}
         onClose={() => setToDelete(null)}
         onConfirm={removePlayer}
-        title="Hapus player?"
-        message={`Skor "${toDelete}" bakal dihapus permanen dari leaderboard.`}
+        title="Hapus player permanen?"
+        message={`Skor "${toDelete}" bakal dihapus dari database dan tidak akan bangkit lagi.`}
         confirmLabel="Hapus"
         variant="danger"
         icon="warning"
