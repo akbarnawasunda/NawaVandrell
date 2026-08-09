@@ -99,6 +99,7 @@ export const featuredTools = [
     keywords: 'text to image canvas quote poster png gambar tulisan',
   },
 
+  { slug: 'stego', title: 'Anti-Kepo (Steganografi)', desc: 'Selundupin pesan rahasia di dalam piksel foto.', icon: 'eye', group: ['populer', 'fun'], keywords: 'steganografi rahasia pesan foto piksel anti kepo' },
   // ================= GAMES =================
   {
     slug: 'games',
