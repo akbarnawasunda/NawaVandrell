@@ -4,6 +4,7 @@ import { ToastProvider } from '@/context/ToastContext';
 import { ModeProvider } from '@/context/ModeContext';
 import TopBar from '@/components/TopBar';
 import CommandPalette from '@/components/CommandPalette';
+import MicroAudioController from '@/components/MicroAudioController';
 
 export const metadata = {
   title: {
