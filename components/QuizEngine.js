@@ -1,252 +1,216 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import GameShell, { PlayerGate } from './GameShell';
-import SkeletonLoader from './SkeletonLoader';
-import { useMode } from '@/context/ModeContext';
-import { useToast } from '@/context/ToastContext';
-import { useSound } from '@/hooks/useSound';
-import { useStreak } from '@/hooks/useStreak';
+import { useEffect, useRef, useState } from 'react';
+import GameShell from '@/components/GameShell';
 import { usePlayer } from '@/hooks/usePlayer';
+import { useToast } from '@/context/ToastContext';
+import Icon from '@/components/icons';
 
-const LEVELS = [
-  { id: 'easy', label: 'Mudah', points: 1 },
-  { id: 'medium', label: 'Sedang', points: 2 },
-  { id: 'hard', label: 'Sulit', points: 3 },
-];
+const TIME_LIMIT = { easy: 15, medium: 30, hard: 60 };
+const BASE_POINT = { easy: 10, medium: 20, hard: 30 };
 
-/**
- * Engine kuis untuk 8 kategori.
- * Simple Mode: soal besar + input + 2 tombol (Jawab / Lewati). Level default easy,
- *              tidak ada pemilihan level, tidak ada XP/streak di header.
- * Pro Mode:    ada pemilih level, stats, streak, combo.
- */
-export default function QuizEngine({ category, title, desc, icon }) {
-  const { isPro } = useMode();
+function normalize(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+export default function QuizEngine({ cat }) {
   const { addToast } = useToast();
-  const sound = useSound();
-  const { streak, best, comboMultiplier, incrementStreak, resetStreak } = useStreak();
   const player = usePlayer();
 
-  const [level, setLevel] = useState('easy');
-  const [question, setQuestion] = useState(null);
+  const [displayName, setDisplayName] = useState('Quiz');
+  const [phase, setPhase] = useState('pick');
+  const [diff, setDiff] = useState('easy');
+  const [current, setCurrent] = useState(null);
   const [answer, setAnswer] = useState('');
-  const [phase, setPhase] = useState('loading'); // loading | playing | done | error
-  const [feedback, setFeedback] = useState(null); // { kind, text }
-  const [checking, setChecking] = useState(false);
-  const [correctCount, setCorrectCount] = useState(0);
-  const [attempts, setAttempts] = useState(0);
-
-  const recentRef = useRef([]);
-  const inputRef = useRef(null);
-
-  const load = useCallback(
-    async (lvl = level) => {
-      setPhase('loading');
-      setFeedback(null);
-      setAnswer('');
-      try {
-        const exclude = recentRef.current.slice(-8).join(',');
-        const res = await fetch(
-          `/api/quiz?category=${encodeURIComponent(category)}&level=${lvl}&exclude=${encodeURIComponent(exclude)}`
-        );
-        const data = await res.json();
-        if (!res.ok || data.error) {
-          setPhase('error');
-          setFeedback({ kind: 'no', text: data.error || 'Gagal memuat soal.' });
-          return;
-        }
-        recentRef.current = [...recentRef.current, data.id].slice(-20);
-        setQuestion(data);
-        setPhase('playing');
-        setTimeout(() => inputRef.current?.focus(), 60);
-      } catch {
-        setPhase('error');
-        setFeedback({ kind: 'no', text: 'Koneksi bermasalah. Coba lagi.' });
-      }
-    },
-    [category, level]
-  );
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [result, setResult] = useState(null);
+  const [reveal, setReveal] = useState(null);
+  const [hintShown, setHintShown] = useState(false);
+  const [lastPts, setLastPts] = useState(0);
+  const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [tally, setTally] = useState({ correct: 0, total: 0 });
+  const excludeRef = useRef([]);
+  const lockRef = useRef(false);
 
   useEffect(() => {
-    load('easy');
-    // sengaja hanya sekali saat mount
+    fetch('/api/quiz?list=1')
+      .then((r) => r.json())
+      .then((list) => {
+        const found = (Array.isArray(list) ? list : []).find((c) => c.slug === cat);
+        if (found) setDisplayName(found.name);
+      })
+      .catch(() => {});
+  }, [cat]);
+
+  const nextQuestion = async (d) => {
+    lockRef.current = false;
+    setPhase('loading');
+    try {
+      const ex = excludeRef.current.slice(-60).join(',');
+      const res = await fetch(`/api/quiz?cat=${cat}&diff=${d}&exclude=${ex}`);
+      if (!res.ok) throw new Error('x');
+      const q = await res.json();
+      excludeRef.current.push(q.id);
+      setCurrent(q);
+      setAnswer('');
+      setResult(null);
+      setReveal(null);
+      setHintShown(false);
+      setPhase('question');
+    } catch {
+      addToast('Gagal ambil soal. Cek koneksi / kategori.', 'error');
+      setPhase('pick');
+    }
+  };
+
+  useEffect(() => {
+    if (phase !== 'question' || !current) return;
+    setTimeLeft(TIME_LIMIT[current.d] || 30);
+    const t = setInterval(() => setTimeLeft((s) => Math.max(0, s - 1)), 1000);
+    return () => clearInterval(t);
+  }, [phase, current]);
+
+  const fetchReveal = async () => {
+    if (reveal) return reveal;
+    const res = await fetch('/api/quiz', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: current.id, cat }),
+    });
+    const rev = await res.json();
+    setReveal(rev);
+    return rev;
+  };
+
+  const settle = async (outcome) => {
+    if (phase !== 'question' || lockRef.current) return;
+    lockRef.current = true;
+    const rev = await fetchReveal();
+    setResult(outcome);
+    setPhase('reveal');
+    setTally((s) => ({ correct: s.correct + (outcome === 'correct' ? 1 : 0), total: s.total + 1 }));
+    if (outcome === 'correct') {
+      const bonus = hintShown ? 0 : timeLeft;
+      const pts = (BASE_POINT[current.d] || 10) + bonus;
+      setLastPts(pts);
+      setScore((s) => s + pts);
+      setStreak((k) => k + 1);
+      player.addScore(pts);
+      addToast(`BENAR! +${pts} poin`, 'success');
+    } else {
+      setStreak(0);
+    }
+  };
+
+  useEffect(() => {
+    if (phase === 'question' && timeLeft === 0 && current) settle('timeout');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category]);
+  }, [timeLeft, phase]);
 
   const submit = async () => {
-    if (!question || checking || phase !== 'playing') return;
-    if (!answer.trim()) {
-      addToast('Isi jawabannya dulu', 'warning');
-      return;
-    }
-
-    setChecking(true);
-    setAttempts((n) => n + 1);
-
-    try {
-      const res = await fetch('/api/quiz/check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: question.id, answer: answer.trim(), streak }),
-      });
-      const data = await res.json();
-
-      if (data.correct) {
-        const points = data.pointsAwarded || 1;
-        setCorrectCount((n) => n + 1);
-        player.addPoints(points);
-        incrementStreak();
-        if (streak >= 2) sound.playCombo();
-        else sound.playCorrect();
-        setFeedback({
-          kind: 'ok',
-          text: isPro
-            ? `Benar! +${points} poin${data.multiplier > 1 ? ` (combo ×${data.multiplier})` : ''}`
-            : `Benar! Jawabannya "${data.jawaban}"`,
-        });
-        setPhase('done');
-      } else {
-        resetStreak();
-        sound.playWrong();
-        setFeedback({ kind: 'no', text: 'Belum tepat. Coba lagi atau klik Lewati.' });
-      }
-    } catch {
-      addToast('Gagal cek jawaban', 'error');
-    } finally {
-      setChecking(false);
-    }
+    if (!answer.trim() || phase !== 'question' || lockRef.current) return;
+    const rev = await fetchReveal();
+    const ok =
+      normalize(rev.a) === normalize(answer) ||
+      (rev.alt || []).some((x) => normalize(x) === normalize(answer));
+    settle(ok ? 'correct' : 'wrong');
   };
 
-  const skip = async () => {
-    if (!question) return;
-    resetStreak();
-    try {
-      const res = await fetch(`/api/quiz/reveal?id=${encodeURIComponent(question.id)}`);
-      const data = await res.json();
-      setFeedback({ kind: 'info', text: `Jawabannya: ${data.jawaban}` });
-    } catch {
-      setFeedback({ kind: 'info', text: 'Gagal mengambil jawaban.' });
-    }
-    setPhase('done');
-  };
-
-  const stats = [
-    { label: 'Poin', value: player.score, color: 'var(--accent-soft)' },
-    { label: 'Benar', value: `${correctCount}/${attempts}` },
-    { label: 'Streak', value: streak > 0 ? `🔥${streak}` : '0', color: streak > 0 ? '#fbbf24' : undefined },
-    { label: 'Rekor', value: best },
-  ];
+  const limit = TIME_LIMIT[current?.d] || 30;
+  const pct = Math.round((timeLeft / limit) * 100);
+  const barColor = pct > 50 ? 'var(--accent)' : pct > 25 ? 'var(--warn, #fbbf24)' : 'var(--danger, #f87171)';
 
   return (
     <GameShell
-      title={title}
-      desc={desc}
-      icon={icon}
-      stats={stats}
-      sound={sound}
-      playerName={player.name}
-      score={player.score}
+      title={displayName}
+      desc="Jawab sebelum waktu habis. Makin cepet, makin gede poinnya."
+      icon="quiz"
+      slug={cat}
+      stats={[
+        { label: 'skor sesi', value: score },
+        { label: 'streak', value: streak },
+        { label: 'benar', value: `${tally.correct}/${tally.total}` },
+      ]}
     >
-      {isPro && !player.name ? (
-        <PlayerGate
-          name={player.name}
-          onSave={(value) => {
-            if (player.saveName(value)) addToast('Nama tersimpan', 'success');
-          }}
-        />
-      ) : null}
-
-      {isPro ? (
-        <div className="field">
-          <label className="label">Tingkat kesulitan</label>
-          <div className="btn-row">
-            {LEVELS.map((l) => (
-              <button
-                key={l.id}
-                type="button"
-                className={`btn btn-sm ${level === l.id ? 'btn-primary' : 'btn-ghost'}`}
-                onClick={() => {
-                  setLevel(l.id);
-                  load(l.id);
-                }}
-              >
-                {l.label} +{l.points}
+      {phase === 'pick' ? (
+        <div className="panel">
+          <p className="label" style={{ marginBottom: 10 }}>Pilih tingkat kesulitan</p>
+          <div style={{ display: 'grid', gap: 9 }}>
+            {['easy', 'medium', 'hard'].map((d) => (
+              <button key={d} type="button" className="btn btn-ghost btn-full" onClick={() => { setDiff(d); nextQuestion(d); }}>
+                {d.toUpperCase()} · {TIME_LIMIT[d]} detik · base {BASE_POINT[d]} poin
               </button>
             ))}
           </div>
         </div>
       ) : null}
 
-      {isPro && comboMultiplier > 1 ? (
-        <div style={{ textAlign: 'center', marginBottom: 12 }}>
-          <span className="combo-badge">🔥 Combo ×{comboMultiplier} aktif</span>
+      {phase === 'loading' ? (
+        <div className="panel">
+          <p className="hint">Ngambil soal dari server...</p>
         </div>
       ) : null}
 
-      <div className="panel">
-        {phase === 'loading' ? (
-          <SkeletonLoader type="quiz" />
-        ) : phase === 'error' ? (
-          <>
-            <p className="err" style={{ marginTop: 0 }}>
-              {feedback?.text}
-            </p>
-            <button type="button" className="btn btn-primary btn-full" onClick={() => load()}>
-              Coba Lagi
+      {phase === 'question' && current ? (
+        <div className="panel">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <span className="label">{current.d} · sisa</span>
+            <strong style={{ color: barColor, fontSize: 18 }}>{timeLeft}s</strong>
+          </div>
+          <div className="quiz-timer">
+            <div className="quiz-timer-fill" style={{ width: `${pct}%`, background: barColor }} />
+          </div>
+
+          <p className="quiz-q">{current.q}</p>
+
+          <input
+            className="input"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && submit()}
+            placeholder="Ketik jawaban lu..."
+            autoFocus
+          />
+
+          {hintShown && current.hint ? (
+            <p className="hint" style={{ marginTop: 10 }}>Petunjuk: {current.hint} (bonus waktu hangus)</p>
+          ) : null}
+
+          <div className="btn-row" style={{ marginTop: 12 }}>
+            <button type="button" className="btn btn-primary" onClick={submit}>
+              <Icon name="check" size={16} /> Kunci
             </button>
-          </>
-        ) : (
-          <>
-            <p className="question">{question?.soal}</p>
+            {!hintShown && current.hint ? (
+              <button type="button" className="btn btn-ghost" onClick={() => setHintShown(true)}>
+                Petunjuk
+              </button>
+            ) : null}
+            <button type="button" className="btn btn-ghost" onClick={() => settle('nyerah')}>
+              Nyerah
+            </button>
+          </div>
+        </div>
+      ) : null}
 
-            {phase === 'playing' ? (
-              <>
-                <div className="field" style={{ marginTop: 15, marginBottom: 12 }}>
-                  <input
-                    ref={inputRef}
-                    className="input"
-                    value={answer}
-                    onChange={(e) => setAnswer(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && submit()}
-                    placeholder="Ketik jawabanmu..."
-                    autoComplete="off"
-                    enterKeyHint="send"
-                  />
-                </div>
-                <div className="btn-row">
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    style={{ flex: 2 }}
-                    onClick={submit}
-                    disabled={checking}
-                  >
-                    {checking ? '...' : 'Jawab'}
-                  </button>
-                  <button type="button" className="btn btn-ghost" onClick={skip}>
-                    Lewati
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div style={{ marginTop: 15 }}>
-                <button type="button" className="btn btn-primary btn-full" onClick={() => load()}>
-                  Soal Berikutnya →
-                </button>
-              </div>
-            )}
-
-            {feedback ? <p className={`feedback ${feedback.kind}`}>{feedback.text}</p> : null}
-          </>
-        )}
-      </div>
-
-      {!isPro && player.score > 0 ? (
-        <p className="hint" style={{ textAlign: 'center' }}>
-          Total poin kamu: <strong style={{ color: 'var(--accent-soft)' }}>{player.score}</strong>
-          {!player.name ? ' — aktifkan Pro Mode untuk simpan nama ke peringkat.' : ''}
-        </p>
+      {phase === 'reveal' ? (
+        <div className="panel">
+          <p style={{ fontWeight: 800, fontSize: 18, marginBottom: 8, color: result === 'correct' ? 'var(--accent-soft)' : 'var(--danger, #f87171)' }}>
+            {result === 'correct' ? `BENAR! +${lastPts} poin` : result === 'timeout' ? 'WAKTU HABIS!' : result === 'nyerah' ? 'MENYERAH!' : 'SALAH!'}
+          </p>
+          <p style={{ marginBottom: 6 }}>
+            Jawaban: <strong style={{ color: 'var(--accent-soft)' }}>{reveal?.a}</strong>
+          </p>
+          <p className="hint" style={{ marginBottom: 14 }}>{reveal?.explain}</p>
+          <div style={{ display: 'grid', gap: 9 }}>
+            <button type="button" className="btn btn-primary btn-full" onClick={() => nextQuestion(diff)}>
+              Soal Berikutnya
+            </button>
+            <button type="button" className="btn btn-ghost btn-full" onClick={() => { lockRef.current = false; setPhase('pick'); }}>
+              Ganti Kesulitan
+            </button>
+          </div>
+        </div>
       ) : null}
     </GameShell>
   );
