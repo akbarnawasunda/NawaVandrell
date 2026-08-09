@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import SearchHome from '@/components/SearchHome';
+import ScrambleText from '@/components/ScrambleText';
 import Icon, { iconNames } from '@/components/icons';
 import { featuredTools } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
@@ -44,12 +45,14 @@ export default async function HomePage() {
       <section className="hero">
         <span className="hero-badge simple-only">{safeTools.length} tools · {safeGames.length} game</span>
         <span className="hero-badge pro-only">Neuro Core Digital Arsenal</span>
+        
         <h1 className="pro-only" style={{ minHeight: '1.2em' }}>
           <ScrambleText text="Tools yang beneran gampang dipakai." />
         </h1>
         <h1 className="simple-only">
           <span className="grad">Tools yang beneran gampang dipakai</span>
         </h1>
+        
         <p className="sub">Bikin QR, stiker WA, kompres foto, download video, sampai main kuis. Semua gratis, tanpa daftar.</p>
         <SearchHome tools={essentialTools} />
       </section>
@@ -63,7 +66,6 @@ export default async function HomePage() {
         </div>
 
         <div className="bento">
-          {/* LARGE CARD: DOWNLOADER */}
           {downloader ? (
             <Link href={`/tools/${downloader.slug}`} className="bento-card bento-large" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.05))' }}>
               <div className="bento-glow" style={{ background: 'var(--accent)', top: -50, right: -50 }} />
@@ -87,7 +89,6 @@ export default async function HomePage() {
             </Link>
           ) : null}
 
-          {/* MEDIUM CARD: STICKER MAKER */}
           {sticker ? (
             <Link href={`/tools/${sticker.slug}`} className="bento-card">
               <h3 className="bento-title" style={{ fontSize: 18 }}>
@@ -100,7 +101,6 @@ export default async function HomePage() {
             </Link>
           ) : null}
 
-          {/* MEDIUM CARD: TEXT STICKER */}
           {textSticker ? (
             <Link href={`/tools/${textSticker.slug}`} className="bento-card">
               <h3 className="bento-title" style={{ fontSize: 18 }}>
@@ -113,7 +113,6 @@ export default async function HomePage() {
             </Link>
           ) : null}
 
-          {/* WIDE CARD: GAMES */}
           {gamesTool ? (
             <Link href="/games" className="bento-card bento-wide" style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
               <div>
@@ -125,7 +124,7 @@ export default async function HomePage() {
                 </h3>
                 <p className="bento-desc">{safeGames.length} game gratis. Main, kumpulin poin.</p>
               </div>
-              <div style={{ display: 'flex', gap: -10, marginLeft: 'auto', flexShrink: 0 }}>
+              <div style={{ display: 'flex', marginLeft: 'auto', flexShrink: 0 }}>
                 {safeGames.slice(0, 3).map((g, i) => (
                   <div key={g.slug} style={{ 
                     width: 44, height: 44, borderRadius: 12, 
@@ -140,7 +139,6 @@ export default async function HomePage() {
             </Link>
           ) : null}
 
-          {/* WIDE CARD: LEADERBOARD */}
           <Link href="/leaderboard" className="bento-card bento-wide" style={{ background: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.15)' }}>
             <h3 className="bento-title" style={{ fontSize: 18 }}>
               <span style={{ color: '#fbbf24', display: 'inline-flex' }}>
