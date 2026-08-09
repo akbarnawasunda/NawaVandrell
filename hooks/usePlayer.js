@@ -2,87 +2,65 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-const NAME_KEY = 'nawa_username';
-const BOARD_KEY = 'nawa_leaderboard';
+const NAME_KEY = 'nawa_player_name';
+const SCORE_KEY = 'nawa_player_score';
 
-function readBoard() {
-  try {
-    const raw = localStorage.getItem(BOARD_KEY);
-    const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
-  } catch {
-    return {};
-  }
+function readName() {
+  try { return localStorage.getItem(NAME_KEY) || ''; } catch { return ''; }
 }
 
-/**
- * Identitas pemain + skor lokal.
- * Skor disimpan di localStorage `nawa_leaderboard` sebagai { username: score }
- * lalu di-sync ke server. Kalau server menolak (butuh token), skor lokal tetap jalan.
- */
+function readScore() {
+  try { return Number(localStorage.getItem(SCORE_KEY)) || 0; } catch { return 0; }
+}
+
 export function usePlayer() {
-  const [name, setName] = useState('');
-  const [score, setScore] = useState(0);
   const [ready, setReady] = useState(false);
+  const [name, setNameState] = useState('');
+  const [score, setScoreState] = useState(0);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(NAME_KEY) || '';
-      setName(saved);
-      if (saved) setScore(Number(readBoard()[saved]) || 0);
-    } catch {
-      /* ignore */
-    }
+    setNameState(readName());
+    setScoreState(readScore());
     setReady(true);
   }, []);
 
   const saveName = useCallback((raw) => {
-    const clean = String(raw || '').trim().slice(0, 24);
+    const clean = String(raw || '').trim().replace(/\s+/g, ' ').slice(0, 24);
     if (!clean) return false;
-    setName(clean);
-    try {
-      localStorage.setItem(NAME_KEY, clean);
-      setScore(Number(readBoard()[clean]) || 0);
-    } catch {
-      /* ignore */
-    }
+    try { localStorage.setItem(NAME_KEY, clean); } catch {}
+    setNameState(clean);
     return true;
   }, []);
 
-  const addPoints = useCallback(
-    (points) => {
-      const delta = Number(points) || 0;
-      if (!delta) return score;
-
-      let next = score + delta;
-      setScore(next);
-
-      if (name) {
-        try {
-          const board = readBoard();
-          board[name] = Math.max(Number(board[name]) || 0, next);
-          localStorage.setItem(BOARD_KEY, JSON.stringify(board));
-        } catch {
-          /* ignore */
-        }
-        // sync best-effort; endpoint publik hanya menerima kenaikan
-        fetch('/api/leaderboard', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, score: next }),
-        }).catch(() => {});
-      }
-      return next;
-    },
-    [name, score]
-  );
-
-  const localBoard = useCallback(() => {
-    return Object.entries(readBoard())
-      .map(([n, s]) => ({ name: n, score: Number(s) || 0 }))
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 20);
+  const setScore = useCallback((value) => {
+    const n = Math.max(0, Math.floor(Number(value) || 0));
+    try { localStorage.setItem(SCORE_KEY, String(n)); } catch {}
+    setScoreState(n);
+    return n;
   }, []);
 
-  return { name, score, ready, saveName, addPoints, localBoard };
+  const addScore = useCallback((delta) => {
+    const n = Math.max(0, Math.floor(readScore() + (Number(delta) || 0)));
+    try { localStorage.setItem(SCORE_KEY, String(n)); } catch {}
+    setScoreState(n);
+    return n;
+  }, []);
+
+  const localBoard = useCallback(() => {
+    const n = readName();
+    const s = readScore();
+    if (!n || s <= 0) return [];
+    return [{ name: n, score: s }];
+  }, []);
+
+  return {
+    ready,
+    name,
+    score,
+    saveName,
+    setName: saveName,
+    setScore,
+    addScore,
+    localBoard,
+  };
 }
