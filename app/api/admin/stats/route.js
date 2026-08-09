@@ -1,14 +1,5 @@
-/**
- * GET /api/admin/stats
- * Header: Authorization: Bearer <ADMIN_API_TOKEN>
- * -> statistik ringkas untuk dashboard admin.
- */
-
-import { getLeaderboard, storageDriver } from '@/lib/db';
 import { verifyBearer, unauthorized } from '@/lib/auth';
-import { countQuestions } from '@/data/quizDatabase';
-import { featuredTools } from '@/data/featuredTools';
-import { allGames } from '@/data/nexrayData';
+import { getLeaderboard, storageDriver } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,27 +7,17 @@ export async function GET(request) {
   if (!verifyBearer(request)) return unauthorized();
 
   const board = await getLeaderboard();
-  const entries = Object.entries(board).map(([name, score]) => ({ name, score }));
-  const scores = entries.map((e) => e.score);
-  const total = scores.reduce((a, b) => a + b, 0);
-  const quiz = countQuestions();
+  const entries = Object.entries(board);
+  const top = [...entries].sort((a, b) => b[1] - a[1])[0];
 
-  return Response.json(
-    {
-      success: true,
+  return Response.json({
+    success: true,
+    stats: {
       players: entries.length,
-      totalScore: total,
-      avgScore: entries.length ? Math.round(total / entries.length) : 0,
-      topScore: scores.length ? Math.max(...scores) : 0,
-      topPlayer: entries.sort((a, b) => b.score - a.score)[0]?.name || null,
-      tools: featuredTools.length,
-      games: allGames.length,
-      quizQuestions: quiz.total,
-      quizPerCategory: quiz.per,
-      storage: storageDriver(),
-      runtime: process.env.VERCEL ? 'vercel' : 'local',
-      generatedAt: new Date().toISOString(),
+      totalScore: entries.reduce((s, [, v]) => s + v, 0),
+      topName: top?.[0] || '-',
+      topScore: top?.[1] || 0,
+      driver: storageDriver(),
     },
-    { headers: { 'Cache-Control': 'no-store' } }
-  );
+  });
 }
