@@ -1,153 +1,211 @@
+// app/tools/json-formatter/page.js
+
 'use client';
 
 import { useState } from 'react';
-import ToolShell, { ResultBox } from '@/components/ToolShell';
+import ToolShell, { CopyButton } from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
+import Icon from '@/components/icons';
 
-const SAMPLE = '{"nama":"NawaVandrell","versi":2,"tools":["qr","base64"],"aktif":true}';
+const SAMPLE = JSON.stringify({
+  app: 'NawaVandrell',
+  version: 3,
+  pro: true,
+  tools: ['downloader', 'qr-code', 'sticker-maker'],
+  owner: { name: 'akbar', region: 'bandung' },
+});
 
-/** Ambil nomor baris & kolom dari pesan error JSON.parse. */
-function locate(input, message) {
-  const m = message.match(/position (\d+)/i);
+function formatBytes(n) {
+  if (n < 1024) return `${n} B`;
+  return `${(n / 1024).toFixed(1)} KB`;
+}
+
+function errorPosition(message, raw) {
+  const m = String(message).match(/position (\d+)/i);
   if (!m) return null;
   const pos = Number(m[1]);
-  const before = input.slice(0, pos);
-  const line = before.split('\n').length;
+  const before = raw.slice(0, pos);
+  const line = (before.match(/\n/g) || []).length + 1;
   const col = pos - before.lastIndexOf('\n');
   return { line, col };
+}
+
+function analyze(node) {
+  let keys = 0;
+  let depth = 0;
+  const walk = (n, d) => {
+    depth = Math.max(depth, d);
+    if (Array.isArray(n)) n.forEach((x) => walk(x, d + 1));
+    else if (n && typeof n === 'object') {
+      keys += Object.keys(n).length;
+      Object.values(n).forEach((x) => walk(x, d + 1));
+    }
+  };
+  walk(node, 1);
+  return { keys, depth };
 }
 
 export default function JsonFormatterPage() {
   const { addToast } = useToast();
   const [input, setInput] = useState('');
+  const [indent, setIndent] = useState('2');
   const [output, setOutput] = useState('');
   const [error, setError] = useState('');
-  const [info, setInfo] = useState('');
+  const [stats, setStats] = useState(null);
 
-  const parse = () => {
-    if (!input.trim()) {
-      addToast('Tempel JSON-nya dulu', 'warning');
-      return null;
+  const space = indent === 'tab' ? '\t' : Number(indent);
+
+  const run = (mode) => {
+    const raw = input.trim();
+    if (!raw) {
+      addToast('Tempel JSON dulu', 'warning');
+      return;
+    }
+
+    try {
+      const value = JSON.parse(raw);
+      setError('');
+
+      const result =
+        mode === 'minify' ? JSON.stringify(value) : JSON.stringify(value, null, space);
+
+      setOutput(result);
+      setStats({
+        ...analyze(value),
+        inBytes: new Blob([raw]).size,
+        outBytes: new Blob([result]).size,
+      });
+      addToast(mode === 'minify' ? 'JSON di-minify' : 'JSON dirapikan', 'success');
+    } catch (e) {
+      setOutput('');
+      setStats(null);
+      const pos = errorPosition(e.message, raw);
+      setError(pos ? `${e.message} (baris ${pos.line}, kolom ${pos.col})` : e.message);
+      addToast('JSON tidak valid', 'error');
+    }
+  };
+
+  const validate = () => {
+    const raw = input.trim();
+    if (!raw) {
+      addToast('Tempel JSON dulu', 'warning');
+      return;
     }
     try {
-      return JSON.parse(input);
-    } catch (err) {
-      const where = locate(input, err.message);
-      setError(
-        where
-          ? `JSON tidak valid di baris ${where.line}, kolom ${where.col} — ${err.message}`
-          : `JSON tidak valid — ${err.message}`
-      );
-      setOutput('');
-      setInfo('');
-      return null;
+      JSON.parse(raw);
+      setError('');
+      addToast('JSON valid. Aman.', 'success');
+    } catch (e) {
+      const pos = errorPosition(e.message, raw);
+      setError(pos ? `${e.message} (baris ${pos.line}, kolom ${pos.col})` : e.message);
+      addToast('JSON rusak', 'error');
     }
-  };
-
-  const format = () => {
-    setError('');
-    const obj = parse();
-    if (obj === null) return;
-    const text = JSON.stringify(obj, null, 2);
-    setOutput(text);
-    describe(obj, text);
-    addToast('JSON rapi ✨', 'success');
-  };
-
-  const minify = () => {
-    setError('');
-    const obj = parse();
-    if (obj === null) return;
-    const text = JSON.stringify(obj);
-    setOutput(text);
-    const saved = input.length - text.length;
-    setInfo(
-      `${text.length} karakter${saved > 0 ? ` · hemat ${saved} karakter (${Math.round((saved / input.length) * 100)}%)` : ''}`
-    );
-    addToast('JSON dipadatkan', 'success');
-  };
-
-  const describe = (obj, text) => {
-    const type = Array.isArray(obj) ? 'array' : typeof obj;
-    const keys = Array.isArray(obj)
-      ? `${obj.length} item`
-      : obj && type === 'object'
-        ? `${Object.keys(obj).length} key`
-        : type;
-    setInfo(`Valid ✓ · ${keys} · ${text.split('\n').length} baris`);
   };
 
   return (
-    <ToolShell title="Rapikan JSON" desc="Format, padatkan, dan cek error JSON kamu." icon="📋">
+    <ToolShell
+      title="Rapikan JSON"
+      desc="Format, minify, dan cek error JSON lengkap dengan posisi barisnya."
+      icon="json"
+    >
       <div className="panel">
         <div className="field">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <label className="label" htmlFor="json-in" style={{ marginBottom: 0 }}>
-              JSON kamu
-            </label>
-            <button
-              type="button"
-              onClick={() => {
-                setInput(SAMPLE);
-                setError('');
-              }}
-              style={{
-                background: 'none',
-                border: 0,
-                color: 'var(--accent-soft)',
-                font: 'inherit',
-                fontSize: 12.5,
-                fontWeight: 600,
-                cursor: 'pointer',
-                padding: 0,
-                marginBottom: 7,
-              }}
-            >
-              pakai contoh
-            </button>
-          </div>
+          <label className="label" htmlFor="json-input">
+            Tempel JSON di sini
+          </label>
           <textarea
-            id="json-in"
+            id="json-input"
             className="textarea"
+            style={{ minHeight: 170 }}
             value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              setError('');
-            }}
-            placeholder='{"nama": "Nawa", "aktif": true}'
+            onChange={(e) => setInput(e.target.value)}
+            placeholder='{"contoh": "data"}'
             spellCheck={false}
           />
         </div>
 
+        <div className="field">
+          <label className="label" htmlFor="json-indent">
+            Indentasi
+          </label>
+          <select
+            id="json-indent"
+            className="select"
+            value={indent}
+            onChange={(e) => setIndent(e.target.value)}
+          >
+            <option value="2">2 spasi</option>
+            <option value="4">4 spasi</option>
+            <option value="tab">Tab</option>
+          </select>
+        </div>
+
         <div className="btn-row">
-          <button type="button" className="btn btn-primary" onClick={format}>
-            Rapikan
+          <button type="button" className="btn btn-primary" onClick={() => run('beautify')}>
+            <Icon name="json" size={16} /> Rapikan
           </button>
-          <button type="button" className="btn btn-ghost" onClick={minify}>
-            Padatkan
+          <button type="button" className="btn btn-ghost" onClick={() => run('minify')}>
+            <Icon name="case" size={16} /> Minify
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={validate}>
+            <Icon name="check" size={16} /> Validasi
+          </button>
+        </div>
+
+        <div className="btn-row" style={{ marginTop: 8 }}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => {
+              setInput(SAMPLE);
+              setOutput('');
+              setError('');
+              setStats(null);
+            }}
+          >
+            <Icon name="sparkles" size={14} /> Isi Contoh
+          </button>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => {
+              setInput('');
+              setOutput('');
+              setError('');
+              setStats(null);
+            }}
+          >
+            <Icon name="close" size={14} /> Bersihkan
           </button>
         </div>
 
         {error ? <p className="err">{error}</p> : null}
-        {info && !error ? <p className="hint">{info}</p> : null}
+
+        {stats ? (
+          <div className="stat-row" style={{ marginTop: 14, marginBottom: 0 }}>
+            <div className="stat">
+              <b>{stats.keys}</b>
+              <small>keys</small>
+            </div>
+            <div className="stat">
+              <b>{stats.depth}</b>
+              <small>depth</small>
+            </div>
+            <div className="stat">
+              <b>{formatBytes(stats.outBytes)}</b>
+              <small>hasil</small>
+            </div>
+          </div>
+        ) : null}
 
         {output ? (
-          <ResultBox
-            label="Hasil"
-            value={output}
-            actions={
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={() => {
-                  setInput(output);
-                  addToast('Hasil dipindah ke input', 'info');
-                }}
-              >
-                ↑ Pakai
-              </button>
-            }
-          />
+          <div className="result">
+            <div className="result-head">
+              <span>Hasil</span>
+              <CopyButton value={output} />
+            </div>
+            <pre style={{ maxHeight: 300, overflow: 'auto' }}>{output}</pre>
+          </div>
         ) : null}
       </div>
     </ToolShell>
