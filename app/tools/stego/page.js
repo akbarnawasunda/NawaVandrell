@@ -96,7 +96,7 @@ export default function StegoPage() {
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.drawImage(img, 0, 0);
 
-      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height); const data = imageData.data;
       const payload = textToBytes(MAGIC + text);
       const bits = bytesToBits(payload);
 
@@ -116,7 +116,7 @@ export default function StegoPage() {
       };
       for (let i = 0; i < allBits.length; i++) writeBit(allBits[i]);
 
-      ctx.putImageData(ctx.getImageData(0, 0, canvas.width, canvas.height), 0, 0);
+      ctx.putImageData(imageData, 0, 0);
       const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
       setResult({ url: track(URL.createObjectURL(blob)), blob, size: blob.size });
       addToast('Pesan berhasil diselundupkan', 'success');
@@ -140,7 +140,7 @@ export default function StegoPage() {
       canvas.height = img.height;
       const ctx = canvas.getContext('2d', { willReadFrequently: true });
       ctx.drawImage(img, 0, 0);
-      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height); const data = imageData.data;
 
       let cursor = 0;
       const nextBit = () => {
