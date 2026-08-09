@@ -45,15 +45,24 @@ import * as chunk40 from './siapakahaku-h3';
 import * as chunk41 from './siapakahaku-m1';
 import * as chunk42 from './siapakahaku-m2';
 import * as chunk43 from './siapakahaku-m3';
-import * as chunk44 from './tekateki-e1';
-import * as chunk45 from './tekateki-e2';
-import * as chunk46 from './tekateki-e3';
-import * as chunk47 from './tekateki-h1';
-import * as chunk48 from './tekateki-h2';
-import * as chunk49 from './tekateki-h3';
-import * as chunk50 from './tekateki-m1';
-import * as chunk51 from './tekateki-m2';
-import * as chunk52 from './tekateki-m3';
+import * as chunk44 from './tebaktebakan-e1';
+import * as chunk45 from './tebaktebakan-e2';
+import * as chunk46 from './tebaktebakan-e3';
+import * as chunk47 from './tebaktebakan-h1';
+import * as chunk48 from './tebaktebakan-h2';
+import * as chunk49 from './tebaktebakan-h3';
+import * as chunk50 from './tebaktebakan-m1';
+import * as chunk51 from './tebaktebakan-m2';
+import * as chunk52 from './tebaktebakan-m3';
+import * as chunk53 from './tekateki-e1';
+import * as chunk54 from './tekateki-e2';
+import * as chunk55 from './tekateki-e3';
+import * as chunk56 from './tekateki-h1';
+import * as chunk57 from './tekateki-h2';
+import * as chunk58 from './tekateki-h3';
+import * as chunk59 from './tekateki-m1';
+import * as chunk60 from './tekateki-m2';
+import * as chunk61 from './tekateki-m3';
 
 export const chunks = [
   chunk0,
@@ -109,4 +118,13 @@ export const chunks = [
   chunk50,
   chunk51,
   chunk52,
+  chunk53,
+  chunk54,
+  chunk55,
+  chunk56,
+  chunk57,
+  chunk58,
+  chunk59,
+  chunk60,
+  chunk61,
 ];
