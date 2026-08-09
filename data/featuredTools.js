@@ -93,6 +93,14 @@ export const featuredTools = [
 
   // ================= GAMES =================
   {
+  {
+    slug: 'wa-direct',
+    title: 'WA Direct Chat',
+    desc: 'Chat WhatsApp tanpa save nomor, lengkap sama template.',
+    icon: 'chat',
+    group: ['populer', 'kerja'],
+    keywords: 'wa whatsapp chat direct nomor kurir olshop',
+  },
     slug: 'games',
     title: 'Semua Game Arcade',
     desc: '15 game: kuis, logika, ketik cepat, math rush.',
