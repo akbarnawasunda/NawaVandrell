@@ -32,7 +32,7 @@ export async function GET(req) {
       name: c.displayName,
       count: c.questions.length,
     }));
-    return Response.json(summary, { headers: { 'Cache-Control': 'public, max-age=3600' } });
+    return Response.json(summary);
   }
 
   if (!cat || !categories[cat]) {
