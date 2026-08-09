@@ -3,7 +3,6 @@ import { join } from 'path';
 
 export const dynamic = 'force-dynamic';
 
-// cache kategori di memory (biar gak baca disk tiap request)
 let cache = null;
 async function loadCategories() {
   if (cache) return cache;
@@ -13,7 +12,12 @@ async function loadCategories() {
   for (const f of files) {
     try {
       const mod = await import(`@/data/quiz/${f.replace('.js', '')}`);
-      if (mod.category) cache[mod.category] = mod;
+      if (mod.category) {
+        if (!cache[mod.category]) {
+          cache[mod.category] = { category: mod.category, displayName: mod.displayName, questions: [] };
+        }
+        cache[mod.category].questions.push(...(mod.questions || []));
+      }
     } catch {}
   }
   return cache;
@@ -28,16 +32,13 @@ export async function GET(req) {
 
   const categories = await loadCategories();
 
-  // /api/quiz?list=1 -> return daftar kategori (buat homepage/selector)
   if (list === '1') {
     const summary = Object.values(categories).map(c => ({
       slug: c.category,
       name: c.displayName,
       count: c.questions.length,
     }));
-    return Response.json(summary, {
-      headers: { 'Cache-Control': 'public, max-age=3600' },
-    });
+    return Response.json(summary, { headers: { 'Cache-Control': 'public, max-age=3600' } });
   }
 
   if (!cat || !categories[cat]) {
@@ -53,29 +54,17 @@ export async function GET(req) {
 
   const pick = pool[Math.floor(Math.random() * pool.length)];
 
-  // return soal TANPA jawaban & explain (biar user gak bisa cheat dari inspect)
   return Response.json(
-    {
-      id: pick.id,
-      q: pick.q,
-      d: pick.d,
-      hint: pick.hint || null,
-      total: pool.length,
-    },
+    { id: pick.id, q: pick.q, d: pick.d, hint: pick.hint || null, total: pool.length },
     { headers: { 'Cache-Control': 'no-store' } }
   );
 }
 
-// /api/quiz?reveal=k001&cat=kimia -> reveal jawaban + penjelasan
 export async function POST(req) {
   const { id, cat } = await req.json().catch(() => ({}));
   const categories = await loadCategories();
   if (!cat || !categories[cat]) return Response.json({ error: 'Kategori tidak ada' }, { status: 404 });
   const q = categories[cat].questions.find(x => x.id === id);
   if (!q) return Response.json({ error: 'Soal tidak ada' }, { status: 404 });
-  return Response.json({
-    a: q.a,
-    alt: q.alt || [],
-    explain: q.explain,
-  });
+  return Response.json({ a: q.a, alt: q.alt || [], explain: q.explain });
 }
