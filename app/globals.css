@@ -266,3 +266,23 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
 
 /* Button Press Tactile Feedback */
 .btn:active { transform: scale(0.97); }
+
+/* Tactical HUD Styling */
+.hud-indicators {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
+}
+
+@media (min-width: 640px) {
+  .hud-label { display: inline !important; margin-right: 4px; color: var(--text-faint); }
+  .hud-value { color: var(--accent-soft); font-weight: 600; }
+}
+
+@media (max-width: 639px) {
+  /* Di HP, sembunyiin indikator biar gak nutupin tombol mode */
+  .hud-indicators { display: none !important; } 
+  /* Atau kalau mau tetep nongol, ganti 'none' sama 'flex' tapi font-size dikecilin */
+}
