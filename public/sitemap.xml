@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://nawavandrell.vercel.app/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/games</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/leaderboard</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/downloader</loc><priority>0.9</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/sticker-maker</loc><priority>0.8</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/text-sticker</loc><priority>0.8</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/stego</loc><priority>0.8</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/wa-direct</loc><priority>0.8</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/qr-code</loc><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/image-compressor</loc><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/password</loc><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/json-formatter</loc><priority>0.6</priority></url>
+</urlset>

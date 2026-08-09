@@ -7,19 +7,31 @@ import CommandPalette from '@/components/CommandPalette';
 import MicroAudioController from '@/components/MicroAudioController';
 
 export const metadata = {
+  metadataBase: new URL('https://nawavandrell.vercel.app'),
   title: {
     default: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
     template: '%s · NawaVandrell 3.0',
   },
   description:
-    'All-in-one downloader, tools harian, dan arcade game dalam satu tempat. Gratis, tanpa daftar.',
+    'All-in-one downloader, stiker WA, steganografi anti-kepo, tools harian, dan 15 arcade game. 100% gratis, tanpa daftar, semua proses di browser.',
   manifest: '/manifest.json',
   applicationName: 'NawaVandrell 3.0',
   icons: { icon: '/icon.svg', apple: '/icon.svg' },
   openGraph: {
-    title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
-    description: 'All-in-one downloader, tools harian, dan arcade game. Gratis, tanpa daftar.',
     type: 'website',
+    siteName: 'NawaVandrell 3.0',
+    title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
+    description:
+      'Downloader, stiker WA, anti-kepo, tools harian, arcade game. Gratis, tanpa daftar.',
+    url: 'https://nawavandrell.vercel.app',
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'NawaVandrell 3.0' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
+    description:
+      'Downloader, stiker WA, anti-kepo, tools harian, arcade game. Gratis, tanpa daftar.',
+    images: ['/og.png'],
   },
 };
 
@@ -40,6 +52,22 @@ export default function RootLayout({ children }) {
         <link
           href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
           rel="stylesheet"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'NawaVandrell 3.0',
+              url: 'https://nawavandrell.vercel.app',
+              applicationCategory: 'UtilitiesApplication',
+              operatingSystem: 'Any',
+              description:
+                'All-in-one downloader, stiker WA, steganografi, tools harian, dan arcade game. Gratis, tanpa daftar.',
+              offers: { '@type': 'Offer', price: '0' },
+            }),
+          }}
         />
         <script
           dangerouslySetInnerHTML={{
