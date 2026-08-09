@@ -1,5 +1,3 @@
-// app/layout.js
-
 import './globals.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
@@ -73,6 +71,23 @@ export default function RootLayout({ children }) {
           </ToastProvider>
         </ModeProvider>
 
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                if (typeof window !== 'undefined') {
+                  window.addEventListener('pointermove', function(e) {
+                    document.querySelectorAll('.bento-card, .card').forEach(function(card) {
+                      var rect = card.getBoundingClientRect();
+                      card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
+                      card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
+                    });
+                  }, { passive: true });
+                }
+              })();
+            `,
+          }}
+        />
         <Script id="nawa-sw" strategy="afterInteractive">
           {`if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }); }`}
         </Script>
