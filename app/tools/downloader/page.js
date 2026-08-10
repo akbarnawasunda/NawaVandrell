@@ -24,19 +24,19 @@ const PLATFORM_META = {
   facebook: { label: 'Facebook', color: '#4d8dff' },
 };
 
-// REAL GATEWAYS (No Proxy/Censored URLs)
+// REAL PROXY & API GATEWAYS
 const GATEWAYS = {
   instagram: [
     { label: 'FastDL (Recommended)', sub: 'IG Post, Reels, Story', url: 'https://fastdl.app/', primary: true },
     { label: 'SnapInsta', sub: 'Backup Gateway', url: 'https://snapinsta.app/' },
   ],
   tiktok: [
-    { label: 'SnapTik', sub: 'No Watermark • MP3', url: 'https://snaptik.app/', primary: true },
-    { label: 'SSSTik', sub: 'Backup Proxy', url: 'https://ssstik.io/' },
+    { label: 'TikWM API', sub: 'Direct Proxy • No Watermark', url: 'https://www.tikwm.com/', primary: true },
+    { label: 'SnapTik', sub: 'Backup Proxy', url: 'https://snaptik.app/' },
   ],
   twitter: [
-    { label: 'Twitsave', sub: 'X / Twitter Video & GIF', url: 'https://twitsave.com/', primary: true },
-    { label: 'SSSTwitter', sub: 'Backup', url: 'https://ssstwitter.com/' },
+    { label: 'Twitsave CDN', sub: 'Direct Twitter API / CDN', url: 'https://twitsave.com/', primary: true },
+    { label: 'SSSTwitter', sub: 'Backup Scraper', url: 'https://ssstwitter.com/' },
   ],
   youtube: [
     { label: 'Y2Mate', sub: 'Video & Audio Converter', url: 'https://www.y2mate.com/', primary: true },
@@ -47,7 +47,7 @@ const GATEWAYS = {
     { label: 'GetfVid', sub: 'Backup', url: 'https://www.getfvid.com/' },
   ],
   default: [
-    { label: 'Cobalt', sub: 'Universal • Ad-Free', url: 'https://cobalt.tools/', primary: true },
+    { label: 'Cobalt', sub: 'Universal • Ad-Free API', url: 'https://cobalt.tools/', primary: true },
     { label: 'Downloader.asia', sub: 'Multi-Platform Hub', url: 'https://downloader.asia/' },
   ],
 };
@@ -69,8 +69,6 @@ export default function DownloaderPage() {
   const handleOpen = (gw) => {
     if (!url.trim()) { showToast('Tempel link dulu', 'warning'); return; }
     try { navigator.clipboard.writeText(url); } catch {}
-    // Most 3rd party downloaders don't support ?url= deep linking reliably.
-    // Safer to just open the site and let user paste (link is already copied).
     window.open(gw.url, '_blank');
     showToast('Link disalin! Tinggal paste di situs downloader.', 'success');
   };
