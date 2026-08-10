@@ -16,8 +16,8 @@ export default function DownloaderPage() {
     setLoading(true);
     setResult(null);
     try {
-      // path=social nge-handle IG, Twitter, FB, TikTok, YT via proxy server
-      const res = await fetch('/api/tools-proxy?path=social&url=' + encodeURIComponent(url));
+      // Asumsi endpoint API utama lu adalah /api/tools
+      const res = await fetch('/api/tools?path=social&url=' + encodeURIComponent(url));
       const data = await res.json();
       if (!data.status) throw new Error(data.error || 'Gagal fetch media');
       setResult(data.result);
@@ -27,6 +27,10 @@ export default function DownloaderPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getProxyUrl = (href) => {
+    return `/api/download-proxy?url=${encodeURIComponent(href)}`;
   };
 
   return (
@@ -47,7 +51,7 @@ export default function DownloaderPage() {
               />
             </div>
             <button type="button" className="btn btn-primary" onClick={handleFetch} disabled={loading}>
-              {loading ? 'Scraping...' : 'Download'}
+              {loading ? 'Scraping...' : 'Fetch'}
             </button>
           </div>
         </div>
@@ -69,7 +73,7 @@ export default function DownloaderPage() {
               {(result.links || []).map((link, i) => (
                 <a
                   key={i}
-                  href={`/api/download-proxy?url=${encodeURIComponent(link.href)}`}
+                  href={getProxyUrl(link.href)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`btn ${link.primary ? 'btn-primary' : 'btn-ghost'} btn-full`}
