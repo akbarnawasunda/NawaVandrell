@@ -28,7 +28,7 @@ export default function GameEngine({ game }){
   const [taps,setTaps]=useState([]);
   const [built,setBuilt]=useState([]);
   const excludeRef=useRef([]); const lockRef=useRef(false);
-  const builtRef=useRef([]); // biar gak stale
+  const builtRef=useRef([]);
 
   useEffect(()=>{
     fetch('/api/games?list=1&_t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(list=>{
@@ -62,8 +62,6 @@ export default function GameEngine({ game }){
   const checkAnswer=(userAns)=>{
     if(!item) return false;
     const ans=item.answer||item.a||item.word||item.w;
-    // debug di console browser
-    console.log('[CHECK]', {userAns, ans, normUser: norm(userAns), normAns: norm(ans), item});
     if(ans && norm(userAns)===norm(ans)) return true;
     if(item.alt && item.alt.some(x=>norm(x)===norm(userAns))) return true;
     return false;
@@ -86,7 +84,6 @@ export default function GameEngine({ game }){
 
   const submitText=()=>{ if(!answer.trim()||phase!=='play') return; settle('auto',answer); };
   const pickOption=(opt)=>{ if(phase!=='play') return; settle('auto',opt); };
-
   const tapCell=(idx)=>{
     if(phase!=='play'||game!=='memorymatrix') return;
     setTaps(prev=>{
@@ -98,7 +95,6 @@ export default function GameEngine({ game }){
       return newTaps;
     });
   };
-
   const tapTile=(i)=>{
     if(phase!=='play'||game!=='susunkata') return;
     if(builtRef.current.includes(i)) return;
@@ -107,11 +103,7 @@ export default function GameEngine({ game }){
     setBuilt(newBuilt);
     const letters=(item.scrambled||'').split('-');
     const word=newBuilt.map(x=>letters[x]).join('');
-    console.log('[TAP]', {i, letter: letters[i], newBuilt, word, target: item.word});
-    if(word.length===letters.length){
-      // kasih delay dikit biar state ke-render
-      setTimeout(()=>settle('auto',word),50);
-    }
+    if(word.length===letters.length) setTimeout(()=>settle('auto',word),30);
   };
 
   const limit=(item&&item.timeLimit)||TIME_LIMIT[diff]||20;
@@ -127,7 +119,7 @@ export default function GameEngine({ game }){
       case 'typingblitz': return <><p className="game-prompt">{item.word}</p><input className="input" value={answer} onChange={e=>{setAnswer(e.target.value); if(norm(e.target.value)===norm(item.word)) settle('auto',e.target.value);}} placeholder="Ketik kata di atas..." autoFocus/></>;
       case 'katasambung': return <><p className="game-prompt" style={{fontSize:16}}>{item.sentence}</p><div className="opt-grid">{(item.options||[]).map(opt=><button key={opt} type="button" className="btn btn-ghost" onClick={()=>pickOption(opt)}>{opt}</button>)}</div></>;
       case 'memorymatrix': { const [rows,cols]=(item.gridSize||'3x3').split('x').map(Number); const cells=[]; for(let i=1;i<=rows*cols;i++) cells.push(i); return <><p className="hint" style={{textAlign:'center'}}>{phase==='display'?'Ingat pola yang menyala...':'Tap kotak sesuai urutan!'}</p><div className="mm-grid" style={{gridTemplateColumns:`repeat(${cols},1fr)`}}>{cells.map(c=>{const lit=phase==='display'&&(item.pattern||[]).includes(c); const tapped=taps.includes(c); return <button key={c} type="button" className={`mm-cell ${lit?'lit':''} ${tapped?'tapped':''}`} onClick={()=>tapCell(c)}/>;})}</div></>; }
-      case 'susunkata': { const letters=(item.scrambled||'').split('-'); const word=built.map(x=>letters[x]).join(''); return <><p className="game-prompt" style={{fontSize:24, letterSpacing:4}}>{word||'...'}</p><div className="tile-row">{letters.map((l,i)=><button key={i} type="button" className={`tile ${built.includes(i)?'used':''}`} onClick={()=>tapTile(i)}>{l}</button>)}</div><button type="button" className="btn btn-ghost" onClick={()=>{builtRef.current=[]; setBuilt([]);}}>Reset</button><p className="hint" style={{marginTop:8}}>Target: {item.word} | Scrambled: {item.scrambled} | Built: {word}</p></>; }
+      case 'susunkata': { const letters=(item.scrambled||'').split('-'); const word=built.map(x=>letters[x]).join(''); return <><p className="game-prompt" style={{fontSize:22, letterSpacing:3}}>{word||'...'}</p><div className="tile-row">{letters.map((l,i)=><button key={i} type="button" className={`tile ${built.includes(i)?'used':''}`} onClick={()=>tapTile(i)}>{l}</button>)}</div><button type="button" className="btn btn-ghost" onClick={()=>{builtRef.current=[]; setBuilt([]);}}>Reset</button></>; }
       default: return <p className="hint">Game belum didukung</p>;
     }
   };
@@ -152,7 +144,6 @@ export default function GameEngine({ game }){
         <div className="panel">
           <p style={{fontWeight:800,fontSize:18,marginBottom:8,color:result==='correct'?'var(--accent-soft)':'#f87171'}}>{result==='correct'?`BENAR! +${lastPts} poin`:result==='timeout'?'WAKTU HABIS!':result==='nyerah'?'MENYERAH!':'SALAH!'}</p>
           <p style={{marginBottom:6}}>Jawaban: <strong style={{color:'var(--accent-soft)'}}>{item.answer||item.a||item.word}</strong></p>
-          <p style={{fontSize:12, marginBottom:6}}>Kamu susun: {built.map(x=>(item.scrambled||'').split('-')[x]).join('')} | Target: {item.word}</p>
           {item.hint?<p className="hint" style={{marginBottom:14}}>{item.hint}</p>:null}
           <div style={{display:'grid',gap:9}}>
             <button type="button" className="btn btn-primary btn-full" onClick={()=>nextItem(diff)}>Soal Berikutnya</button>
