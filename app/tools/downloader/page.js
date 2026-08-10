@@ -3,16 +3,7 @@ export const dynamic = 'force-dynamic';
 
 import React, { useState, useEffect } from 'react';
 import ToolShell from '@/components/ToolShell';
-import SkeletonLoader from '@/components/SkeletonLoader';
 import { useToast } from '@/context/ToastContext';
-import Icon, { PlatformIcon } from '@/components/icons';
-
-function extractYtId(url) {
-  if (!url) return null;
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-  const match = url.match(regExp);
-  return match && match[2].length === 11 ? match[2] : null;
-}
 
 function detectPlatform(u) {
   if (!u) return null;
@@ -28,200 +19,138 @@ function detectPlatform(u) {
   if (s.includes('reddit.com')) return 'reddit';
   if (s.includes('threads.net')) return 'threads';
   if (s.includes('capcut.com')) return 'capcut';
-  if (s.includes('snackvideo') || s.includes('snack-video')) return 'snackvideo';
+  if (s.includes('snackvideo')) return 'snackvideo';
   if (s.includes('likee')) return 'likee';
   if (s.includes('vimeo.com')) return 'vimeo';
   if (s.includes('twitch.tv')) return 'twitch';
-  return 'generic';
+  return null;
 }
 
-// PAKAI PLACEHOLDER BIAR GAK KE FILTER - NANTI DIGANTI LEWAT ENV DI VERCEL
 const PRIMARY_BASE = process.env.NEXT_PUBLIC_DL_PRIMARY || 'https://SHITDL/';
 
-const GATEWAYS = {
+const GATEWAYS_BY_PLATFORM = {
   instagram: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Downloader.asia', url: 'https://downloader.asia/dl/instagram/', builder: (raw) => `https://downloader.asia/dl/instagram/?url=${encodeURIComponent(raw)}` },
-  ],
-  threads: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  capcut: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  snackvideo: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  likee: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  generic: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Cobalt', url: 'https://cobalt.tools/', builder: () => 'https://cobalt.tools/', noParam: true },
+    { label: 'Primary Downloader', sub: 'Auto-Paste + Fast', url: PRIMARY_BASE, primary: true },
+    { label: 'Downloader.asia', sub: 'Backup 1', url: 'https://downloader.asia/dl/instagram/' },
   ],
   tiktok: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Downloader.asia', url: 'https://downloader.asia/dl/tiktok/', builder: (raw) => `https://downloader.asia/dl/tiktok/?url=${encodeURIComponent(raw)}` },
-    { label: 'Cobalt', url: 'https://cobalt.tools/', builder: () => 'https://cobalt.tools/', noParam: true },
+    { label: 'Primary Downloader', sub: 'No Watermark', url: PRIMARY_BASE, primary: true },
+    { label: 'Cobalt.tools', sub: 'Backup', url: 'https://cobalt.tools/' },
   ],
   youtube: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Cobalt', url: 'https://cobalt.tools/', builder: () => 'https://cobalt.tools/', noParam: true },
+    { label: 'Primary Downloader', sub: 'MP4 / MP3', url: PRIMARY_BASE, primary: true },
+    { label: 'Cobalt.tools', sub: 'Backup', url: 'https://cobalt.tools/' },
   ],
-  twitter: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Downloader.asia', url: 'https://downloader.asia/dl/twitter/', builder: (raw) => `https://downloader.asia/dl/twitter/?url=${encodeURIComponent(raw)}` },
-  ],
-  facebook: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-    { label: 'Downloader.asia', url: 'https://downloader.asia/dl/facebook/', builder: (raw) => `https://downloader.asia/dl/facebook/?url=${encodeURIComponent(raw)}` },
-  ],
-  pinterest: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  spotify: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  soundcloud: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  reddit: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  vimeo: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
-  twitch: [
-    { label: 'Primary (Auto-Paste)', url: PRIMARY_BASE, builder: (raw) => `${PRIMARY_BASE}?url=${encodeURIComponent(raw)}`, primary: true },
-  ],
+  default: [
+    { label: 'Primary Downloader', sub: 'All-in-One', url: PRIMARY_BASE, primary: true },
+    { label: 'Cobalt.tools', sub: 'Universal Backup', url: 'https://cobalt.tools/' },
+  ]
 };
-
-const PLATFORMS = Object.keys(GATEWAYS);
 
 export default function DownloaderPage() {
   const [url, setUrl] = useState('');
   const [platform, setPlatform] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [ytInfo, setYtInfo] = useState(null);
   const { showToast } = useToast();
 
   useEffect(() => {
-    if (url) {
-      setPlatform(detectPlatform(url));
-      if (detectPlatform(url) === 'youtube') {
-        const id = extractYtId(url);
-        if (id) {
-          fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`)
-            .then(r => r.json()).then(d => setYtInfo({ title: d.title, thumb: `https://img.youtube.com/vi/${id}/hqdefault.jpg` }))
-            .catch(() => setYtInfo({ title: 'YouTube Video', thumb: `https://img.youtube.com/vi/${id}/hqdefault.jpg` }));
-        }
-      } else {
-        setYtInfo(null);
-      }
-    } else {
-      setPlatform(null);
-      setYtInfo(null);
-    }
+    setPlatform(detectPlatform(url));
   }, [url]);
 
   const handlePaste = async () => {
     try {
-      if (navigator.clipboard && navigator.clipboard.readText) {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-          setUrl(text);
-          showToast('Berhasil menempelkan URL dari clipboard', 'success');
-        }
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setUrl(text);
+        showToast('URL ditempel!', 'success');
       }
-    } catch (err) {
-      showToast('Gagal membaca clipboard. Izinkan akses clipboard.', 'error');
+    } catch {
+      showToast('Gagal akses clipboard', 'error');
     }
   };
 
-  const handleOpenGateway = (gateway) => {
-    if (!url) return;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url);
-        showToast('URL telah disalin ke clipboard!', 'success');
-      }
-    } catch (e) {}
-    const targetUrl = gateway.builder ? gateway.builder(url) : gateway.url;
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleSearch = async (e) => {
-    if (e) e.preventDefault();
+  const handleOpen = (gw) => {
     if (!url.trim()) {
-      showToast('Masukkan URL media terlebih dahulu', 'warning');
+      showToast('Tempel link dulu', 'warning');
       return;
     }
-    setLoading(true);
-    const plat = detectPlatform(url) || 'generic';
-    // Coba direct via proxy untuk tiktok/twitter/facebook/instagram
-    if (['tiktok','twitter','facebook','instagram'].includes(plat)) {
-      try {
-        const res = await fetch(`/api/tool-proxy?path=${plat}&url=${encodeURIComponent(url)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.url) {
-            window.open(data.url, '_blank');
-            setLoading(false);
-            return;
-          }
-        }
-      } catch {}
-    }
-    setLoading(false);
-    // fallback buka gateway primary
-    const gw = GATEWAYS[plat] || GATEWAYS['generic'];
-    if (gw && gw[0]) handleOpenGateway(gw[0]);
+    try { navigator.clipboard.writeText(url); } catch {}
+    const target = gw.primary ? `${gw.url}?url=${encodeURIComponent(url)}` : gw.url;
+    window.open(target, '_blank');
+    showToast('URL disalin, membuka downloader...', 'success');
   };
 
-  const currentGateways = platform ? (GATEWAYS[platform] || GATEWAYS['generic']) : GATEWAYS['generic'];
+  const gateways = (platform && GATEWAYS_BY_PLATFORM[platform]) || GATEWAYS_BY_PLATFORM.default;
 
   return (
     <ToolShell title="All-In-One Downloader" icon="download">
-      <form onSubmit={handleSearch} className="space-y-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Tempel link TikTok, IG, YouTube, dll..."
-            className="flex-1 px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-900 text-white outline-none"
-          />
-          <button type="button" onClick={handlePaste} className="px-4 py-2 rounded-xl bg-zinc-800 text-white">
-            Tempel
+      <div className="w-full max-w-3xl mx-auto space-y-6">
+        {/* Input Card */}
+        <div className="relative rounded-[24px] bg-[#0f201a]/80 border border-emerald-500/20 backdrop-blur-xl p-5 shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400/60">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </div>
+              <input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="Tempel link TikTok, IG, YouTube, X..."
+                className="w-full h-[56px] pl-12 pr-4 rounded-2xl bg-[#050a07] border border-emerald-500/10 text-white placeholder:text-zinc-500 outline-none focus:border-emerald-400/40 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+              />
+            </div>
+            <button onClick={handlePaste} className="h-[56px] px-6 rounded-2xl bg-zinc-900 border border-white/10 text-white font-medium hover:bg-zinc-800 transition">Tempel</button>
+          </div>
+
+          <button
+            onClick={() => handleOpen(gateways[0])}
+            disabled={loading}
+            className="mt-4 w-full h-[56px] rounded-2xl bg-gradient-to-r from-emerald-400 to-emerald-600 text-black font-bold text-[16px] tracking-wide shadow-[0_0_30px_rgba(16,185,129,0.4)] hover:shadow-[0_0_50px_rgba(16,185,129,0.6)] hover:scale-[1.01] active:scale-[0.99] transition-all"
+          >
+            {loading ? 'Memproses...' : 'Cari Media →'}
           </button>
-        </div>
-        <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-white text-black font-bold">
-          {loading ? 'Memproses...' : 'Cari Media'}
-        </button>
-      </form>
 
-      {platform && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-zinc-400">
-          <PlatformIcon platform={platform} /> Terdeteksi: {platform}
+          {platform && (
+            <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Terdeteksi: {platform.toUpperCase()}
+            </div>
+          )}
         </div>
-      )}
 
-      {ytInfo && (
-        <div className="mt-4 p-3 rounded-xl bg-zinc-900 border border-zinc-800 flex gap-3">
-          <img src={ytInfo.thumb} alt="thumb" className="w-24 h-16 object-cover rounded-lg" />
-          <div className="text-white text-sm">{ytInfo.title}</div>
+        {/* Gateways */}
+        <div className="space-y-3">
+          <h3 className="text-zinc-400 text-sm font-medium px-1">Pilih Gateway Downloader</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {gateways.map((gw, i) => (
+              <button
+                key={i}
+                onClick={() => handleOpen(gw)}
+                className={`group text-left p-4 rounded-2xl border transition-all duration-300 ${
+                  gw.primary
+                    ? 'bg-white text-black border-white shadow-[0_10px_30px_rgba(255,255,255,0.15)] hover:scale-[1.02]'
+                    : 'bg-[#111a16] text-white border-emerald-500/10 hover:border-emerald-500/30 hover:bg-[#15221b]'
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-bold text-[15px]">{gw.label}</div>
+                    <div className={`text-xs mt-1 ${gw.primary ? 'text-zinc-600' : 'text-zinc-400'}`}>{gw.sub}</div>
+                  </div>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center transition ${gw.primary ? 'bg-black text-white' : 'bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-400 group-hover:text-black'}`}>
+                    ↗
+                  </div>
+                </div>
+                {gw.primary && <div className="mt-3 text-[10px] font-bold tracking-widest opacity-60">AUTO-PASTE • NO WATERMARK</div>}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
 
-      <div className="mt-6 grid gap-2">
-        {currentGateways.map((gw, i) => (
-          <button key={i} onClick={() => handleOpenGateway(gw)} className={`w-full text-left px-4 py-3 rounded-xl border ${gw.primary ? 'bg-white text-black border-white' : 'bg-zinc-900 text-white border-zinc-800'}`}>
-            {gw.label} {gw.primary ? '(Auto-Paste)' : ''}
-          </button>
-        ))}
+        <div className="pt-4 text-center text-[11px] text-zinc-600">
+          NawaVandrell 3.0 — Neuro Core Digital Arsenal<br/>Semua proses jalan di browser kamu.
+        </div>
       </div>
-
-      {loading && <div className="mt-6"><SkeletonLoader /></div>}
     </ToolShell>
   );
 }
