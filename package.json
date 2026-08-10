@@ -22,7 +22,7 @@
     "tailwindcss": "^3.4.14"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=24.x"
   },
   "optionalDependencies": {
     "@next/swc-android-arm64": "npm:null@*"
