@@ -291,3 +291,16 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
 .quiz-timer { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.07); overflow: hidden; margin: 4px 0 14px; }
 .quiz-timer-fill { height: 100%; border-radius: 999px; transition: width 1s linear, background 0.3s ease; }
 .quiz-q { font-size: 17px; font-weight: 700; line-height: 1.5; margin-bottom: 14px; }
+
+/* ===== game engine ===== */
+.game-prompt { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 14px; letter-spacing: 1px; }
+.game-emoji { font-size: 48px; text-align: center; margin-bottom: 14px; }
+.opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.mm-grid { display: grid; gap: 8px; max-width: 260px; margin: 0 auto; }
+.mm-cell { aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--border,rgba(255,255,255,0.15)); background: var(--card,rgba(255,255,255,0.05)); transition: background 0.15s, box-shadow 0.15s; cursor: pointer; }
+.mm-cell.lit { background: var(--accent,#6366f1); box-shadow: 0 0 20px var(--accent,#6366f1); }
+.mm-cell.tapped { background: #22d3ee; box-shadow: 0 0 12px #22d3ee; }
+.tile-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
+.tile { width: 44px; height: 44px; border-radius: 8px; border: 1px solid var(--border,rgba(255,255,255,0.15)); background: var(--card,rgba(255,255,255,0.05)); color: var(--text,#fff); font-size: 18px; font-weight: 800; cursor: pointer; transition: transform 0.1s; }
+.tile:active { transform: scale(0.92); }
+.tile.used { opacity: 0.25; }
