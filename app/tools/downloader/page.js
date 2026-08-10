@@ -69,7 +69,7 @@ export default function DownloaderPage() {
               {(result.links || []).map((link, i) => (
                 <a
                   key={i}
-                  href={link.href}
+                  href={`/api/download-proxy?url=${encodeURIComponent(link.href)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`btn ${link.primary ? 'btn-primary' : 'btn-ghost'} btn-full`}
