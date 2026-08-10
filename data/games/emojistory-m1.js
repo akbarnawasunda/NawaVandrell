@@ -4,7 +4,7 @@ export const level = 'medium';
 
 export const items = [
 { id: 'esm001', d: 'medium', emojis: '🎭👤', a: 'The Mask', alt: ['mask'], category: 'Film', hint: 'Topeng hijau yang mengubah pemakainya' },
-{ id: 'esm002', d: 'medium', emojis: '🪄🧹', a: 'Harry Potter and the Philosopher's Stone', alt: ['harry potter stone'], category: 'Film', hint: 'Batu bertuah dan tongkat sihir' },
+{ id: 'esm002', d: 'medium', emojis: '🪄🧹', a: 'Harry Potter and the Philosopher\'s Stone', alt: ['harry potter stone'], category: 'Film', hint: 'Batu bertuah dan tongkat sihir' },
 { id: 'esm003', d: 'medium', emojis: '👁️🗡️', a: 'The Eye of the Needle', alt: ['eye needle'], category: 'Peribahasa', hint: 'Mata jarum, sulit melewati' },
 { id: 'esm004', d: 'medium', emojis: '🪞👸', a: 'Snow White and the Seven Dwarfs', alt: ['snow white dwarfs'], category: 'Film', hint: 'Cermin ajaib dan putri' },
 { id: 'esm005', d: 'medium', emojis: '⏳🧑‍🔬', a: 'The Time Machine', alt: ['time machine'], category: 'Film', hint: 'Mesin waktu H.G. Wells' },
