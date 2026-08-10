@@ -101,6 +101,6 @@ export const items = [
 { id: 'skh096', d: 'hard', word: 'DESERIALIZATION', scrambled: 'N-O-I-T-A-Z-I-L-A-I-R-E-S-E-D', hint: 'Rekonstruksi objek dari format simpan', category: 'Teknologi' },
 { id: 'skh097', d: 'hard', word: 'MULTITHREADING', scrambled: 'G-N-I-D-A-E-R-H-T-I-T-L-U-M', hint: 'Eksekusi beberapa utas bersamaan', category: 'Teknologi' },
 { id: 'skh098', d: 'hard', word: 'LOADBALANCING', scrambled: 'G-N-I-C-N-A-L-A-B-D-A-O-L', hint: 'Pembagian beban kerja ke peladen', category: 'Teknologi' },
-{ id: 'skh099', d: 'hard', word: 'REFCTORING', scrambled: 'G-N-I-R-O-T-C-A-F-E-R', hint: 'Pengubahan restrukturisasi kode', category: 'Teknologi' },
+{ id: 'skh099', d: 'hard', word: 'REFCTORING', scrambled: 'R-E-O-T-C-G-N-F-R-I', hint: 'Pengubahan restrukturisasi kode', category: 'Teknologi' },
 { id: 'skh100', d: 'hard', word: 'DOCUMENTATION', scrambled: 'N-O-I-T-A-T-N-E-M-U-C-O-D', hint: 'Catatan panduan petunjuk sistem', category: 'Teknologi' }
 ];

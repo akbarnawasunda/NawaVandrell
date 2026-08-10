@@ -9,7 +9,7 @@ export const items = [
 { id: 'skm104', d: 'medium', word: 'FOTOSINTESIS', scrambled: 'S-I-S-E-T-N-I-S-O-T-O-F', hint: 'Proses masak tumbuhan hijau', category: 'Sains' },
 { id: 'skm105', d: 'medium', word: 'EVAPORASI', scrambled: 'I-S-A-R-O-P-A-V-E', hint: 'Proses penguapan air', category: 'Sains' },
 { id: 'skm106', d: 'medium', word: 'KONDENSASI', scrambled: 'I-S-A-S-N-E-D-N-O-K', hint: 'Pengembunan uap air', category: 'Sains' },
-{ id: 'skm107', d: 'medium', word: 'PRESIPITASI', scrambled: 'I-S-A-T-I-P-I-C-E-R-P', hint: 'Proses turunnya hujan', category: 'Sains' },
+{ id: 'skm107', d: 'medium', word: 'PRESIPITASI', scrambled: 'S-I-R-I-S-A-P-P-E-I-T', hint: 'Proses turunnya hujan', category: 'Sains' },
 { id: 'skm108', d: 'medium', word: 'EKOSISTEM', scrambled: 'M-E-T-S-I-S-O-K-E', hint: 'Hubungan timbal balik makhluk', category: 'Sains' },
 { id: 'skm109', d: 'medium', word: 'BIODIVERSITAS', scrambled: 'S-A-T-I-S-R-E-V-I-D-O-I-B', hint: 'Keanekaragaman hayati', category: 'Sains' },
 { id: 'skm110', d: 'medium', word: 'HABITAT', scrambled: 'T-A-T-I-B-A-H', hint: 'Tempat tinggal alami makhluk', category: 'Sains' },

@@ -98,7 +98,7 @@ export const items = [
 { id: 'ske293', d: 'easy', word: 'PAGI', scrambled: 'I-G-A-P', hint: 'Waktu terbit matahari', category: 'Waktu' },
 { id: 'ske294', d: 'easy', word: 'SIANG', scrambled: 'G-N-A-I-S', hint: 'Waktu tengah hari', category: 'Waktu' },
 { id: 'ske295', d: 'easy', word: 'SORE', scrambled: 'E-R-O-S', hint: 'Waktu menjelang malam', category: 'Waktu' },
-{ id: 'ske296', d: 'easy', word: 'MALAM', scrambled: 'M-A-L-A-M', hint: 'Waktu tidur gelap', category: 'Waktu' },
+{ id: 'ske296', d: 'easy', word: 'MALAM', scrambled: 'A-M-L-A-M', hint: 'Waktu tidur gelap', category: 'Waktu' },
 { id: 'ske297', d: 'easy', word: 'DETIK', scrambled: 'K-I-T-E-D', hint: 'Satuan waktu singkat', category: 'Waktu' },
 { id: 'ske298', d: 'easy', word: 'MENIT', scrambled: 'T-I-N-E-M', hint: 'Enam puluh detik', category: 'Waktu' },
 { id: 'ske299', d: 'easy', word: 'JAM', scrambled: 'M-A-J', hint: 'Enam puluh menit', category: 'Waktu' },
