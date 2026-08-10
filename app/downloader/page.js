@@ -35,7 +35,7 @@ export default function DownloaderPage() {
       const data = await res.json();
       if (!data.status) throw new Error(data.error || 'Gagal fetch media');
       setResult(data.result);
-      showToast('Media ketemu! Pilih kualitas di bawah.', 'success');
+      showToast('Media ketemu!', 'success');
     } catch (err) {
       showToast(err.message || 'Gagal fetch', 'error');
     } finally {
@@ -51,17 +51,15 @@ export default function DownloaderPage() {
         <div className="panel">
           <p className="label" style={{ marginBottom: 10 }}>Tempel link media (TikTok, IG, X, FB, YT)</p>
           <div style={{ display: 'flex', gap: 10 }}>
-            <div className="dl-input-wrap" style={{ flex: 1 }}>
-              <span className="dl-input-icon"><Icon name="link" size={18} /></span>
-              <input
-                className="input"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
-                placeholder="https://..."
-                disabled={loading}
-              />
-            </div>
+            <input
+              className="input"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
+              placeholder="https://..."
+              disabled={loading}
+              style={{ flex: 1 }}
+            />
             <button type="button" className="btn btn-primary" onClick={handleFetch} disabled={loading}>
               {loading ? 'Scraping...' : 'Fetch'}
             </button>
@@ -83,25 +81,14 @@ export default function DownloaderPage() {
             <p className="label" style={{ marginBottom: 10 }}>Pilih kualitas / format:</p>
             <div style={{ display: 'grid', gap: 10 }}>
               {(result.links || []).map((link, i) => (
-                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <a
-                    href={proxy(link.href)}
-                    className={`btn ${link.primary ? 'btn-primary' : 'btn-ghost'} btn-full`}
-                    style={{ justifyContent: 'flex-start', gap: 10, height: 48 }}
-                  >
-                    <Icon name="download" size={16} /> {link.label}
-                  </a>
-                  <a
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-ghost"
-                    style={{ flex: 'none', padding: '0 14px', height: 48 }}
-                    title="Buka direct (fallback)"
-                  >
-                    <Icon name="link" size={14} />
-                  </a>
-                </div>
+                <a
+                  key={i}
+                  href={proxy(link.href)}
+                  className={`btn ${link.primary ? 'btn-primary' : 'btn-ghost'} btn-full`}
+                  style={{ justifyContent: 'flex-start', gap: 10, height: 48 }}
+                >
+                  <Icon name="download" size={16} /> {link.label}
+                </a>
               ))}
             </div>
           </div>
