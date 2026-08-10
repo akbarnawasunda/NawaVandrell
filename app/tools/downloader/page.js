@@ -1,9 +1,9 @@
 'use client';
-export const dynamic = 'force-dynamic';
 
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
+import Icon from '@/components/icons';
 
 function detectPlatform(u) {
   if (!u) return null;
@@ -16,21 +16,40 @@ function detectPlatform(u) {
   return null;
 }
 
-const PRIMARY_BASE = process.env.NEXT_PUBLIC_DL_PRIMARY || 'https://SHITDL/';
+const PLATFORM_META = {
+  instagram: { label: 'Instagram', color: '#e1306c' },
+  tiktok: { label: 'TikTok', color: '#22d3ee' },
+  youtube: { label: 'YouTube', color: '#ff4d4d' },
+  twitter: { label: 'X / Twitter', color: '#a1a1aa' },
+  facebook: { label: 'Facebook', color: '#4d8dff' },
+};
 
+// REAL GATEWAYS (No Proxy/Censored URLs)
 const GATEWAYS = {
   instagram: [
-    { label: 'Primary Downloader', sub: 'Auto-Paste • No Watermark', url: PRIMARY_BASE, primary: true },
-    { label: 'Cobalt.tools', sub: 'Universal Backup', url: 'https://cobalt.tools/' },
+    { label: 'FastDL (Recommended)', sub: 'IG Post, Reels, Story', url: 'https://fastdl.app/', primary: true },
+    { label: 'SnapInsta', sub: 'Backup Gateway', url: 'https://snapinsta.app/' },
   ],
   tiktok: [
-    { label: 'Primary Downloader', sub: 'No Watermark • Fast', url: PRIMARY_BASE, primary: true },
-    { label: 'Cobalt.tools', sub: 'Backup', url: 'https://cobalt.tools/' },
+    { label: 'SnapTik', sub: 'No Watermark • MP3', url: 'https://snaptik.app/', primary: true },
+    { label: 'SSSTik', sub: 'Backup Proxy', url: 'https://ssstik.io/' },
+  ],
+  twitter: [
+    { label: 'Twitsave', sub: 'X / Twitter Video & GIF', url: 'https://twitsave.com/', primary: true },
+    { label: 'SSSTwitter', sub: 'Backup', url: 'https://ssstwitter.com/' },
+  ],
+  youtube: [
+    { label: 'Y2Mate', sub: 'Video & Audio Converter', url: 'https://www.y2mate.com/', primary: true },
+    { label: '9xBuddy', sub: 'Universal Backup', url: 'https://9xbuddy.in/' },
+  ],
+  facebook: [
+    { label: 'FDown', sub: 'FB Video HD/SD', url: 'https://fdown.net/', primary: true },
+    { label: 'GetfVid', sub: 'Backup', url: 'https://www.getfvid.com/' },
   ],
   default: [
-    { label: 'Primary Downloader', sub: 'All-in-One • Auto-Paste', url: PRIMARY_BASE, primary: true },
-    { label: 'Cobalt.tools', sub: 'Universal Backup', url: 'https://cobalt.tools/' },
-  ]
+    { label: 'Cobalt', sub: 'Universal • Ad-Free', url: 'https://cobalt.tools/', primary: true },
+    { label: 'Downloader.asia', sub: 'Multi-Platform Hub', url: 'https://downloader.asia/' },
+  ],
 };
 
 export default function DownloaderPage() {
@@ -50,77 +69,68 @@ export default function DownloaderPage() {
   const handleOpen = (gw) => {
     if (!url.trim()) { showToast('Tempel link dulu', 'warning'); return; }
     try { navigator.clipboard.writeText(url); } catch {}
-    const target = gw.primary ? `${gw.url}?url=${encodeURIComponent(url)}` : gw.url;
-    window.open(target, '_blank');
-    showToast('URL disalin, membuka downloader...', 'success');
+    // Most 3rd party downloaders don't support ?url= deep linking reliably.
+    // Safer to just open the site and let user paste (link is already copied).
+    window.open(gw.url, '_blank');
+    showToast('Link disalin! Tinggal paste di situs downloader.', 'success');
   };
 
   const gateways = (platform && GATEWAYS[platform]) || GATEWAYS.default;
+  const meta = platform ? PLATFORM_META[platform] : null;
 
   return (
     <ToolShell title="All-In-One Downloader" icon="download">
-      <div style={{ maxWidth: 720, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 20 }}>
-        
-        {/* MAIN CARD */}
-        <div style={{ background: 'linear-gradient(180deg, #13251d 0%, #0c1712 100%)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 24, padding: 20, boxShadow: '0 0 60px rgba(16,185,129,0.12)' }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#10b981' }}>🔗</span>
+      <div style={{ maxWidth: 720, margin: '0 auto', display: 'grid', gap: 20 }}>
+        <div className="panel">
+          <p className="label" style={{ marginBottom: 10 }}>Tempel link media</p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <div className="dl-input-wrap" style={{ flex: 1 }}>
+              <span className="dl-input-icon"><Icon name="link" size={18} /></span>
               <input
+                className="input"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleOpen(gateways[0])}
                 placeholder="Tempel link TikTok, IG, YouTube, X..."
-                style={{ width: '100%', height: 56, paddingLeft: 44, paddingRight: 16, borderRadius: 16, background: '#050a07', border: '1px solid rgba(16,185,129,0.15)', color: 'white', outline: 'none', fontSize: 15 }}
               />
             </div>
-            <button onClick={handlePaste} style={{ height: 56, padding: '0 20px', borderRadius: 16, background: '#1a1a1a', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Tempel</button>
+            <button type="button" className="btn btn-ghost" onClick={handlePaste}>Tempel</button>
           </div>
 
-          <button
-            onClick={() => handleOpen(gateways[0])}
-            style={{ marginTop: 16, width: '100%', height: 56, borderRadius: 16, background: 'linear-gradient(90deg, #34d399, #059669)', color: 'black', fontWeight: 800, fontSize: 16, border: 'none', cursor: 'pointer', boxShadow: '0 0 30px rgba(16,185,129,0.4)' }}
-          >
-            Cari Media →
-          </button>
+          {meta ? (
+            <span className="dl-chip" style={{ marginTop: 12, color: meta.color, borderColor: `${meta.color}55` }}>
+              <span className="dot" /> Terdeteksi: {meta.label}
+            </span>
+          ) : null}
 
-          {platform && (
-            <div style={{ marginTop: 14, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 12px', borderRadius: 999, background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', color: '#6ee7b7', fontSize: 12 }}>
-              <span style={{ width: 8, height: 8, borderRadius: 999, background: '#10b981', display: 'inline-block' }} /> Terdeteksi: {platform.toUpperCase()}
-            </div>
-          )}
+          <button type="button" className="btn btn-primary btn-full" style={{ marginTop: 14, height: 52 }} onClick={() => handleOpen(gateways[0])}>
+            Cari Media
+          </button>
         </div>
 
-        {/* GATEWAY GRID */}
         <div>
-          <div style={{ color: '#a1a1aa', fontSize: 13, marginBottom: 10, paddingLeft: 4, fontWeight: 600 }}>Pilih Gateway Downloader</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <p className="label" style={{ marginBottom: 10 }}>Pilih gateway downloader</p>
+          <div className="dl-grid">
             {gateways.map((gw, i) => (
-              <button
-                key={i}
-                onClick={() => handleOpen(gw)}
-                style={{
-                  textAlign: 'left', padding: 16, borderRadius: 16, border: gw.primary ? '1px solid white' : '1px solid rgba(16,185,129,0.15)',
-                  background: gw.primary ? 'white' : '#121a16',
-                  color: gw.primary ? 'black' : 'white',
-                  cursor: 'pointer', transition: 'all 0.2s'
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 14 }}>{gw.label}</div>
-                    <div style={{ fontSize: 12, marginTop: 4, opacity: 0.6 }}>{gw.sub}</div>
-                  </div>
-                  <div style={{ width: 28, height: 28, borderRadius: 999, background: gw.primary ? 'black' : 'rgba(16,185,129,0.15)', color: gw.primary ? 'white' : '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>↗</div>
-                </div>
-                {gw.primary && <div style={{ marginTop: 12, fontSize: 10, fontWeight: 800, letterSpacing: 1, opacity: 0.5 }}>AUTO-PASTE • NO WATERMARK</div>}
+              <button key={i} type="button" className={`dl-gw ${gw.primary ? 'primary' : ''}`} onClick={() => handleOpen(gw)}>
+                <span style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10 }}>
+                  <span>
+                    <span style={{ display: 'block', fontWeight: 800, fontSize: 14 }}>{gw.label}</span>
+                    <span style={{ display: 'block', fontSize: 12, marginTop: 4, opacity: 0.65 }}>{gw.sub}</span>
+                  </span>
+                  <span className="arrow"><Icon name="link" size={14} /></span>
+                </span>
+                {gw.primary ? (
+                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1, opacity: 0.6 }}>AUTO-COPY • NO WATERMARK</span>
+                ) : null}
               </button>
             ))}
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', color: '#52525b', fontSize: 11, paddingTop: 8 }}>
-          NawaVandrell 3.0 — Neuro Core Digital Arsenal<br/>Semua proses jalan di browser kamu.
-        </div>
+        <p className="hint" style={{ textAlign: 'center' }}>
+          Semua proses jalan di browser kamu. NawaVandrell tidak menyimpan media apa pun.
+        </p>
       </div>
     </ToolShell>
   );
