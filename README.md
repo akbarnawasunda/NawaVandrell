@@ -119,7 +119,7 @@ Tool **Rekap SIM Kolektif** menerima banyak foto KTP sekaligus, membaca saran na
 dengan Tesseract.js di browser, lalu membuat tabel yang dapat dikoreksi dengan kolom utama
 **No, NAMA, SIM, KETERANGAN, FOTO KTP**. File mesin OCR disalin dari dependensi npm ke
 `public/ocr/` oleh `predev` / `prebuild`; folder hasil generasi ini sengaja tidak masuk Git.
-Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Mode cermat menggabungkan pembacaan foto asli, peningkatan kontras, dan pembersihan tambahan bila data inti belum terbaca; mode cepat tersedia untuk batch besar. Setiap foto bisa digeser, di-zoom, dan diatur utuh atau isi bingkai—hasil posisi tersimpan pada pratinjau serta ekspor yang memuat gambar. Periksa dan koreksi semua hasil OCR.
+Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Mode cermat menggabungkan pembacaan foto asli, peningkatan kontras, dan pembersihan tambahan bila data inti belum terbaca; mode cepat tersedia untuk batch besar. Setiap foto bisa digeser, di-zoom, dan diatur utuh atau isi bingkai—hasil posisi tersimpan pada pratinjau serta ekspor yang memuat gambar. Daftar bisa dicari dan disaring tanpa mengurangi baris pada ekspor; tersedia juga opsi teks besar dan navigasi keyboard pada editor foto. Periksa dan koreksi semua hasil OCR.
 
 Hasil ekspor adalah **draf rekap pribadi**, bukan SIM, bukti pendaftaran, atau formulir resmi.
 Tersedia PDF (dialog cetak browser), DOCX, Excel dengan foto KTP tertanam dan sheet data,

@@ -436,298 +436,468 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
   .sim-doc-checklist li, .sim-doc-notes p { color: #111827 !important; font-size: 7.5pt !important; }
   .sim-doc-footer { color: #334155 !important; font-size: 6.5pt !important; }
 }
-/* Collective SIM roster — clearer hierarchy, touch-friendly controls and print layout */
-.sim-collective-shell { max-width: 1240px; padding-bottom: 88px; }
-.sim-collective-shell .tool-head { margin-bottom: 13px; }
-.sim-collective-shell .tool-head h1 { font-size: clamp(23px, 3.2vw, 30px); letter-spacing: -.04em; }
-.sim-collective-shell .tool-head p { max-width: 670px; font-size: 13px; line-height: 1.6; }
-.sim-collective-shell .tool-head h1 > span:first-child { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(52,211,153,.2); border-radius: 12px; background: rgba(16,185,129,.1); }
-.sim-collective-intro { position: relative; overflow: hidden; margin: 15px 0 14px; padding: 21px 23px 17px; border: 1px solid rgba(148,163,184,.17); border-radius: 20px; background: radial-gradient(ellipse at 90% 5%, rgba(99,102,241,.16), transparent 36%), linear-gradient(115deg, rgba(16,185,129,.1), rgba(255,255,255,.028) 52%, rgba(99,102,241,.07)); box-shadow: 0 12px 34px rgba(0,0,0,.12); }
-.sim-collective-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #9ca3af; font-size: 9px; font-weight: 850; letter-spacing: .14em; }
-.sim-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 12px rgba(52,211,153,.72); }
-.sim-collective-intro > p { max-width: 710px; margin: 0; color: #d4d4d8; font-size: 13px; line-height: 1.55; }
-.sim-workflow-steps { display: flex; align-items: center; gap: 12px; max-width: 640px; margin-top: 18px; }
-.sim-workflow-steps > div { display: flex; align-items: center; gap: 8px; min-width: 0; opacity: .55; }
+/* SIM Kolektif — modern, readable, local-first workspace */
+.sim-collective-shell {
+  --sim-panel: #101827;
+  --sim-panel-raised: #141f30;
+  --sim-panel-soft: rgba(18, 28, 43, .72);
+  --sim-line: rgba(174, 193, 216, .17);
+  --sim-line-strong: rgba(174, 193, 216, .3);
+  --sim-ink: #f4f7fb;
+  --sim-muted: #c0cad8;
+  --sim-subtle: #9cabc0;
+  --sim-mint: #71e3c3;
+  --sim-blue: #9ac2ff;
+  width: 100%;
+  max-width: 1420px;
+  padding: 8px clamp(15px, 2.6vw, 34px) 88px;
+  color: var(--sim-ink);
+}
+.sim-collective-shell .back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 11px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  color: var(--sim-muted);
+  font-size: 13px;
+  font-weight: 650;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.sim-collective-shell .back:hover { border-color: var(--sim-line); background: rgba(255,255,255,.045); color: #fff; }
+.sim-collective-shell .tool-head { margin: 10px 0 18px; }
+.sim-collective-shell .tool-head h1 { gap: 13px !important; color: #f8fafc; font-size: clamp(27px, 3.3vw, 38px); font-weight: 820; letter-spacing: -.045em; }
+.sim-collective-shell .tool-head h1 > span:first-child {
+  display: grid !important;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(113,227,195,.25);
+  border-radius: 15px;
+  background: linear-gradient(145deg, rgba(113,227,195,.15), rgba(96,165,250,.1));
+  color: var(--sim-mint) !important;
+  box-shadow: 0 8px 24px rgba(14,165,130,.1);
+}
+.sim-collective-shell .tool-head p { max-width: 760px; margin: 9px 0 0 61px; color: var(--sim-muted); font-size: 15px; line-height: 1.65; }
+.sim-collective-intro {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 16px;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid rgba(153, 180, 218, .2);
+  border-radius: 23px;
+  background: radial-gradient(ellipse at 91% 0%, rgba(86, 111, 216, .17), transparent 38%), radial-gradient(ellipse at 0% 100%, rgba(30, 191, 151, .12), transparent 42%), linear-gradient(125deg, #121e30, #101723 54%, #15182b);
+  box-shadow: 0 18px 54px rgba(0,0,0,.22);
+}
+.sim-collective-intro::after { position: absolute; right: -48px; bottom: -102px; width: 245px; height: 245px; border: 1px solid rgba(255,255,255,.045); border-radius: 50%; content: ''; pointer-events: none; }
+.sim-collective-intro-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.sim-collective-eyebrow { display: flex; align-items: center; gap: 9px; margin: 0; color: #bdc8d8; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.sim-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--sim-mint); box-shadow: 0 0 0 4px rgba(113,227,195,.11), 0 0 17px rgba(113,227,195,.55); }
+.sim-readable-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 13px;
+  border: 1px solid rgba(200,216,235,.2);
+  border-radius: 12px;
+  background: rgba(255,255,255,.045);
+  color: #e6edf6;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.sim-readable-toggle > span:first-child { color: var(--sim-mint); font-size: 17px; font-weight: 850; }
+.sim-readable-toggle:hover { transform: translateY(-1px); border-color: rgba(113,227,195,.42); background: rgba(113,227,195,.08); }
+.sim-readable-toggle[aria-pressed='true'] { border-color: rgba(113,227,195,.5); background: rgba(113,227,195,.12); }
+.sim-collective-intro > p { position: relative; z-index: 1; max-width: 820px; margin: 15px 0 0; color: #eef3f8; font-size: clamp(16px, 1.9vw, 19px); font-weight: 550; line-height: 1.55; letter-spacing: -.012em; }
+.sim-workflow-steps { position: relative; z-index: 1; display: flex; align-items: center; gap: 13px; max-width: 700px; margin-top: 23px; }
+.sim-workflow-steps > div { display: flex; align-items: center; gap: 10px; min-width: 0; opacity: .66; }
 .sim-workflow-steps > div.is-current, .sim-workflow-steps > div.is-complete { opacity: 1; }
-.sim-workflow-steps > div > b { display: grid; place-items: center; width: 29px; height: 29px; flex: 0 0 auto; border: 1px solid var(--border-strong); border-radius: 9px; color: #a1a1aa; font-size: 9px; }
-.sim-workflow-steps > div.is-current > b { border-color: rgba(52,211,153,.55); background: rgba(16,185,129,.13); color: #a7f3d0; }
-.sim-workflow-steps > div.is-complete > b { border-color: rgba(52,211,153,.28); background: rgba(16,185,129,.08); color: #6ee7b7; }
+.sim-workflow-steps > div > b { display: grid; place-items: center; width: 37px; height: 37px; flex: 0 0 auto; border: 1px solid rgba(197,212,232,.23); border-radius: 12px; background: rgba(255,255,255,.04); color: #c7d2e1; font-size: 11px; font-weight: 850; }
+.sim-workflow-steps > div.is-current > b { border-color: rgba(113,227,195,.65); background: rgba(113,227,195,.15); color: #c4fff0; box-shadow: 0 0 0 4px rgba(113,227,195,.07); }
+.sim-workflow-steps > div.is-complete > b { border-color: rgba(113,227,195,.36); background: rgba(113,227,195,.1); color: var(--sim-mint); }
 .sim-workflow-steps span { display: grid; line-height: 1.25; }
-.sim-workflow-steps strong { color: #f4f4f5; font-size: 10px; }
-.sim-workflow-steps small { margin-top: 3px; color: #9ca3af; font-size: 9px; }
-.sim-workflow-steps > i { width: clamp(12px, 5vw, 47px); height: 1px; flex: 0 1 47px; background: rgba(148,163,184,.25); }
-.sim-privacy-note { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 14px; padding: 11px 14px; border: 1px solid rgba(96,165,250,.2); border-radius: 13px; background: linear-gradient(100deg, rgba(59,130,246,.075), rgba(99,102,241,.035)); color: #cbd5e1; }
-.sim-privacy-icon { display: grid; place-items: center; width: 27px; height: 27px; flex: 0 0 auto; border-radius: 8px; background: rgba(96,165,250,.11); color: #93c5fd; }
-.sim-privacy-note p { margin: 2px 0 0; font-size: 11px; line-height: 1.55; }
-.sim-privacy-note strong { color: #eff6ff; }
-.sim-upload-card { padding: 19px; margin-bottom: 15px; border: 1px solid rgba(148,163,184,.15); border-radius: 18px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018)); box-shadow: 0 12px 35px rgba(0,0,0,.11); }
-.sim-upload-card-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.sim-workflow-steps strong { color: #f1f5f9; font-size: 13px; font-weight: 750; }
+.sim-workflow-steps small { margin-top: 4px; color: #b1bfd1; font-size: 11px; }
+.sim-workflow-steps > i { width: clamp(14px, 4vw, 56px); height: 1px; flex: 0 1 56px; background: rgba(191,207,229,.28); }
+.sim-privacy-note { display: flex; align-items: flex-start; gap: 13px; margin: 0 0 18px; padding: 15px 17px; border: 1px solid rgba(132,180,239,.22); border-radius: 15px; background: linear-gradient(100deg, rgba(57,111,181,.13), rgba(91,89,186,.065)); color: #d7e1ee; }
+.sim-privacy-icon { display: grid; place-items: center; width: 37px; height: 37px; flex: 0 0 auto; border: 1px solid rgba(132,180,239,.18); border-radius: 11px; background: rgba(132,180,239,.1); color: #b3d3ff; }
+.sim-privacy-note p { margin: 2px 0 0; font-size: 13px; line-height: 1.6; }
+.sim-privacy-note strong { color: #f5f8ff; }
+.sim-upload-card { display: block; padding: clamp(17px, 2.3vw, 25px); margin-bottom: 19px; border: 1px solid var(--sim-line); border-radius: 21px; background: linear-gradient(155deg, rgba(20,31,48,.96), rgba(13,21,34,.93)); box-shadow: 0 14px 42px rgba(0,0,0,.17); }
+.sim-upload-card-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 19px; }
 .sim-upload-card-heading > div:nth-child(2) { flex: 1; }
-.sim-step-large { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; border: 1px solid rgba(52,211,153,.22); border-radius: 11px; background: rgba(16,185,129,.09); color: #6ee7b7; font-size: 10px; font-weight: 900; }
-.sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { margin: 0; color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
-.sim-upload-card-heading p, .sim-roster-section-heading p, .sim-export-panel-heading p { margin: 4px 0 0; color: var(--text-faint); font-size: 10.5px; line-height: 1.5; }
-.sim-local-badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border: 1px solid rgba(52,211,153,.17); border-radius: 999px; background: rgba(16,185,129,.07); color: #a7f3d0; font-size: 8px; font-weight: 850; letter-spacing: .1em; }
-.sim-ocr-settings { display: grid; grid-template-columns: 1fr 1.2fr 1.3fr; gap: 10px; margin-bottom: 8px; }
-.sim-setting-field { display: grid; gap: 5px; min-width: 0; }
-.sim-setting-field > span { color: #a1a1aa; font-size: 10px; font-weight: 750; }
-.sim-setting-field .select, .sim-setting-field .input { height: 42px; min-height: 42px; padding-left: 12px; font-size: 12px; }
-.sim-ocr-mode-note { margin: 7px 0 12px; color: #8b8b95; font-size: 9.5px; line-height: 1.5; }
-.sim-ocr-mode-note strong { color: #c4b5fd; }
+.sim-step-large { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid rgba(113,227,195,.27); border-radius: 14px; background: linear-gradient(145deg, rgba(113,227,195,.16), rgba(113,227,195,.055)); color: #9af2dc; font-size: 12px; font-weight: 900; }
+.sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { margin: 0; color: #f4f7fb; font-size: 19px; font-weight: 800; letter-spacing: -.025em; }
+.sim-upload-card-heading p, .sim-roster-section-heading p, .sim-export-panel-heading p { margin: 5px 0 0; color: #b1bfd1; font-size: 13px; line-height: 1.55; }
+.sim-local-badge { display: inline-flex; align-items: center; gap: 7px; min-height: 35px; padding: 0 11px; border: 1px solid rgba(113,227,195,.23); border-radius: 999px; background: rgba(113,227,195,.075); color: #b7f5e5; font-size: 10px; font-weight: 850; letter-spacing: .1em; white-space: nowrap; }
+.sim-ocr-settings { display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.15fr) minmax(0,1.25fr); gap: 13px; margin-bottom: 9px; }
+.sim-setting-field { display: grid; align-content: start; gap: 7px; min-width: 0; }
+.sim-setting-field > span { color: #d1d9e4; font-size: 12px; font-weight: 700; }
+.sim-setting-field .select, .sim-setting-field .input { height: 48px; min-height: 48px; padding: 0 13px; border: 1px solid rgba(176,195,219,.22); border-radius: 12px; background-color: #0d1522; color: #f0f4f8; font-size: 14px; }
+.sim-setting-field .select:focus, .sim-setting-field .input:focus { border-color: var(--sim-mint); box-shadow: 0 0 0 3px rgba(113,227,195,.15); }
+.sim-ocr-mode-note { margin: 10px 1px 15px; color: #b5c1d1; font-size: 12px; line-height: 1.55; }
+.sim-ocr-mode-note strong { color: #c5baff; }
 .sim-file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
-.sim-drop-zone { display: grid; grid-template-columns: 48px minmax(0,1fr) auto; align-items: center; gap: 13px; min-height: 107px; padding: 15px 17px; border: 1px dashed rgba(148,163,184,.29); border-radius: 14px; background: linear-gradient(110deg, rgba(16,185,129,.045), rgba(255,255,255,.018)); transition: border-color .18s ease, background .18s ease, transform .18s ease; }
-.sim-drop-zone.is-dragging { border-color: #34d399; background: rgba(16,185,129,.12); transform: translateY(-1px); }
-.sim-drop-zone.is-processing { border-style: solid; border-color: rgba(52,211,153,.3); }
-.sim-drop-icon { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(52,211,153,.19); border-radius: 14px; background: rgba(16,185,129,.1); color: #6ee7b7; }
+.sim-file-input:focus-visible + .sim-drop-zone { outline: 3px solid var(--sim-mint); outline-offset: 4px; }
+.sim-drop-zone { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; align-items: center; gap: 16px; min-height: 132px; padding: 19px 21px; border: 1px dashed rgba(171,194,222,.38); border-radius: 17px; background: linear-gradient(110deg, rgba(113,227,195,.065), rgba(255,255,255,.025)); transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.sim-drop-zone.is-dragging { transform: translateY(-2px); border-color: #81efd5; background: rgba(48,191,155,.14); }
+.sim-drop-zone.is-processing { border-style: solid; border-color: rgba(113,227,195,.38); }
+.sim-drop-icon { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid rgba(113,227,195,.26); border-radius: 17px; background: rgba(113,227,195,.11); color: #9af2dc; }
 .sim-drop-copy { min-width: 0; }
 .sim-drop-copy strong, .sim-drop-copy span { display: block; }
-.sim-drop-copy strong { color: #f4f4f5; font-size: 12px; font-weight: 800; }
-.sim-drop-copy span { margin-top: 4px; color: #92929c; font-size: 10px; }
-.sim-drop-zone > small { grid-column: 1 / -1; color: #73737d; font-size: 9px; text-align: center; }
-.sim-drop-actions { display: flex; align-items: center; gap: 7px; }
-.sim-drop-actions .btn { height: 39px; padding: 0 13px; border-radius: 10px; font-size: 10px; white-space: nowrap; }
-.sim-upload-button { box-shadow: 0 5px 16px rgba(16,185,129,.15); }
-.sim-add-row-button { min-height: 39px; }
-.sim-cancel-button { min-height: 39px; }
-.sim-batch-progress { margin-top: 11px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 11px; background: rgba(255,255,255,.028); }
-.sim-batch-progress-text { display: flex; justify-content: space-between; gap: 10px; color: #b4b4bc; font-size: 10px; }
-.sim-batch-progress-text strong { color: var(--text); font-variant-numeric: tabular-nums; }
-.sim-batch-progress progress { display: block; width: 100%; height: 6px; margin-top: 8px; overflow: hidden; border: 0; border-radius: 99px; accent-color: #34d399; }
-.sim-roster-controls { display: flex; justify-content: space-between; align-items: center; gap: 13px; margin: 19px 2px 9px; }
-.sim-roster-count { display: flex; align-items: center; gap: 10px; }
-.sim-roster-count-number { display: grid; place-items: center; min-width: 40px; height: 40px; padding: 0 8px; border: 1px solid rgba(52,211,153,.19); border-radius: 12px; background: rgba(16,185,129,.085); color: #a7f3d0; font-size: 16px; font-weight: 850; font-variant-numeric: tabular-nums; }
-.sim-roster-count > span:last-child { display: grid; line-height: 1.3; }
-.sim-roster-count strong { color: #e4e4e7; font-size: 11px; }
-.sim-roster-count small { margin-top: 4px; color: #777780; font-size: 9px; }
-.sim-roster-tools { display: flex; align-items: center; gap: 13px; }
-.sim-nik-toggle { display: inline-flex; align-items: center; gap: 7px; color: #b2b2ba; font-size: 10px; cursor: pointer; }
-.sim-nik-toggle input { width: 15px; height: 15px; accent-color: var(--accent-soft); }
-.sim-clear-button { height: 34px; padding: 0 10px; border-radius: 9px; font-size: 9px; }
+.sim-drop-copy strong { color: #f5f8fc; font-size: 16px; font-weight: 800; }
+.sim-drop-copy span { margin-top: 5px; color: #b3c0d1; font-size: 13px; line-height: 1.5; }
+.sim-drop-zone > small { grid-column: 1 / -1; color: #a9b7c9; font-size: 11px; text-align: center; }
+.sim-drop-actions { display: flex; align-items: center; gap: 9px; }
+.sim-drop-actions .btn { min-height: 46px; height: auto; padding: 0 15px; border-radius: 12px; font-size: 12px; white-space: nowrap; }
+.sim-upload-button { border-color: #72e3c3; background: linear-gradient(135deg, #82efd1, #55d7b4); color: #071912; box-shadow: 0 8px 22px rgba(51,193,154,.15); }
+.sim-upload-button:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+.sim-add-row-button, .sim-cancel-button { min-height: 46px; }
+.sim-batch-progress { margin-top: 15px; padding: 15px 16px; border: 1px solid var(--sim-line); border-radius: 14px; background: rgba(255,255,255,.035); }
+.sim-batch-progress-text { display: flex; justify-content: space-between; gap: 12px; color: #d4dce7; font-size: 12px; line-height: 1.5; }
+.sim-batch-progress-text strong { flex: 0 0 auto; color: #f5f8fb; font-variant-numeric: tabular-nums; }
+.sim-batch-progress progress { display: block; width: 100%; height: 8px; margin-top: 11px; overflow: hidden; border: 0; border-radius: 99px; accent-color: #71e3c3; }
+.sim-roster-controls { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin: 24px 2px 12px; }
+.sim-roster-count { display: flex; align-items: center; gap: 12px; }
+.sim-roster-count-number { display: grid; place-items: center; min-width: 48px; height: 48px; padding: 0 10px; border: 1px solid rgba(113,227,195,.27); border-radius: 15px; background: rgba(113,227,195,.11); color: #b4f7e7; font-size: 20px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.sim-roster-count > span:last-child { display: grid; line-height: 1.35; }
+.sim-roster-count strong { color: #f0f4f8; font-size: 13px; }
+.sim-roster-count small { margin-top: 4px; color: #a7b4c5; font-size: 11px; }
+.sim-roster-tools { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+.sim-nik-toggle { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; color: #d4dce7; font-size: 12px; font-weight: 650; cursor: pointer; }
+.sim-nik-toggle input { width: 19px; height: 19px; accent-color: var(--sim-mint); }
+.sim-clear-button { min-height: 42px; height: auto; padding: 0 14px; border-radius: 11px; font-size: 12px; }
 .sim-roster-section { min-width: 0; }
-.sim-roster-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0 2px 10px; }
-.sim-roster-section-heading > div:first-child { display: flex; align-items: center; gap: 10px; }
-.sim-roster-section-heading p { max-width: 620px; }
-.sim-sim-counts { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
-.sim-sim-counts span { display: inline-flex; align-items: center; gap: 7px; padding: 5px 7px 5px 9px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255,255,255,.025); color: #9f9fa8; font-size: 8px; white-space: nowrap; }
-.sim-sim-counts b { color: #e4e4e7; font-size: 9px; }
-.sim-collective-document { width: 100%; max-width: 100%; margin: 0 auto; padding: 19px; overflow: hidden; border-color: #d5dbe5; border-radius: 14px; box-shadow: 0 10px 32px rgba(0,0,0,.15); }
-.sim-collective-title { margin: 0 0 5px; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 800; text-align: center; line-height: 1.25; }
-.sim-collective-disclaimer { margin: 0 0 13px; color: #596579; font-family: Arial, Helvetica, sans-serif; font-size: 7px; font-weight: 750; text-align: center; letter-spacing: .045em; }
-.sim-table-scroll { max-height: min(74vh, 870px); overflow: auto; border: 1px solid #e1e5eb; border-radius: 7px; scrollbar-color: #aab5c3 transparent; }
-.sim-collective-table { width: 100%; min-width: 950px; table-layout: fixed; border-collapse: separate; border-spacing: 0; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 11px; }
-.sim-collective-table.has-nik { min-width: 1080px; }
-.sim-collective-table th, .sim-collective-table td { padding: 9px 8px; border-right: 1px solid #e1e5eb; border-bottom: 1px solid #e1e5eb; vertical-align: middle; overflow-wrap: anywhere; }
-.sim-collective-table th:first-child, .sim-collective-table td:first-child { border-left: 1px solid #e1e5eb; }
-.sim-collective-table thead th { position: sticky; top: 0; z-index: 2; background: #f3f6fa; color: #344054; font-size: 9px; font-weight: 850; text-align: center; letter-spacing: .075em; }
+.sim-roster-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 2px 13px; }
+.sim-roster-section-heading > div:first-child { display: flex; align-items: center; gap: 13px; }
+.sim-roster-section-heading p { max-width: 700px; }
+.sim-sim-counts { display: flex; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
+.sim-sim-counts span { display: inline-flex; align-items: center; gap: 8px; min-height: 33px; padding: 0 9px 0 12px; border: 1px solid var(--sim-line); border-radius: 999px; background: rgba(255,255,255,.035); color: #c0cad8; font-size: 10px; white-space: nowrap; }
+.sim-sim-counts b { color: #f5f8fb; font-size: 11px; }
+.sim-roster-filter-bar { display: grid; grid-template-columns: minmax(240px, .9fr) minmax(0, 1.3fr); align-items: center; gap: 10px 13px; margin: 0 0 13px; padding: 13px; border: 1px solid var(--sim-line); border-radius: 16px; background: rgba(16,24,39,.74); }
+.sim-roster-search { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 48px; padding: 0 10px 0 13px; border: 1px solid rgba(176,195,219,.24); border-radius: 12px; background: #0c1420; color: #aebed0; }
+.sim-roster-search:focus-within { border-color: var(--sim-mint); box-shadow: 0 0 0 3px rgba(113,227,195,.12); }
+.sim-roster-search input { width: 100%; min-width: 0; height: 44px; padding: 0; border: 0; outline: 0; background: transparent; color: #f3f6fa; font: inherit; font-size: 13px; }
+.sim-roster-search input::placeholder { color: #a0adc0; opacity: 1; }
+.sim-roster-search input::-webkit-search-cancel-button { cursor: pointer; }
+.sim-roster-search > button { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 9px; background: transparent; color: #c5cfdd; font-size: 22px; cursor: pointer; }
+.sim-roster-search > button:hover { background: rgba(255,255,255,.08); }
+.sim-roster-filter-group { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px; border: 1px solid rgba(176,195,219,.14); border-radius: 13px; background: rgba(0,0,0,.16); }
+.sim-roster-filter-group button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 40px; flex: 1 1 auto; padding: 0 11px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #c1ccdb; font: inherit; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .16s ease, color .16s ease, border-color .16s ease; }
+.sim-roster-filter-group button b { color: #f7f9fc; font-size: 11px; font-variant-numeric: tabular-nums; }
+.sim-roster-filter-group button:hover { background: rgba(255,255,255,.06); color: #fff; }
+.sim-roster-filter-group button.is-active { border-color: rgba(113,227,195,.28); background: rgba(113,227,195,.12); color: #c2f8eb; }
+.sim-roster-filter-group button.is-active b { color: #dcfff6; }
+.sim-roster-filter-status { grid-column: 1 / -1; margin: 0 2px; color: #aebacc; font-size: 11px; line-height: 1.45; }
+.sim-collective-document { width: 100%; max-width: 100%; margin: 0 auto; padding: clamp(15px, 2vw, 22px); overflow: hidden; border: 1px solid #d7e0e9; border-radius: 17px; background: #fff; color: #111827; box-shadow: 0 18px 48px rgba(0,0,0,.17); }
+.sim-collective-title { margin: 0 0 6px; color: #101828; font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 800; text-align: center; line-height: 1.3; }
+.sim-collective-disclaimer { margin: 0 0 16px; color: #475569; font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 750; text-align: center; letter-spacing: .035em; line-height: 1.5; }
+.sim-table-scroll { position: relative; max-height: min(74vh, 900px); overflow: auto; border: 1px solid #dfe5ec; border-radius: 10px; scrollbar-color: #a5b2c3 transparent; }
+.sim-collective-table { width: 100%; min-width: 1010px; table-layout: fixed; border-collapse: separate; border-spacing: 0; color: #182230; font-family: Arial, Helvetica, sans-serif; font-size: 13px; }
+.sim-collective-table.has-nik { min-width: 1150px; }
+.sim-collective-table th, .sim-collective-table td { padding: 12px 10px; border-right: 1px solid #e2e7ee; border-bottom: 1px solid #e2e7ee; vertical-align: middle; overflow-wrap: anywhere; }
+.sim-collective-table th:first-child, .sim-collective-table td:first-child { border-left: 1px solid #e2e7ee; }
+.sim-collective-table .sim-screen-only-col { display: table-cell; }
+.sim-collective-table thead th { position: sticky; top: 0; z-index: 2; background: #f1f5f9; color: #344256; font-size: 11px; font-weight: 850; text-align: center; letter-spacing: .055em; }
 .sim-collective-table tbody tr { background: #fff; transition: background .14s ease; }
-.sim-collective-table tbody tr:nth-child(even) { background: #fbfcfe; }
-.sim-collective-table tbody tr:hover { background: #f5faf8; }
-.sim-collective-table th:nth-child(1) { width: 52px; }
-.sim-collective-table th:nth-child(2) { width: 218px; }
-.sim-collective-table:not(.has-nik) th:nth-child(3) { width: 124px; }
-.sim-collective-table:not(.has-nik) th:nth-child(4) { width: 158px; }
-.sim-collective-table:not(.has-nik) th:nth-child(5) { width: 278px; }
-.sim-collective-table.has-nik th:nth-child(2) { width: 190px; }
-.sim-collective-table.has-nik th:nth-child(3) { width: 155px; }
-.sim-collective-table.has-nik th:nth-child(4) { width: 116px; }
-.sim-collective-table.has-nik th:nth-child(5) { width: 145px; }
-.sim-collective-table.has-nik th:nth-child(6) { width: 245px; }
-.sim-collective-table th:last-child, .sim-collective-table .sim-screen-only-col { width: 42px; }
-.sim-roster-number { color: #475569; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
-.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 35px; height: 35px; padding: 6px 8px; border: 1px solid #d8dee7; border-radius: 7px; outline: none; background: #fff; color: #172033; font: inherit; font-size: 10px; transition: border-color .15s ease, box-shadow .15s ease; }
-.sim-roster-input:hover { border-color: #b8c3d1; }
-.sim-roster-input:focus { border-color: #0f9f72; box-shadow: 0 0 0 3px rgba(16,185,129,.13); }
-.sim-name-input { min-height: 37px; height: 37px; font-weight: 750; }
-.sim-roster-select { padding-right: 4px; cursor: pointer; }
-.sim-roster-nik-hint { display: block; margin: 5px 1px 0; color: #64748b; font-size: 8.5px; }
-.sim-ocr-badge { display: inline-flex; align-items: center; gap: 5px; margin: 6px 0 0 1px; color: #9a6700; font-size: 8px; font-weight: 750; }
-.sim-ocr-badge i { width: 6px; height: 6px; border-radius: 50%; background: #e6a700; }
-.sim-ocr-badge.looks-good { color: #12805c; }
-.sim-ocr-badge.looks-good i { background: #10b981; }
-.sim-ocr-badge.is-manual { color: #667085; }
-.sim-ocr-badge.is-manual i { background: #98a2b3; }
-.sim-roster-details { margin-top: 7px; font-family: var(--font-body); }
-.sim-roster-details summary { width: fit-content; color: #2563eb; font-size: 8.5px; font-weight: 700; cursor: pointer; list-style-position: inside; }
-.sim-roster-details summary:hover { color: #1d4ed8; text-decoration: underline; }
-.sim-roster-details summary span { color: #7c8798; font-weight: 500; }
-.sim-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px 11px; min-width: 380px; margin-top: 9px; padding: 11px; border: 1px solid #e5e9f0; border-radius: 9px; background: #f8fafc; }
-.sim-detail-field { display: grid; align-content: start; gap: 4px; min-width: 0; color: #475569; font-size: 9px; }
+.sim-collective-table tbody tr:nth-child(even) { background: #fafbfd; }
+.sim-collective-table tbody tr:hover { background: #f1faf7; }
+.sim-collective-table tbody tr.sim-filtered-out { display: none; }
+.sim-collective-table th:nth-child(1) { width: 58px; }
+.sim-collective-table th:nth-child(2) { width: 245px; }
+.sim-collective-table:not(.has-nik) th:nth-child(3) { width: 142px; }
+.sim-collective-table:not(.has-nik) th:nth-child(4) { width: 184px; }
+.sim-collective-table:not(.has-nik) th:nth-child(5) { width: 305px; }
+.sim-collective-table.has-nik th:nth-child(2) { width: 205px; }
+.sim-collective-table.has-nik th:nth-child(3) { width: 145px; }
+.sim-collective-table.has-nik th:nth-child(4) { width: 132px; }
+.sim-collective-table.has-nik th:nth-child(5) { width: 160px; }
+.sim-collective-table.has-nik th:nth-child(6) { width: 270px; }
+.sim-collective-table th:last-child, .sim-collective-table .sim-screen-only-col { width: 48px; }
+.sim-roster-number { color: #465569; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
+.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 44px; height: 44px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 9px; outline: none; background: #fff; color: #172033; font: inherit; font-size: 13px; color-scheme: light; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+.sim-roster-input:hover { border-color: #94a3b8; }
+.sim-roster-input:focus { border-color: #078768; box-shadow: 0 0 0 3px rgba(16,185,129,.15); }
+.sim-name-input { min-height: 46px; height: 46px; font-size: 15px; font-weight: 750; }
+.sim-roster-select { padding-right: 7px; cursor: pointer; }
+.sim-roster-nik-hint { display: block; margin: 7px 1px 0; color: #536276; font-size: 11px; }
+.sim-ocr-badge { display: inline-flex; align-items: center; gap: 7px; min-height: 27px; margin: 6px 0 0 1px; color: #854d0e; font-size: 10px; font-weight: 750; }
+.sim-ocr-badge i { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; background: #d58b0b; }
+.sim-ocr-badge.looks-good { color: #087653; }
+.sim-ocr-badge.looks-good i { background: #0c9b6b; }
+.sim-ocr-badge.is-manual { color: #526174; }
+.sim-ocr-badge.is-manual i { background: #8190a3; }
+.sim-roster-details { display: block; margin-top: 6px; font-family: var(--font-body); }
+.sim-roster-details summary { display: inline-flex; align-items: center; gap: 6px; min-height: 39px; padding: 5px 8px; border-radius: 8px; color: #175bbb; font-size: 11px; font-weight: 750; cursor: pointer; list-style-position: inside; }
+.sim-roster-details summary:hover { background: #eff6ff; color: #123e80; }
+.sim-roster-details summary:focus-visible { outline-color: #1457b8; }
+.sim-roster-details summary span { color: #536276; font-weight: 550; }
+.sim-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; min-width: 430px; margin-top: 8px; padding: 14px; border: 1px solid #dce4ed; border-radius: 12px; background: #f6f8fb; }
+.sim-detail-field { display: grid; align-content: start; gap: 6px; min-width: 0; color: #344256; font-size: 11px; }
 .sim-detail-field > span:first-child { font-weight: 750; }
-.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid #d5dce6; border-radius: 7px; background: #fff; color: #111827; font: inherit; font-size: 10px; }
-.sim-detail-field input:focus, .sim-detail-field textarea:focus { border-color: #0f9f72; outline: 2px solid rgba(16,185,129,.12); }
+.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; min-height: 44px; padding: 9px 10px; border: 1px solid #c8d2df; border-radius: 9px; background: #fff; color: #121b28; font: inherit; font-size: 12px; color-scheme: light; }
+.sim-detail-field input:focus, .sim-detail-field textarea:focus { border-color: #078768; outline: 3px solid rgba(16,185,129,.15); }
 .sim-detail-field textarea { resize: vertical; }
 .sim-detail-field-wide { grid-column: 1 / -1; }
 .sim-nik-input-wrap { position: relative; display: block; }
-.sim-nik-input-wrap input { padding-right: 67px; }
-.sim-nik-input-wrap button { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); padding: 4px 6px; border: 0; border-radius: 5px; background: #eff6ff; color: #2563eb; font-size: 8px; font-weight: 700; cursor: pointer; }
-.sim-ocr-quality-note, .sim-ocr-conflict-note { grid-column: 1 / -1; margin: 0; color: #64748b; font-size: 8.5px; line-height: 1.5; }
-.sim-ocr-conflict-note { color: #b45309; }
-.sim-retry-ocr { grid-column: 1 / -1; justify-self: start; padding: 7px 10px; border: 1px solid #dbeafe; border-radius: 7px; background: #eff6ff; color: #1d4ed8; font: inherit; font-size: 9px; font-weight: 750; cursor: pointer; }
-.sim-retry-ocr:disabled { opacity: .55; cursor: wait; }
+.sim-nik-input-wrap input { padding-right: 82px; }
+.sim-nik-input-wrap button { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); min-height: 34px; padding: 4px 8px; border: 0; border-radius: 7px; background: #eaf2ff; color: #175bbb; font-size: 10px; font-weight: 750; cursor: pointer; }
+.sim-ocr-quality-note, .sim-ocr-conflict-note { grid-column: 1 / -1; margin: 0; color: #536276; font-size: 11px; line-height: 1.55; }
+.sim-ocr-conflict-note { color: #9a570a; }
+.sim-retry-ocr { grid-column: 1 / -1; justify-self: start; min-height: 42px; padding: 0 13px; border: 1px solid #cfe1fb; border-radius: 9px; background: #eff6ff; color: #174f9e; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
+.sim-retry-ocr:hover:not(:disabled) { border-color: #9dc5f8; background: #e2efff; }
+.sim-retry-ocr:disabled { opacity: .6; cursor: wait; }
 .sim-roster-photo-cell { text-align: center; }
-.sim-photo-preview-frame { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1.6; overflow: hidden; border: 1px solid #e5e9ef; border-radius: 5px; background: #f8fafc; }
+.sim-photo-preview-frame { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1.6; overflow: hidden; border: 1px solid #dce3eb; border-radius: 8px; background: #f7f9fb; }
 .sim-roster-photo { display: block; width: 100%; height: 100%; object-fit: contain; }
-.sim-photo-missing { display: flex; justify-content: center; align-items: center; gap: 6px; min-height: 48px; color: #8892a1; font-size: 9px; }
-.sim-photo-actions { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
-.sim-photo-action { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 27px; padding: 0 8px; border: 1px solid #dce3eb; border-radius: 7px; background: #fff; color: #475569; font: inherit; font-size: 8px; font-weight: 700; cursor: pointer; transition: .15s ease; }
-.sim-photo-action:hover { border-color: #a7f3d0; background: #f0fdf4; color: #047857; }
-.sim-photo-action:disabled { opacity: .5; cursor: not-allowed; }
-.sim-photo-action input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.sim-photo-adjust { border-color: #a7f3d0; background: #f0fdf4; color: #047857; }
-.sim-remove-person { display: grid; place-items: center; width: 28px; height: 28px; margin: auto; border: 1px solid #fee2e2; border-radius: 8px; background: #fff; color: #b91c1c; font-size: 19px; line-height: 1; cursor: pointer; transition: .15s ease; }
-.sim-remove-person:hover { border-color: #fecaca; background: #fef2f2; transform: scale(1.04); }
-.sim-export-panel { display: grid; grid-template-columns: 1fr; gap: 11px; margin-top: 13px; padding: 15px 16px; border: 1px solid rgba(148,163,184,.15); border-radius: 16px; background: linear-gradient(135deg, rgba(16,185,129,.045), rgba(99,102,241,.045)); }
-.sim-export-panel-heading { display: flex; align-items: center; gap: 10px; }
-.sim-export-panel-heading p { margin-top: 3px; }
-.sim-export-actions { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 8px; margin: 0; }
-.sim-export-card { display: grid; grid-template-columns: 36px minmax(0,1fr) 15px; align-items: center; gap: 8px; min-width: 0; min-height: 58px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: 11px; background: rgba(255,255,255,.035); color: var(--text); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease; }
-.sim-export-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(52,211,153,.38); background: rgba(16,185,129,.07); }
-.sim-export-card:disabled { opacity: .5; cursor: wait; }
-.sim-export-card.is-primary { border-color: rgba(52,211,153,.34); background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.04)); }
+.sim-photo-missing { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 64px; color: #58677a; font-size: 11px; }
+.sim-photo-actions { display: flex; justify-content: center; gap: 7px; margin-top: 8px; }
+.sim-photo-action { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 750; cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease; }
+.sim-photo-action:hover:not(.is-busy) { border-color: #7bd9bf; background: #edfbf6; color: #076c51; }
+.sim-photo-action:focus-within { outline: 3px solid rgba(16,185,129,.2); outline-offset: 2px; }
+.sim-photo-action:disabled { opacity: .55; cursor: not-allowed; }
+.sim-photo-action input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.sim-photo-adjust { border-color: #a8e8d7; background: #eefbf7; color: #076c51; }
+.sim-remove-person { display: grid; place-items: center; width: 38px; height: 38px; margin: auto; border: 1px solid #f1c9c8; border-radius: 10px; background: #fff; color: #a33131; font-size: 23px; line-height: 1; cursor: pointer; transition: border-color .15s ease, background .15s ease, transform .15s ease; }
+.sim-remove-person:hover { transform: translateY(-1px); border-color: #edaaa8; background: #fff4f3; }
+.sim-export-panel { display: grid; grid-template-columns: minmax(0,1fr); gap: 15px; margin-top: 17px; padding: 20px; border: 1px solid var(--sim-line); border-radius: 19px; background: linear-gradient(135deg, rgba(20,31,48,.9), rgba(17,24,39,.9)); }
+.sim-export-panel-heading { display: flex; align-items: center; gap: 13px; }
+.sim-export-panel-heading p { margin-top: 4px; }
+.sim-export-actions { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; margin: 0; }
+.sim-export-card { display: grid; grid-template-columns: 43px minmax(0,1fr) 18px; align-items: center; gap: 10px; min-width: 0; min-height: 72px; padding: 10px 12px; border: 1px solid var(--sim-line-strong); border-radius: 13px; background: rgba(255,255,255,.035); color: var(--sim-ink); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease; }
+.sim-export-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(113,227,195,.5); background: rgba(113,227,195,.07); box-shadow: 0 8px 23px rgba(0,0,0,.14); }
+.sim-export-card:focus-visible { outline: 3px solid var(--sim-mint); outline-offset: 3px; }
+.sim-export-card:disabled { opacity: .56; cursor: wait; }
+.sim-export-card.is-primary { border-color: rgba(113,227,195,.44); background: linear-gradient(135deg, rgba(113,227,195,.14), rgba(113,227,195,.045)); }
 .sim-export-card > span:nth-child(2) { display: grid; min-width: 0; }
-.sim-export-card strong { overflow: hidden; color: #e5e7eb; font-size: 9.5px; text-overflow: ellipsis; white-space: nowrap; }
-.sim-export-card small { margin-top: 3px; color: #878791; font-size: 8px; }
-.sim-export-card > svg { color: #73737d; }
-.sim-export-format { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(148,163,184,.13); border-radius: 9px; background: rgba(255,255,255,.045); color: #d4d4d8; font-size: 8px; font-weight: 900; letter-spacing: .025em; }
-.sim-format-pdf { color: #fca5a5; background: rgba(239,68,68,.09); }
-.sim-format-docx { color: #93c5fd; background: rgba(59,130,246,.09); }
-.sim-format-xlsx { color: #86efac; background: rgba(34,197,94,.09); }
-.sim-format-csv { color: #fde68a; background: rgba(234,179,8,.09); }
-.sim-format-json { color: #c4b5fd; background: rgba(139,92,246,.09); }
-.sim-export-hint { margin: 0; color: #85858f; font-size: 9px; line-height: 1.5; }
-.sim-roster-empty { display: grid; justify-items: center; padding: 27px 20px 30px; border: 1px solid rgba(148,163,184,.13); border-radius: 17px; background: rgba(255,255,255,.022); text-align: center; }
-.sim-empty-illustration { position: relative; display: grid; place-items: center; width: 90px; height: 74px; margin-bottom: 7px; }
-.sim-empty-illustration > span { z-index: 1; display: grid; place-items: center; width: 53px; height: 53px; border: 1px solid rgba(52,211,153,.21); border-radius: 17px; background: linear-gradient(145deg, rgba(16,185,129,.18), rgba(99,102,241,.1)); color: #6ee7b7; box-shadow: 0 8px 25px rgba(16,185,129,.08); }
-.sim-empty-illustration > i { position: absolute; display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid rgba(148,163,184,.17); border-radius: 8px; background: #11131a; color: #9ca3af; font-size: 7px; font-style: normal; font-weight: 800; }
-.sim-empty-illustration > i:nth-of-type(1) { top: 2px; left: 2px; transform: rotate(-9deg); }
-.sim-empty-illustration > i:nth-of-type(2) { top: 3px; right: 1px; transform: rotate(9deg); }
-.sim-empty-illustration > i:nth-of-type(3) { bottom: 0; left: 34px; }
-.sim-roster-empty h2 { margin: 2px 0 0; color: #f4f4f5; font-size: 15px; }
-.sim-roster-empty p { max-width: 520px; margin: 7px 0 14px; color: #9999a3; font-size: 10.5px; line-height: 1.6; }
-.sim-roster-empty .btn { height: 40px; padding: 0 15px; font-size: 10px; }
-.sim-collective-footer { display: flex; justify-content: space-between; gap: 12px; margin: 12px 2px 0; color: #73737d; font-size: 9px; line-height: 1.5; }
-.sim-collective-footer > span { display: inline-flex; align-items: center; gap: 5px; }
-.sim-collective-footer svg { flex: 0 0 auto; color: #fbbf24; }
-.sim-photo-editor-backdrop { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; padding: 18px; overflow-y: auto; background: rgba(3,7,18,.76); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-.sim-photo-editor { width: min(100%, 610px); max-height: calc(100vh - 36px); overflow: auto; padding: 20px; border: 1px solid rgba(148,163,184,.22); border-radius: 19px; background: #11131b; color: #f4f4f5; box-shadow: 0 25px 90px rgba(0,0,0,.55); }
-.sim-photo-editor-header { display: flex; align-items: center; gap: 10px; }
-.sim-photo-editor-icon { display: grid; place-items: center; width: 39px; height: 39px; border: 1px solid rgba(52,211,153,.2); border-radius: 12px; background: rgba(16,185,129,.11); color: #6ee7b7; }
+.sim-export-card strong { overflow: hidden; color: #f3f6fa; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.sim-export-card small { margin-top: 4px; color: #bdc7d4; font-size: 10px; }
+.sim-export-card > svg { color: #b0bdcd; }
+.sim-export-format { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(174,193,216,.16); border-radius: 12px; background: rgba(255,255,255,.05); color: #e2e8f0; font-size: 10px; font-weight: 900; letter-spacing: .025em; }
+.sim-format-pdf { color: #ffb4b4; background: rgba(239,68,68,.12); }
+.sim-format-docx { color: #b8d6ff; background: rgba(59,130,246,.12); }
+.sim-format-xlsx { color: #a5f2c1; background: rgba(34,197,94,.12); }
+.sim-format-csv { color: #fce5a0; background: rgba(234,179,8,.12); }
+.sim-format-json { color: #d5c4ff; background: rgba(139,92,246,.13); }
+.sim-export-hint { margin: 0; color: #b1bdcc; font-size: 11px; line-height: 1.6; }
+.sim-roster-empty { display: grid; justify-items: center; padding: clamp(26px,4vw,44px) 22px; border: 1px solid var(--sim-line); border-radius: 20px; background: radial-gradient(ellipse at 50% 0%, rgba(113,227,195,.07), transparent 52%), rgba(17,24,39,.65); text-align: center; }
+.sim-empty-illustration { position: relative; display: grid; place-items: center; width: 100px; height: 83px; margin-bottom: 11px; }
+.sim-empty-illustration > span { z-index: 1; display: grid; place-items: center; width: 61px; height: 61px; border: 1px solid rgba(113,227,195,.28); border-radius: 19px; background: linear-gradient(145deg, rgba(113,227,195,.2), rgba(99,102,241,.13)); color: #9af2dc; box-shadow: 0 9px 25px rgba(16,185,129,.09); }
+.sim-empty-illustration > i { position: absolute; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid rgba(174,193,216,.23); border-radius: 9px; background: #141e2d; color: #d0d9e5; font-size: 9px; font-style: normal; font-weight: 800; }
+.sim-empty-illustration > i:nth-of-type(1) { top: 0; left: 0; transform: rotate(-9deg); }
+.sim-empty-illustration > i:nth-of-type(2) { top: 0; right: 0; transform: rotate(9deg); }
+.sim-empty-illustration > i:nth-of-type(3) { bottom: 0; left: 37px; }
+.sim-roster-empty h2 { margin: 3px 0 0; color: #f5f8fb; font-size: 21px; letter-spacing: -.02em; }
+.sim-roster-empty p { max-width: 650px; margin: 9px 0 18px; color: #c0cad8; font-size: 14px; line-height: 1.65; }
+.sim-roster-empty .btn { min-height: 48px; height: auto; padding: 0 18px; font-size: 13px; }
+.sim-collective-footer { display: flex; justify-content: space-between; gap: 14px; margin: 15px 2px 0; color: #abb8c9; font-size: 11px; line-height: 1.6; }
+.sim-collective-footer > span { display: inline-flex; align-items: flex-start; gap: 7px; }
+.sim-collective-footer svg { flex: 0 0 auto; margin-top: 2px; color: #f0c56b; }
+.sim-roster-no-results { display: grid; justify-items: center; gap: 7px; padding: 28px 16px; color: #334155; text-align: center; }
+.sim-roster-no-results > span { color: #4b6482; font-size: 28px; line-height: 1; }
+.sim-roster-no-results strong { color: #1f2937; font-size: 15px; }
+.sim-roster-no-results p { margin: 0 0 4px; color: #526175; font-size: 12px; }
+.sim-roster-no-results .btn { min-height: 42px; height: auto; padding: 0 13px; border-color: #cbd5e1; color: #26364a; font-size: 11px; }
+.sim-photo-editor-backdrop { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; padding: 20px; overflow-y: auto; background: rgba(4,9,18,.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.sim-photo-editor { width: min(100%, 680px); max-height: calc(100vh - 40px); overflow: auto; padding: clamp(17px,3vw,25px); border: 1px solid rgba(174,193,216,.25); border-radius: 22px; background: #111a28; color: #f1f5f9; box-shadow: 0 28px 100px rgba(0,0,0,.62); }
+.sim-photo-editor:focus { outline: none; }
+.sim-photo-editor-header { display: flex; align-items: center; gap: 13px; }
+.sim-photo-editor-icon { display: grid; place-items: center; width: 47px; height: 47px; flex: 0 0 auto; border: 1px solid rgba(113,227,195,.25); border-radius: 15px; background: rgba(113,227,195,.12); color: #9af2dc; }
 .sim-photo-editor-header > div:nth-child(2) { flex: 1; }
-.sim-photo-editor-header p { margin: 0 0 3px; color: #7b7b87; font-size: 8px; font-weight: 850; letter-spacing: .13em; }
-.sim-photo-editor-header h2 { color: #fafafa; font-size: 17px; }
-.sim-photo-close { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.04); color: #c4c4cc; font-size: 21px; cursor: pointer; }
-.sim-photo-editor-help { margin: 11px 0; color: #a1a1aa; font-size: 10px; line-height: 1.55; }
-.sim-photo-editor-help strong { color: #e4e4e7; }
-.sim-photo-canvas-wrap { display: grid; place-items: center; min-height: 190px; overflow: hidden; border: 1px solid rgba(148,163,184,.2); border-radius: 12px; background: repeating-conic-gradient(#f8fafc 0% 25%, #e9edf2 0% 50%) 50% / 18px 18px; }
-.sim-photo-editor-canvas { display: block; width: 100%; max-height: 340px; object-fit: contain; cursor: grab; touch-action: none; user-select: none; }
+.sim-photo-editor-header p { margin: 0 0 4px; color: #bcc9d9; font-size: 10px; font-weight: 850; letter-spacing: .12em; }
+.sim-photo-editor-header h2 { color: #f8fafc; font-size: clamp(18px,2.5vw,22px); }
+.sim-photo-close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid var(--sim-line-strong); border-radius: 12px; background: rgba(255,255,255,.045); color: #e0e7f0; font-size: 25px; cursor: pointer; }
+.sim-photo-editor-help { margin: 13px 0 15px; color: #c5cfdd; font-size: 13px; line-height: 1.6; }
+.sim-photo-editor-help strong { color: #f5f8fb; }
+.sim-photo-canvas-wrap { display: grid; place-items: center; min-height: 200px; overflow: hidden; border: 1px solid rgba(174,193,216,.23); border-radius: 14px; background: repeating-conic-gradient(#f8fafc 0% 25%, #e9edf2 0% 50%) 50% / 20px 20px; }
+.sim-photo-editor-canvas { display: block; width: 100%; max-height: 390px; object-fit: contain; cursor: grab; touch-action: none; user-select: none; }
 .sim-photo-editor-canvas:active { cursor: grabbing; }
-.sim-photo-loading { padding: 40px; color: #9ca3af; font-size: 11px; }
-.sim-photo-fit-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 12px 0; }
-.sim-photo-fit-options button { display: grid; gap: 3px; padding: 9px 11px; border: 1px solid rgba(148,163,184,.18); border-radius: 10px; background: rgba(255,255,255,.025); color: #f4f4f5; text-align: left; cursor: pointer; }
-.sim-photo-fit-options button.is-selected { border-color: rgba(52,211,153,.5); background: rgba(16,185,129,.1); box-shadow: 0 0 0 2px rgba(16,185,129,.07); }
-.sim-photo-fit-options strong { font-size: 10px; }
-.sim-photo-fit-options span { color: #91919b; font-size: 8.5px; }
-.sim-photo-slider { display: block; margin-top: 11px; }
-.sim-photo-slider > span { display: flex; justify-content: space-between; color: #d4d4d8; font-size: 9px; }
-.sim-photo-slider output { color: #a7f3d0; font-variant-numeric: tabular-nums; }
-.sim-photo-slider input { width: 100%; height: 18px; margin: 5px 0 0; accent-color: #34d399; cursor: pointer; }
-.sim-photo-editor-error { margin: 10px 0 0; color: #fca5a5; font-size: 10px; }
-.sim-photo-editor-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; padding-top: 13px; border-top: 1px solid rgba(148,163,184,.14); }
-.sim-photo-editor-footer > div { display: flex; gap: 7px; }
-.sim-photo-editor-footer .btn { height: 38px; padding: 0 12px; border-radius: 9px; font-size: 10px; }
+.sim-photo-loading { padding: 44px; color: #d3dce8; font-size: 13px; text-align: center; }
+.sim-photo-fit-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 15px 0 18px; }
+.sim-photo-fit-options button { display: grid; align-content: center; gap: 5px; min-height: 67px; padding: 10px 13px; border: 1px solid rgba(174,193,216,.22); border-radius: 12px; background: rgba(255,255,255,.035); color: #f4f7fb; text-align: left; cursor: pointer; }
+.sim-photo-fit-options button:hover { border-color: rgba(113,227,195,.45); }
+.sim-photo-fit-options button.is-selected { border-color: rgba(113,227,195,.6); background: rgba(113,227,195,.1); box-shadow: 0 0 0 2px rgba(113,227,195,.08); }
+.sim-photo-fit-options strong { font-size: 13px; }
+.sim-photo-fit-options span { color: #bdc8d6; font-size: 11px; }
+.sim-photo-slider { display: block; margin-top: 15px; }
+.sim-photo-slider > span { display: flex; justify-content: space-between; gap: 12px; color: #e1e7ef; font-size: 12px; }
+.sim-photo-slider output { color: #a7f3df; font-variant-numeric: tabular-nums; }
+.sim-photo-slider input { width: 100%; min-height: 28px; margin: 7px 0 0; accent-color: #71e3c3; cursor: pointer; }
+.sim-photo-editor-error { margin: 11px 0 0; color: #ffb4b4; font-size: 12px; }
+.sim-photo-editor-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(174,193,216,.18); }
+.sim-photo-editor-footer > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.sim-photo-editor-footer .btn { min-height: 44px; height: auto; padding: 0 14px; border-radius: 11px; font-size: 12px; }
+.sim-photo-reset { color: #e0e7f0; }
+.sim-visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
+.sim-collective-shell button:focus-visible, .sim-collective-shell input:focus-visible, .sim-collective-shell select:focus-visible, .sim-collective-shell textarea:focus-visible { outline: 3px solid #89f0d4; outline-offset: 3px; }
+.sim-collective-shell input[type='checkbox']:focus-visible, .sim-collective-shell input[type='range']:focus-visible { outline-offset: 4px; }
+.sim-collective-shell.is-large-text { font-size: 1.12em; }
+.sim-collective-shell.is-large-text .sim-collective-intro > p { font-size: clamp(18px,2.2vw,22px); }
+.sim-collective-shell.is-large-text .sim-setting-field > span, .sim-collective-shell.is-large-text .sim-detail-field, .sim-collective-shell.is-large-text .sim-roster-filter-status { font-size: 14px; }
+.sim-collective-shell.is-large-text .sim-roster-input, .sim-collective-shell.is-large-text .sim-roster-search input { font-size: 15px; }
+.sim-collective-shell.is-large-text .sim-roster-filter-group button, .sim-collective-shell.is-large-text .sim-photo-action, .sim-collective-shell.is-large-text .sim-export-card strong { font-size: 13px; }
+.sim-collective-shell.is-large-text .sim-collective-table { font-size: 15px; }
+.sim-collective-shell.is-large-text .sim-collective-table thead th { font-size: 12px; }
+.sim-collective-shell.is-large-text .sim-roster-empty p { font-size: 16px; }
 
-@media (max-width: 920px) {
+@media (max-width: 1050px) {
   .sim-collective-shell { max-width: 100%; }
-  .sim-sim-counts { display: none; }
+  .sim-sim-counts { max-width: 360px; }
   .sim-export-actions { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .sim-export-card { min-height: 68px; }
 }
-@media (max-width: 760px) {
-  .sim-collective-shell { padding-right: 14px; padding-left: 14px; }
-  .sim-upload-card { padding: 15px; }
+@media (max-width: 850px) {
   .sim-ocr-settings { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .sim-ocr-mode-field { grid-column: 1 / -1; }
-  .sim-drop-zone { grid-template-columns: 40px minmax(0,1fr); gap: 10px; padding: 12px; }
-  .sim-drop-icon { width: 39px; height: 39px; }
-  .sim-drop-actions { grid-column: 1 / -1; justify-content: center; }
-  .sim-drop-zone > small { margin-top: -1px; }
+  .sim-roster-section-heading { align-items: flex-start; }
+  .sim-sim-counts { display: none; }
+  .sim-roster-filter-bar { grid-template-columns: minmax(0,1fr); }
+  .sim-roster-filter-status { grid-column: 1; }
+}
+@media (max-width: 760px) {
+  .sim-collective-shell { padding-right: 15px; padding-left: 15px; }
+  .sim-collective-shell .tool-head { margin-bottom: 16px; }
+  .sim-collective-shell .tool-head h1 { font-size: clamp(25px,6vw,33px); }
+  .sim-collective-shell .tool-head p { margin-left: 0; font-size: 14px; }
+  .sim-upload-card { padding: 17px; }
+  .sim-drop-zone { grid-template-columns: 48px minmax(0,1fr); gap: 12px; padding: 16px; }
+  .sim-drop-icon { width: 47px; height: 47px; }
+  .sim-drop-actions { grid-column: 1 / -1; justify-content: flex-start; flex-wrap: wrap; }
+  .sim-drop-zone > small { text-align: left; }
+  .sim-roster-controls { align-items: flex-start; }
+  .sim-roster-tools { gap: 8px; flex-wrap: wrap; }
+  .sim-roster-filter-group { overflow-x: auto; }
+  .sim-roster-filter-group button { min-width: 105px; }
   .sim-table-scroll { max-height: none; overflow: visible; border: 0; border-radius: 0; }
   .sim-collective-table, .sim-collective-table.has-nik { display: block; width: 100%; min-width: 0; table-layout: auto; border: 0; }
+  .sim-collective-table caption { display: none; }
   .sim-collective-table thead { display: none; }
-  .sim-collective-table tbody { display: grid; gap: 10px; }
-  .sim-collective-table tbody tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px 11px; padding: 12px; border: 1px solid #e0e5ec; border-radius: 11px; background: #fff !important; box-shadow: 0 3px 12px rgba(15,23,42,.045); }
+  .sim-collective-table tbody { display: grid; gap: 13px; }
+  .sim-collective-table tbody tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px 13px; padding: 15px; border: 1px solid #dce3eb; border-radius: 15px; background: #fff !important; box-shadow: 0 6px 20px rgba(15,23,42,.06); }
+  .sim-collective-table tbody tr.sim-filtered-out { display: none; }
   .sim-collective-table td, .sim-collective-table th, .sim-collective-table td:first-child { display: block; width: auto !important; min-width: 0; padding: 0; border: 0; }
-  .sim-collective-table td::before { display: block; margin: 0 0 4px; content: attr(data-label); color: #7b8492; font-family: var(--font-body); font-size: 8px; font-weight: 850; letter-spacing: .09em; }
-  .sim-collective-table .sim-roster-number { display: flex; align-items: center; gap: 7px; color: #64748b; font-size: 9px; text-align: left; }
-  .sim-collective-table .sim-roster-number::before { display: inline; content: 'NO.'; margin: 0; }
+  .sim-collective-table td::before { display: block; margin: 0 0 6px; content: attr(data-label); color: #536276; font-family: var(--font-body); font-size: 10px; font-weight: 800; letter-spacing: .065em; }
+  .sim-collective-table .sim-roster-number { display: flex; align-items: center; gap: 7px; color: #526175; font-size: 12px; text-align: left; }
+  .sim-collective-table .sim-roster-number::before { display: inline; content: 'NO.'; margin: 0; color: #6b7a8e; font-size: 10px; font-weight: 800; }
   .sim-collective-table .sim-roster-name-cell { grid-column: 1 / -1; }
   .sim-collective-table .sim-roster-name-cell::before { display: none; }
   .sim-collective-table .sim-roster-nik-cell { grid-column: 1 / -1; }
-  .sim-collective-table .sim-roster-photo-cell { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 9px; }
+  .sim-collective-table .sim-roster-photo-cell { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 10px; }
   .sim-collective-table .sim-roster-photo-cell::before { grid-column: 1 / -1; }
-  .sim-detail-grid { min-width: 0; grid-template-columns: minmax(0,1fr); }
-  .sim-photo-preview-frame { max-width: 330px; }
-  .sim-photo-actions { flex-direction: column; margin: 0; }
-  .sim-photo-action { min-height: 32px; padding: 0 9px; font-size: 8px; }
+  .sim-detail-grid { width: 100%; min-width: 0; grid-template-columns: minmax(0,1fr); gap: 11px; padding: 12px; }
+  .sim-photo-preview-frame { max-width: 380px; }
+  .sim-photo-actions { flex-direction: column; gap: 8px; margin: 0; }
+  .sim-photo-action { min-height: 42px; padding: 0 11px; font-size: 10px; }
   .sim-collective-table .sim-roster-action-cell { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
   .sim-collective-table .sim-roster-action-cell::before { content: ''; }
-  .sim-remove-person { width: 34px; height: 31px; }
-  .sim-roster-input { min-height: 39px; height: 39px; padding: 8px 9px; font-size: 11px; }
-  .sim-name-input { height: 41px; }
-  .sim-collective-document { padding: 13px; }
-  .sim-collective-footer { flex-direction: column; gap: 5px; }
+  .sim-remove-person { width: 42px; height: 42px; }
+  .sim-roster-input { min-height: 46px; height: 46px; padding: 9px 11px; font-size: 14px; }
+  .sim-name-input { height: 49px; font-size: 16px; }
+  .sim-collective-document { padding: 14px; border-radius: 14px; }
+  .sim-collective-footer { flex-direction: column; gap: 7px; }
 }
 @media (max-width: 520px) {
-  .sim-collective-intro { padding: 16px; border-radius: 15px; }
-  .sim-collective-intro > p { font-size: 11px; }
-  .sim-workflow-steps { gap: 7px; margin-top: 14px; }
-  .sim-workflow-steps > div { gap: 5px; }
-  .sim-workflow-steps > div > b { width: 25px; height: 25px; border-radius: 8px; font-size: 8px; }
-  .sim-workflow-steps strong { font-size: 8.5px; }
-  .sim-workflow-steps small { font-size: 7.5px; }
-  .sim-workflow-steps > i { width: 8px; }
-  .sim-privacy-note { padding: 9px 10px; }
-  .sim-privacy-note p { font-size: 9.5px; }
-  .sim-upload-card { padding: 12px; border-radius: 14px; }
-  .sim-upload-card-heading { align-items: flex-start; gap: 8px; }
-  .sim-step-large { width: 31px; height: 31px; border-radius: 9px; }
-  .sim-upload-card-heading h2, .sim-roster-section-heading h2 { font-size: 13px; }
-  .sim-upload-card-heading p, .sim-roster-section-heading p { font-size: 9px; }
-  .sim-local-badge { padding: 5px 7px; font-size: 7px; }
-  .sim-ocr-settings { gap: 7px; }
-  .sim-setting-field .select, .sim-setting-field .input { height: 39px; min-height: 39px; padding-left: 9px; font-size: 10px; }
-  .sim-setting-field > span { font-size: 8.5px; }
-  .sim-ocr-mode-note { font-size: 8.5px; }
-  .sim-drop-copy strong { font-size: 10px; }
-  .sim-drop-copy span { font-size: 8.5px; }
-  .sim-drop-actions .btn { height: 37px; padding: 0 9px; font-size: 9px; }
-  .sim-roster-controls { align-items: flex-start; flex-wrap: wrap; row-gap: 8px; margin-top: 14px; }
+  .sim-collective-intro { padding: 18px; border-radius: 18px; }
+  .sim-collective-intro > p { margin-top: 13px; font-size: 16px; }
+  .sim-workflow-steps { gap: 6px; margin-top: 18px; }
+  .sim-workflow-steps > div { gap: 6px; }
+  .sim-workflow-steps > div > b { width: 31px; height: 31px; border-radius: 10px; font-size: 9px; }
+  .sim-workflow-steps strong { font-size: 11px; }
+  .sim-workflow-steps small { font-size: 9px; }
+  .sim-workflow-steps > i { width: 7px; }
+  .sim-readable-toggle { min-height: 40px; gap: 6px; padding: 0 9px; font-size: 10px; }
+  .sim-privacy-note { gap: 10px; padding: 12px; }
+  .sim-privacy-note p { font-size: 12px; }
+  .sim-upload-card { padding: 14px; border-radius: 17px; }
+  .sim-upload-card-heading { align-items: flex-start; gap: 9px; }
+  .sim-step-large { width: 38px; height: 38px; border-radius: 12px; }
+  .sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { font-size: 17px; }
+  .sim-upload-card-heading p, .sim-roster-section-heading p, .sim-export-panel-heading p { font-size: 12px; }
+  .sim-local-badge { min-height: 32px; padding: 0 8px; font-size: 9px; }
+  .sim-ocr-settings { gap: 9px; }
+  .sim-setting-field .select, .sim-setting-field .input { height: 46px; min-height: 46px; padding-left: 10px; font-size: 12px; }
+  .sim-setting-field > span { font-size: 11px; }
+  .sim-ocr-mode-note { font-size: 11px; }
+  .sim-drop-copy strong { font-size: 14px; }
+  .sim-drop-copy span { font-size: 12px; }
+  .sim-drop-actions { justify-content: stretch; }
+  .sim-drop-actions .btn { flex: 1; min-height: 46px; padding: 0 9px; font-size: 11px; }
+  .sim-roster-controls { align-items: flex-start; flex-wrap: wrap; row-gap: 10px; margin-top: 18px; }
   .sim-roster-tools { width: 100%; justify-content: space-between; }
-  .sim-roster-count-number { min-width: 35px; height: 35px; font-size: 14px; }
+  .sim-roster-count-number { min-width: 43px; height: 43px; font-size: 18px; }
   .sim-roster-section-heading { align-items: flex-start; }
-  .sim-collective-title { font-size: 13px; }
-  .sim-collective-disclaimer { font-size: 6px; }
-  .sim-export-panel { padding: 12px; }
-  .sim-export-actions { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  .sim-export-card { min-height: 54px; }
+  .sim-roster-section-heading > div:first-child { gap: 9px; }
+  .sim-roster-filter-bar { padding: 10px; border-radius: 13px; }
+  .sim-roster-filter-group { gap: 3px; }
+  .sim-roster-filter-group button { min-width: 0; min-height: 42px; gap: 5px; padding: 0 7px; font-size: 10px; }
+  .sim-roster-filter-status { font-size: 10px; }
+  .sim-collective-title { font-size: 16px; }
+  .sim-collective-disclaimer { font-size: 9px; }
+  .sim-export-panel { padding: 15px; border-radius: 16px; }
+  .sim-export-actions { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .sim-export-card { grid-template-columns: 36px minmax(0,1fr); min-height: 67px; gap: 8px; padding: 9px; }
+  .sim-export-card > svg { display: none; }
+  .sim-export-format { width: 35px; height: 35px; border-radius: 10px; font-size: 9px; }
+  .sim-export-card strong { font-size: 11px; }
+  .sim-export-card small { font-size: 9px; }
+  .sim-export-hint { font-size: 10px; }
   .sim-photo-editor-backdrop { padding: 8px; }
-  .sim-photo-editor { max-height: calc(100dvh - 16px); padding: 13px; border-radius: 15px; }
-  .sim-photo-editor-header h2 { font-size: 14px; }
-  .sim-photo-editor-canvas { max-height: 250px; }
-  .sim-photo-editor-footer { flex-wrap: wrap; }
-  .sim-photo-editor-footer .btn { height: 36px; padding: 0 9px; font-size: 9px; }
+  .sim-photo-editor { max-height: calc(100dvh - 16px); padding: 14px; border-radius: 17px; }
+  .sim-photo-editor-header h2 { font-size: 17px; }
+  .sim-photo-editor-canvas { max-height: 260px; }
+  .sim-photo-editor-footer { align-items: stretch; flex-wrap: wrap; }
+  .sim-photo-editor-footer > .btn { flex: 1; }
+  .sim-photo-editor-footer > div { width: 100%; }
+  .sim-photo-editor-footer > div .btn { flex: 1; min-height: 44px; padding: 0 9px; font-size: 11px; }
 }
-
+@media (max-width: 360px) {
+  .sim-collective-shell .tool-head h1 { font-size: 23px; }
+  .sim-collective-shell .tool-head h1 > span:first-child { width: 40px; height: 40px; }
+  .sim-collective-eyebrow { font-size: 9px; letter-spacing: .08em; }
+  .sim-workflow-steps { gap: 4px; }
+  .sim-workflow-steps > div { gap: 4px; }
+  .sim-workflow-steps > div > b { width: 27px; height: 27px; }
+  .sim-workflow-steps strong { font-size: 10px; }
+  .sim-workflow-steps small { font-size: 8px; }
+  .sim-roster-tools { align-items: flex-start; }
+  .sim-nik-toggle { font-size: 11px; }
+  .sim-clear-button { padding: 0 9px; font-size: 11px; }
+  .sim-collective-table tbody tr { padding: 12px; }
+  .sim-ocr-settings { grid-template-columns: minmax(0,1fr); }
+  .sim-ocr-mode-field { grid-column: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-collective-shell *, .sim-photo-editor-backdrop * { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+@media (prefers-contrast: more) {
+  .sim-collective-shell { --sim-line: rgba(235,244,255,.42); --sim-line-strong: rgba(235,244,255,.6); --sim-muted: #e0e8f2; --sim-subtle: #c9d4e2; }
+  .sim-collective-eyebrow, .sim-ocr-mode-note, .sim-collective-footer, .sim-roster-filter-status, .sim-export-hint { color: #e0e8f2; }
+  .sim-roster-input, .sim-setting-field .input, .sim-setting-field .select, .sim-detail-field input, .sim-detail-field textarea, .sim-roster-search { border-width: 2px; }
+}
+@media (forced-colors: active) {
+  .sim-collective-shell button, .sim-collective-shell input, .sim-collective-shell select, .sim-collective-shell textarea { forced-color-adjust: auto; }
+  .sim-collective-shell button:focus-visible, .sim-collective-shell input:focus-visible, .sim-collective-shell select:focus-visible, .sim-collective-shell textarea:focus-visible { outline: 3px solid Highlight; }
+}
 @media print {
   @page { size: A4 portrait; margin: 9mm; }
-  html, body { background: #fff !important; color: #111827 !important; }
+  .sim-collective-shell { width: 100% !important; max-width: none !important; padding: 0 !important; color: #111827 !important; }
   .sim-collective-document { position: absolute !important; top: 0 !important; left: 0 !important; display: block !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
   .sim-collective-title { margin: 0 0 3mm !important; color: #111 !important; font-size: 13pt !important; }
-  .sim-collective-disclaimer { margin: 0 0 4mm !important; color: #444 !important; font-size: 6.5pt !important; }
+  .sim-collective-disclaimer { margin: 0 0 4mm !important; color: #444 !important; font-size: 7pt !important; }
   .sim-table-scroll { display: block !important; max-height: none !important; overflow: visible !important; border: 0 !important; }
-  .sim-collective-table, .sim-collective-table.has-nik { display: table !important; width: 100% !important; min-width: 0 !important; table-layout: fixed !important; border-collapse: collapse !important; border-spacing: 0 !important; font-size: 7.5pt !important; }
+  .sim-collective-table, .sim-collective-table.has-nik { display: table !important; width: 100% !important; min-width: 0 !important; table-layout: fixed !important; border-collapse: collapse !important; border-spacing: 0 !important; font-size: 8pt !important; }
   .sim-collective-table thead { display: table-header-group !important; }
   .sim-collective-table tbody { display: table-row-group !important; }
-  .sim-collective-table tr { display: table-row !important; break-inside: avoid !important; page-break-inside: avoid !important; background: #fff !important; }
-  .sim-collective-table th, .sim-collective-table td, .sim-collective-table td:first-child { display: table-cell !important; padding: 1.5mm 1.2mm !important; border: .6pt solid #222 !important; color: #111 !important; font-size: 7.5pt !important; }
+  .sim-collective-table tbody tr, .sim-collective-table tbody tr.sim-filtered-out { display: table-row !important; break-inside: avoid !important; page-break-inside: avoid !important; background: #fff !important; }
+  .sim-collective-table th, .sim-collective-table td, .sim-collective-table td:first-child { display: table-cell !important; padding: 1.6mm 1.2mm !important; border: .6pt solid #222 !important; color: #111 !important; font-size: 7.5pt !important; }
   .sim-collective-table th { background: #eee !important; font-size: 7pt !important; }
   .sim-collective-table:not(.has-nik) th:nth-child(1) { width: 7% !important; }
   .sim-collective-table:not(.has-nik) th:nth-child(2) { width: 22% !important; }
@@ -741,8 +911,8 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
   .sim-collective-table.has-nik th:nth-child(5) { width: 17% !important; }
   .sim-collective-table.has-nik th:nth-child(6) { width: 28% !important; }
   .sim-collective-table .sim-screen-only-col, .sim-collective-table .sim-photo-actions, .sim-collective-table .sim-roster-details, .sim-collective-table .sim-roster-nik-hint, .sim-collective-table .sim-ocr-badge { display: none !important; }
-  .sim-roster-input { min-height: 0 !important; height: auto !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; appearance: none !important; background: transparent !important; color: #111 !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 7.5pt !important; }
+  .sim-roster-input { min-height: 0 !important; height: auto !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; appearance: none !important; background: transparent !important; color: #111 !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 8pt !important; }
   .sim-photo-preview-frame { position: relative !important; display: grid !important; width: 100% !important; aspect-ratio: 1.6 !important; overflow: hidden !important; border: 0 !important; background: #fff !important; }
   .sim-roster-photo { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; object-fit: contain !important; }
-  .sim-photo-missing { color: #555 !important; }
+  .sim-photo-missing { color: #444 !important; }
 }

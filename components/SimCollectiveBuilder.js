@@ -78,6 +78,12 @@ function createPerson({ simType = 'SIM C', note = 'BIKIN BARU', photoData = '', 
   };
 }
 
+function personNeedsReview(person) {
+  return !String(person?.name || '').trim()
+    || !/^\d{16}$/.test(String(person?.nik || ''))
+    || Boolean(person?.ocrConflicts?.length);
+}
+
 function maskNik(value) {
   const digits = String(value || '').replace(/\D/g, '');
   return digits ? `${'•'.repeat(Math.max(0, digits.length - 4))}${digits.slice(-4)}` : 'Belum terbaca';
@@ -190,6 +196,11 @@ function PhotoPositionEditor({ person, rowNumber, onClose, onSave }) {
   const [saving, setSaving] = useState(false);
   const canvasRef = useRef(null);
   const dragRef = useRef(null);
+  const dialogRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+  const savingRef = useRef(saving);
+  onCloseRef.current = onClose;
+  savingRef.current = saving;
 
   useEffect(() => {
     let active = true;
@@ -202,10 +213,49 @@ function PhotoPositionEditor({ person, rowNumber, onClose, onSave }) {
   }, [sourceData]);
 
   useEffect(() => {
-    const onKeyDown = (event) => { if (event.key === 'Escape' && !saving) onClose(); };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [onClose, saving]);
+    const dialog = dialogRef.current;
+    const previousFocus = document.activeElement;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const getFocusable = () => Array.from(dialog?.querySelectorAll(
+      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+    ) || []).filter((element) => element.getClientRects().length > 0);
+    getFocusable()[0]?.focus();
+
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape' && !savingRef.current) {
+        event.preventDefault();
+        onCloseRef.current();
+        return;
+      }
+      if (event.key !== 'Tab' || !dialog) return;
+      const focusable = getFocusable();
+      if (!focusable.length) {
+        event.preventDefault();
+        dialog.focus();
+        return;
+      }
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousBodyOverflow;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -264,7 +314,7 @@ function PhotoPositionEditor({ person, rowNumber, onClose, onSave }) {
 
   return (
     <div className="sim-photo-editor-backdrop sim-screen-only" onMouseDown={(event) => { if (event.target === event.currentTarget && !saving) onClose(); }}>
-      <section className="sim-photo-editor" role="dialog" aria-modal="true" aria-labelledby="sim-photo-editor-title">
+      <section ref={dialogRef} className="sim-photo-editor" role="dialog" aria-modal="true" aria-labelledby="sim-photo-editor-title" aria-describedby="sim-photo-editor-help" tabIndex={-1}>
         <div className="sim-photo-editor-header">
           <div className="sim-photo-editor-icon"><Icon name="image" size={19} /></div>
           <div>
@@ -274,7 +324,7 @@ function PhotoPositionEditor({ person, rowNumber, onClose, onSave }) {
           <button type="button" className="sim-photo-close" onClick={onClose} disabled={saving} aria-label="Tutup editor foto">×</button>
         </div>
 
-        <p className="sim-photo-editor-help">Seret foto langsung di pratinjau. Pilih mode <strong>Utuh</strong> agar kartu tidak terpotong, atau <strong>Isi bingkai</strong> untuk memenuhi kotak.</p>
+        <p className="sim-photo-editor-help" id="sim-photo-editor-help">Seret foto di pratinjau, atau gunakan penggeser posisi di bawah. Pilih <strong>Utuh</strong> agar kartu tidak terpotong, atau <strong>Isi bingkai</strong> untuk memenuhi kotak.</p>
         <div className={`sim-photo-canvas-wrap${image ? ' is-ready' : ''}`}>
           {image ? (
             <canvas
@@ -331,6 +381,9 @@ export default function SimCollectiveBuilder() {
   const [defaultNote, setDefaultNote] = useState('BIKIN BARU');
   const [ocrMode, setOcrMode] = useState('cermat');
   const [includeNIK, setIncludeNIK] = useState(false);
+  const [largeText, setLargeText] = useState(false);
+  const [rosterQuery, setRosterQuery] = useState('');
+  const [rosterFilter, setRosterFilter] = useState('all');
   const [isDragging, setIsDragging] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [retryingPersonId, setRetryingPersonId] = useState('');
@@ -405,6 +458,8 @@ export default function SimCollectiveBuilder() {
 
     const jobId = ++recognitionRef.current.id;
     const careful = ocrMode === 'cermat';
+    setRosterQuery('');
+    setRosterFilter('all');
     setProcessing(true);
     setProgress({ current: 0, total: files.length, percent: 0, message: 'Menyiapkan mesin OCR bahasa Indonesia…' });
     activeOcrRef.current = { jobId, fileIndex: 0, totalFiles: files.length, passIndex: 0, passCount: careful ? 3 : 1, label: 'Memuat model OCR' };
@@ -502,6 +557,8 @@ export default function SimCollectiveBuilder() {
       addToast(`Batas rekap ${MAX_ROSTER} orang sudah tercapai.`, 'warning');
       return;
     }
+    setRosterQuery('');
+    setRosterFilter('all');
     setRoster((current) => [...current, createPerson({ simType: defaultSimType, note: defaultNote })]);
   };
 
@@ -607,6 +664,8 @@ export default function SimCollectiveBuilder() {
     if (!roster.length) return;
     if (!window.confirm('Hapus semua orang dan foto KTP dari rekap ini? Tindakan ini tidak dapat dibatalkan.')) return;
     setRoster([]);
+    setRosterQuery('');
+    setRosterFilter('all');
     setProgress({ current: 0, total: 0, percent: 0, message: '' });
     addToast('Rekap dihapus dari perangkat ini.', 'success');
   };
@@ -664,16 +723,33 @@ export default function SimCollectiveBuilder() {
     counts[type] = (counts[type] || 0) + 1;
     return counts;
   }, {});
+  const needsReviewCount = roster.filter(personNeedsReview).length;
+  const readyCount = roster.length - needsReviewCount;
+  const normalizedRosterQuery = rosterQuery.trim().toLocaleLowerCase('id');
+  const personMatchesRosterView = (person) => {
+    const needsReview = personNeedsReview(person);
+    if (rosterFilter === 'review' && !needsReview) return false;
+    if (rosterFilter === 'ready' && needsReview) return false;
+    if (!normalizedRosterQuery) return true;
+    return [person.name, person.nik, person.simType, person.note, person.city]
+      .some((value) => String(value || '').toLocaleLowerCase('id').includes(normalizedRosterQuery));
+  };
+  const visibleRosterCount = roster.filter(personMatchesRosterView).length;
 
   return (
     <ToolShell
       title="Rekap SIM Kolektif"
       desc="Satukan data banyak KTP dalam satu rekap yang bisa dikoreksi dan dicetak."
       icon="fingerprint"
-      className="sim-tool-shell sim-collective-shell"
+      className={`sim-tool-shell sim-collective-shell${largeText ? ' is-large-text' : ''}`}
     >
       <section className="sim-collective-intro" aria-label="Alur penggunaan">
-        <div className="sim-collective-eyebrow"><span className="sim-live-dot" /> OCR LOKAL · REKAP BANYAK ORANG</div>
+        <div className="sim-collective-intro-top">
+          <div className="sim-collective-eyebrow"><span className="sim-live-dot" /> GRATIS · LOKAL · TANPA AKUN</div>
+          <button type="button" className="sim-readable-toggle" onClick={() => setLargeText((current) => !current)} aria-pressed={largeText}>
+            <span aria-hidden="true">A+</span><span>{largeText ? 'Teks normal' : 'Teks besar'}</span>
+          </button>
+        </div>
         <p>Satu foto KTP jadi satu baris. Rapikan data, atur foto, lalu ekspor daftar yang siap dibagikan.</p>
         <div className="sim-workflow-steps">
           <div className={roster.length ? 'is-complete' : 'is-current'}><b>01</b><span><strong>Unggah</strong><small>Foto KTP</small></span></div>
@@ -782,24 +858,46 @@ export default function SimCollectiveBuilder() {
             </div>
           </div>
 
+          <div className="sim-roster-filter-bar sim-screen-only">
+            <label className="sim-roster-search">
+              <Icon name="search" size={18} />
+              <span className="sim-visually-hidden">Cari nama, NIK, jenis SIM, kota, atau keterangan</span>
+              <input
+                type="search"
+                value={rosterQuery}
+                onChange={(event) => setRosterQuery(event.target.value)}
+                placeholder="Cari nama, NIK, jenis SIM…"
+                autoComplete="off"
+              />
+              {rosterQuery ? <button type="button" onClick={() => setRosterQuery('')} aria-label="Hapus pencarian">×</button> : null}
+            </label>
+            <div className="sim-roster-filter-group" role="group" aria-label="Saring daftar orang">
+              <button type="button" className={rosterFilter === 'all' ? 'is-active' : ''} aria-pressed={rosterFilter === 'all'} onClick={() => setRosterFilter('all')}>Semua <b>{roster.length}</b></button>
+              <button type="button" className={rosterFilter === 'review' ? 'is-active' : ''} aria-pressed={rosterFilter === 'review'} onClick={() => setRosterFilter('review')}>Perlu dicek <b>{needsReviewCount}</b></button>
+              <button type="button" className={rosterFilter === 'ready' ? 'is-active' : ''} aria-pressed={rosterFilter === 'ready'} onClick={() => setRosterFilter('ready')}>Lengkap <b>{readyCount}</b></button>
+            </div>
+            <p className="sim-roster-filter-status" aria-live="polite">Menampilkan {visibleRosterCount} dari {roster.length} orang. Ekspor tetap memuat seluruh daftar.</p>
+          </div>
+
           <article className="sim-print-sheet sim-collective-document" aria-label="Pratinjau rekap SIM kolektif">
             <h2 className="sim-collective-title">{rosterTitle}</h2>
             <p className="sim-collective-disclaimer">DRAF REKAP PRIBADI — BUKAN SIM, BUKAN BUKTI PENDAFTARAN/PEMBAYARAN, DAN BUKAN FORMULIR RESMI.</p>
             <div className="sim-table-scroll">
               <table className={`sim-collective-table${includeNIK ? ' has-nik' : ''}`}>
+                <caption className="sim-visually-hidden">Daftar SIM kolektif. Kolom: nomor, nama, jenis SIM, keterangan, dan foto KTP. NIK dapat ditampilkan melalui pengaturan di atas.</caption>
                 <thead>
                   <tr>
-                    <th>No</th><th>NAMA</th>
-                    {includeNIK ? <th>NIK</th> : null}
-                    <th>SIM</th><th>KETERANGAN</th><th>FOTO KTP</th>
-                    <th className="sim-screen-only-col" aria-label="Aksi" />
+                    <th scope="col">No</th><th scope="col">NAMA</th>
+                    {includeNIK ? <th scope="col">NIK</th> : null}
+                    <th scope="col">SIM</th><th scope="col">KETERANGAN</th><th scope="col">FOTO KTP</th>
+                    <th scope="col" className="sim-screen-only-col" aria-label="Aksi" />
                   </tr>
                 </thead>
                 <tbody>
                   {roster.map((person, index) => {
-                    const needsReview = !person.name || !/^\d{16}$/.test(String(person.nik || '')) || Boolean(person.ocrConflicts?.length);
+                    const needsReview = personNeedsReview(person);
                     return (
-                      <tr key={person.id}>
+                      <tr key={person.id} className={personMatchesRosterView(person) ? '' : 'sim-filtered-out'}>
                         <td data-label="No" className="sim-roster-number">{index + 1}</td>
                         <td data-label="NAMA" className="sim-roster-name-cell">
                           <input
@@ -860,7 +958,7 @@ export default function SimCollectiveBuilder() {
                             <div className="sim-photo-preview-frame"><img className="sim-roster-photo" src={person.photoData} alt={`Foto KTP orang ke-${index + 1}`} /></div>
                           ) : <div className="sim-photo-missing"><Icon name="image" size={16} /><span>Foto belum ada</span></div>}
                           <div className="sim-photo-actions sim-screen-only">
-                            <button type="button" className="sim-photo-action sim-photo-adjust" onClick={() => setPhotoEditorId(person.id)} disabled={!person.photoData || processing || Boolean(retryingPersonId)}>
+                            <button type="button" className="sim-photo-action sim-photo-adjust" onClick={() => setPhotoEditorId(person.id)} disabled={!person.photoData || processing || Boolean(retryingPersonId)} aria-label={`Atur posisi foto KTP orang ke-${index + 1}`}>
                               Atur posisi
                             </button>
                             <label className={`sim-photo-action${replacementPersonId === person.id ? ' is-busy' : ''}`}>
@@ -877,6 +975,14 @@ export default function SimCollectiveBuilder() {
                   })}
                 </tbody>
               </table>
+              {visibleRosterCount === 0 ? (
+                <div className="sim-roster-no-results sim-screen-only" role="status">
+                  <span aria-hidden="true">⌕</span>
+                  <strong>Tidak ada baris yang cocok</strong>
+                  <p>Coba kata lain atau tampilkan kembali seluruh daftar.</p>
+                  <button type="button" className="btn btn-ghost" onClick={() => { setRosterQuery(''); setRosterFilter('all'); }}>Tampilkan semua orang</button>
+                </div>
+              ) : null}
             </div>
           </article>
 
@@ -900,7 +1006,7 @@ export default function SimCollectiveBuilder() {
                 </button>
               ))}
             </div>
-            <p className="sim-export-hint">PDF dibuat lewat dialog cetak browser dan mengikuti tampilan tabel. Excel/DOCX/PDF menampilkan foto; CSV/JSON memuat data KTP lengkap termasuk NIK, dan JSON menyertakan foto. Bagikan file dengan hati-hati.</p>
+            <p className="sim-export-hint">Pencarian hanya menyaring tampilan; ekspor selalu memuat seluruh daftar. PDF dibuat lewat dialog cetak browser. Excel/DOCX/PDF menyertakan foto; CSV/JSON memuat data KTP lengkap termasuk NIK, dan JSON menyertakan foto. Bagikan file dengan hati-hati.</p>
           </section>
         </section>
       ) : (
