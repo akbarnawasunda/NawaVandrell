@@ -85,3 +85,32 @@ test('returns empty strings for a blank or unrelated scan', () => {
   assert.equal(result.occupation, '');
   assert.equal(result.province, '');
 });
+
+test('recovers common OCR label errors and Indonesian month-name birth dates', () => {
+  const result = extractKtpFields(`
+    N1K : 3174 0101 0190 0001
+    N4MA LENGKAP : NUR AINI
+    TEMPAT/TGL LAHIR : BANDUNG, 3 JANUARI 1992
+    JENIS KELAMIN : PEREMPUAN
+  `);
+
+  assert.equal(result.nik, '3174010101900001');
+  assert.equal(result.name, 'NUR AINI');
+  assert.equal(result.placeOfBirth, 'BANDUNG');
+  assert.equal(result.birthDate, '03-01-1992');
+});
+
+test('ranks and merges multiple OCR passes without dropping fields seen in only one pass', async () => {
+  const { mergeKtpCandidates, scoreKtpFields } = await import('../lib/ktpOcr.mjs');
+  const merged = mergeKtpCandidates([
+    { text: 'NIK: 3174010101900001\nNAMA: BUDI SANTOSO', confidence: 72 },
+    { text: 'ALAMAT: JALAN MELATI RT/RW: 001/002\nTEMPAT/TGL LAHIR: BANDUNG 01-01-1990', confidence: 58 },
+  ]);
+
+  assert.equal(merged.fields.nik, '3174010101900001');
+  assert.equal(merged.fields.name, 'BUDI SANTOSO');
+  assert.equal(merged.fields.address, 'JALAN MELATI');
+  assert.equal(merged.fields.rtRw, '001/002');
+  assert.equal(merged.fieldsFound >= 5, true);
+  assert.equal(scoreKtpFields(merged.fields, 72) > 40, true);
+});

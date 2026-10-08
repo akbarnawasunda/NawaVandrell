@@ -436,138 +436,313 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
   .sim-doc-checklist li, .sim-doc-notes p { color: #111827 !important; font-size: 7.5pt !important; }
   .sim-doc-footer { color: #334155 !important; font-size: 6.5pt !important; }
 }
-/* Collective SIM roster */
-.sim-privacy-note { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 16px; padding: 12px 14px; border: 1px solid rgba(96,165,250,0.24); border-radius: 12px; background: rgba(59,130,246,0.08); color: var(--text-soft); }
-.sim-privacy-note > svg { flex: 0 0 auto; margin-top: 2px; color: #93c5fd; }
-.sim-privacy-note p { margin: 0; font-size: 12px; line-height: 1.55; }
-.sim-privacy-note strong { color: var(--text); }
-.sim-collective-toolbar { display: flex; align-items: flex-end; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
-.sim-default-field { display: grid; gap: 5px; min-width: 142px; flex: 0 1 165px; }
-.sim-default-field > span { color: var(--text-faint); font-size: 10px; font-weight: 700; letter-spacing: .025em; }
-.sim-default-field .select, .sim-default-field .input { height: 41px; min-height: 41px; font-size: 12px; }
-.sim-note-default { flex-basis: 175px; }
-.sim-upload-button { min-height: 41px; }
-.sim-add-row-button, .sim-clear-button { min-height: 41px; }
+/* Collective SIM roster — clearer hierarchy, touch-friendly controls and print layout */
+.sim-collective-shell { max-width: 1240px; padding-bottom: 88px; }
+.sim-collective-shell .tool-head { margin-bottom: 13px; }
+.sim-collective-shell .tool-head h1 { font-size: clamp(23px, 3.2vw, 30px); letter-spacing: -.04em; }
+.sim-collective-shell .tool-head p { max-width: 670px; font-size: 13px; line-height: 1.6; }
+.sim-collective-shell .tool-head h1 > span:first-child { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(52,211,153,.2); border-radius: 12px; background: rgba(16,185,129,.1); }
+.sim-collective-intro { position: relative; overflow: hidden; margin: 15px 0 14px; padding: 21px 23px 17px; border: 1px solid rgba(148,163,184,.17); border-radius: 20px; background: radial-gradient(ellipse at 90% 5%, rgba(99,102,241,.16), transparent 36%), linear-gradient(115deg, rgba(16,185,129,.1), rgba(255,255,255,.028) 52%, rgba(99,102,241,.07)); box-shadow: 0 12px 34px rgba(0,0,0,.12); }
+.sim-collective-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: #9ca3af; font-size: 9px; font-weight: 850; letter-spacing: .14em; }
+.sim-live-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 12px rgba(52,211,153,.72); }
+.sim-collective-intro > p { max-width: 710px; margin: 0; color: #d4d4d8; font-size: 13px; line-height: 1.55; }
+.sim-workflow-steps { display: flex; align-items: center; gap: 12px; max-width: 640px; margin-top: 18px; }
+.sim-workflow-steps > div { display: flex; align-items: center; gap: 8px; min-width: 0; opacity: .55; }
+.sim-workflow-steps > div.is-current, .sim-workflow-steps > div.is-complete { opacity: 1; }
+.sim-workflow-steps > div > b { display: grid; place-items: center; width: 29px; height: 29px; flex: 0 0 auto; border: 1px solid var(--border-strong); border-radius: 9px; color: #a1a1aa; font-size: 9px; }
+.sim-workflow-steps > div.is-current > b { border-color: rgba(52,211,153,.55); background: rgba(16,185,129,.13); color: #a7f3d0; }
+.sim-workflow-steps > div.is-complete > b { border-color: rgba(52,211,153,.28); background: rgba(16,185,129,.08); color: #6ee7b7; }
+.sim-workflow-steps span { display: grid; line-height: 1.25; }
+.sim-workflow-steps strong { color: #f4f4f5; font-size: 10px; }
+.sim-workflow-steps small { margin-top: 3px; color: #9ca3af; font-size: 9px; }
+.sim-workflow-steps > i { width: clamp(12px, 5vw, 47px); height: 1px; flex: 0 1 47px; background: rgba(148,163,184,.25); }
+.sim-privacy-note { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 14px; padding: 11px 14px; border: 1px solid rgba(96,165,250,.2); border-radius: 13px; background: linear-gradient(100deg, rgba(59,130,246,.075), rgba(99,102,241,.035)); color: #cbd5e1; }
+.sim-privacy-icon { display: grid; place-items: center; width: 27px; height: 27px; flex: 0 0 auto; border-radius: 8px; background: rgba(96,165,250,.11); color: #93c5fd; }
+.sim-privacy-note p { margin: 2px 0 0; font-size: 11px; line-height: 1.55; }
+.sim-privacy-note strong { color: #eff6ff; }
+.sim-upload-card { padding: 19px; margin-bottom: 15px; border: 1px solid rgba(148,163,184,.15); border-radius: 18px; background: linear-gradient(155deg, rgba(255,255,255,.045), rgba(255,255,255,.018)); box-shadow: 0 12px 35px rgba(0,0,0,.11); }
+.sim-upload-card-heading { display: flex; align-items: center; gap: 11px; margin-bottom: 16px; }
+.sim-upload-card-heading > div:nth-child(2) { flex: 1; }
+.sim-step-large { display: grid; place-items: center; width: 36px; height: 36px; flex: 0 0 auto; border: 1px solid rgba(52,211,153,.22); border-radius: 11px; background: rgba(16,185,129,.09); color: #6ee7b7; font-size: 10px; font-weight: 900; }
+.sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { margin: 0; color: var(--text); font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+.sim-upload-card-heading p, .sim-roster-section-heading p, .sim-export-panel-heading p { margin: 4px 0 0; color: var(--text-faint); font-size: 10.5px; line-height: 1.5; }
+.sim-local-badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 9px; border: 1px solid rgba(52,211,153,.17); border-radius: 999px; background: rgba(16,185,129,.07); color: #a7f3d0; font-size: 8px; font-weight: 850; letter-spacing: .1em; }
+.sim-ocr-settings { display: grid; grid-template-columns: 1fr 1.2fr 1.3fr; gap: 10px; margin-bottom: 8px; }
+.sim-setting-field { display: grid; gap: 5px; min-width: 0; }
+.sim-setting-field > span { color: #a1a1aa; font-size: 10px; font-weight: 750; }
+.sim-setting-field .select, .sim-setting-field .input { height: 42px; min-height: 42px; padding-left: 12px; font-size: 12px; }
+.sim-ocr-mode-note { margin: 7px 0 12px; color: #8b8b95; font-size: 9.5px; line-height: 1.5; }
+.sim-ocr-mode-note strong { color: #c4b5fd; }
 .sim-file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
-.sim-drop-zone { display: flex; align-items: center; gap: 12px; min-height: 70px; margin-bottom: 11px; padding: 13px 15px; border: 1px dashed var(--border-strong, rgba(255,255,255,.22)); border-radius: 12px; background: rgba(255,255,255,.025); transition: border-color .15s, background .15s; }
-.sim-drop-zone.is-dragging { border-color: var(--accent-soft); background: rgba(59,130,246,.1); }
-.sim-drop-zone.is-processing { border-style: solid; }
-.sim-drop-icon { display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 auto; border-radius: 11px; color: var(--accent-soft); background: rgba(99,102,241,.12); }
-.sim-drop-zone > div { min-width: 0; flex: 1; }
-.sim-drop-zone strong { color: var(--text); font-size: 12px; }
-.sim-drop-zone p { margin: 4px 0 0; color: var(--text-faint); font-size: 10.5px; line-height: 1.45; }
-.sim-batch-progress { margin: 0 0 13px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.035); }
-.sim-batch-progress-text { display: flex; justify-content: space-between; gap: 10px; color: var(--text-soft); font-size: 11px; }
+.sim-drop-zone { display: grid; grid-template-columns: 48px minmax(0,1fr) auto; align-items: center; gap: 13px; min-height: 107px; padding: 15px 17px; border: 1px dashed rgba(148,163,184,.29); border-radius: 14px; background: linear-gradient(110deg, rgba(16,185,129,.045), rgba(255,255,255,.018)); transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.sim-drop-zone.is-dragging { border-color: #34d399; background: rgba(16,185,129,.12); transform: translateY(-1px); }
+.sim-drop-zone.is-processing { border-style: solid; border-color: rgba(52,211,153,.3); }
+.sim-drop-icon { display: grid; place-items: center; width: 46px; height: 46px; border: 1px solid rgba(52,211,153,.19); border-radius: 14px; background: rgba(16,185,129,.1); color: #6ee7b7; }
+.sim-drop-copy { min-width: 0; }
+.sim-drop-copy strong, .sim-drop-copy span { display: block; }
+.sim-drop-copy strong { color: #f4f4f5; font-size: 12px; font-weight: 800; }
+.sim-drop-copy span { margin-top: 4px; color: #92929c; font-size: 10px; }
+.sim-drop-zone > small { grid-column: 1 / -1; color: #73737d; font-size: 9px; text-align: center; }
+.sim-drop-actions { display: flex; align-items: center; gap: 7px; }
+.sim-drop-actions .btn { height: 39px; padding: 0 13px; border-radius: 10px; font-size: 10px; white-space: nowrap; }
+.sim-upload-button { box-shadow: 0 5px 16px rgba(16,185,129,.15); }
+.sim-add-row-button { min-height: 39px; }
+.sim-cancel-button { min-height: 39px; }
+.sim-batch-progress { margin-top: 11px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 11px; background: rgba(255,255,255,.028); }
+.sim-batch-progress-text { display: flex; justify-content: space-between; gap: 10px; color: #b4b4bc; font-size: 10px; }
 .sim-batch-progress-text strong { color: var(--text); font-variant-numeric: tabular-nums; }
-.sim-batch-progress progress { display: block; width: 100%; height: 7px; margin-top: 8px; overflow: hidden; border: 0; border-radius: 99px; accent-color: var(--accent-soft); }
-.sim-roster-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 13px 1px 9px; color: var(--text-faint); font-size: 11px; }
-.sim-roster-controls strong { color: var(--text); font-size: 13px; }
-.sim-nik-toggle { display: inline-flex; align-items: center; gap: 8px; color: var(--text-soft); cursor: pointer; }
+.sim-batch-progress progress { display: block; width: 100%; height: 6px; margin-top: 8px; overflow: hidden; border: 0; border-radius: 99px; accent-color: #34d399; }
+.sim-roster-controls { display: flex; justify-content: space-between; align-items: center; gap: 13px; margin: 19px 2px 9px; }
+.sim-roster-count { display: flex; align-items: center; gap: 10px; }
+.sim-roster-count-number { display: grid; place-items: center; min-width: 40px; height: 40px; padding: 0 8px; border: 1px solid rgba(52,211,153,.19); border-radius: 12px; background: rgba(16,185,129,.085); color: #a7f3d0; font-size: 16px; font-weight: 850; font-variant-numeric: tabular-nums; }
+.sim-roster-count > span:last-child { display: grid; line-height: 1.3; }
+.sim-roster-count strong { color: #e4e4e7; font-size: 11px; }
+.sim-roster-count small { margin-top: 4px; color: #777780; font-size: 9px; }
+.sim-roster-tools { display: flex; align-items: center; gap: 13px; }
+.sim-nik-toggle { display: inline-flex; align-items: center; gap: 7px; color: #b2b2ba; font-size: 10px; cursor: pointer; }
 .sim-nik-toggle input { width: 15px; height: 15px; accent-color: var(--accent-soft); }
-.sim-roster-panel { padding: 14px; overflow: hidden; }
-.sim-collective-document { width: 100%; max-width: 1100px; margin: 0 auto; padding: 20px; overflow-x: auto; border-color: #cbd5e1; border-radius: 9px; box-shadow: 0 8px 28px rgba(0,0,0,.13); }
-.sim-collective-title { margin: 0 0 7px; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 800; text-align: center; line-height: 1.25; }
-.sim-collective-disclaimer { margin: 0 0 15px; color: #4b5563; font-family: Arial, Helvetica, sans-serif; font-size: 8px; font-weight: 700; text-align: center; letter-spacing: .025em; }
-.sim-collective-table { width: 100%; min-width: 850px; table-layout: fixed; border-collapse: collapse; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 11px; }
-.sim-collective-table.has-nik { min-width: 1020px; }
-.sim-collective-table th, .sim-collective-table td { padding: 8px 7px; border: 1px solid #6b7280; vertical-align: middle; overflow-wrap: anywhere; }
-.sim-collective-table th { background: #f3f4f6; color: #111827; font-size: 10px; font-weight: 800; text-align: center; letter-spacing: .035em; }
-.sim-collective-table th:nth-child(1) { width: 48px; }
-.sim-collective-table th:nth-child(2) { width: 210px; }
-.sim-collective-table:not(.has-nik) th:nth-child(3) { width: 120px; }
-.sim-collective-table:not(.has-nik) th:nth-child(4) { width: 155px; }
-.sim-collective-table:not(.has-nik) th:nth-child(5) { width: 255px; }
+.sim-clear-button { height: 34px; padding: 0 10px; border-radius: 9px; font-size: 9px; }
+.sim-roster-section { min-width: 0; }
+.sim-roster-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 0 2px 10px; }
+.sim-roster-section-heading > div:first-child { display: flex; align-items: center; gap: 10px; }
+.sim-roster-section-heading p { max-width: 620px; }
+.sim-sim-counts { display: flex; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.sim-sim-counts span { display: inline-flex; align-items: center; gap: 7px; padding: 5px 7px 5px 9px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255,255,255,.025); color: #9f9fa8; font-size: 8px; white-space: nowrap; }
+.sim-sim-counts b { color: #e4e4e7; font-size: 9px; }
+.sim-collective-document { width: 100%; max-width: 100%; margin: 0 auto; padding: 19px; overflow: hidden; border-color: #d5dbe5; border-radius: 14px; box-shadow: 0 10px 32px rgba(0,0,0,.15); }
+.sim-collective-title { margin: 0 0 5px; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 17px; font-weight: 800; text-align: center; line-height: 1.25; }
+.sim-collective-disclaimer { margin: 0 0 13px; color: #596579; font-family: Arial, Helvetica, sans-serif; font-size: 7px; font-weight: 750; text-align: center; letter-spacing: .045em; }
+.sim-table-scroll { max-height: min(74vh, 870px); overflow: auto; border: 1px solid #e1e5eb; border-radius: 7px; scrollbar-color: #aab5c3 transparent; }
+.sim-collective-table { width: 100%; min-width: 950px; table-layout: fixed; border-collapse: separate; border-spacing: 0; color: #111827; font-family: Arial, Helvetica, sans-serif; font-size: 11px; }
+.sim-collective-table.has-nik { min-width: 1080px; }
+.sim-collective-table th, .sim-collective-table td { padding: 9px 8px; border-right: 1px solid #e1e5eb; border-bottom: 1px solid #e1e5eb; vertical-align: middle; overflow-wrap: anywhere; }
+.sim-collective-table th:first-child, .sim-collective-table td:first-child { border-left: 1px solid #e1e5eb; }
+.sim-collective-table thead th { position: sticky; top: 0; z-index: 2; background: #f3f6fa; color: #344054; font-size: 9px; font-weight: 850; text-align: center; letter-spacing: .075em; }
+.sim-collective-table tbody tr { background: #fff; transition: background .14s ease; }
+.sim-collective-table tbody tr:nth-child(even) { background: #fbfcfe; }
+.sim-collective-table tbody tr:hover { background: #f5faf8; }
+.sim-collective-table th:nth-child(1) { width: 52px; }
+.sim-collective-table th:nth-child(2) { width: 218px; }
+.sim-collective-table:not(.has-nik) th:nth-child(3) { width: 124px; }
+.sim-collective-table:not(.has-nik) th:nth-child(4) { width: 158px; }
+.sim-collective-table:not(.has-nik) th:nth-child(5) { width: 278px; }
 .sim-collective-table.has-nik th:nth-child(2) { width: 190px; }
-.sim-collective-table.has-nik th:nth-child(3) { width: 145px; }
-.sim-collective-table.has-nik th:nth-child(4) { width: 115px; }
-.sim-collective-table.has-nik th:nth-child(5) { width: 140px; }
-.sim-collective-table.has-nik th:nth-child(6) { width: 210px; }
-.sim-collective-table .sim-screen-only-col { width: 39px; }
-.sim-roster-number { text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
-.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 34px; height: 34px; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 5px; outline: none; background: #fff; color: #111827; font: inherit; font-size: 11px; }
-.sim-roster-input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,.15); }
-.sim-name-input { min-height: 36px; height: 36px; font-weight: 700; }
-.sim-roster-select { padding-right: 3px; }
-.sim-roster-nik-hint { display: block; margin: 5px 1px 0; color: #64748b; font-family: Arial, Helvetica, sans-serif; font-size: 9px; }
-.sim-roster-details { margin-top: 7px; font-family: Arial, Helvetica, sans-serif; }
-.sim-roster-details summary { width: fit-content; color: #2563eb; font-size: 9px; cursor: pointer; }
-.sim-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px 10px; min-width: 350px; margin-top: 9px; padding: 9px; border-radius: 7px; background: #f8fafc; }
+.sim-collective-table.has-nik th:nth-child(3) { width: 155px; }
+.sim-collective-table.has-nik th:nth-child(4) { width: 116px; }
+.sim-collective-table.has-nik th:nth-child(5) { width: 145px; }
+.sim-collective-table.has-nik th:nth-child(6) { width: 245px; }
+.sim-collective-table th:last-child, .sim-collective-table .sim-screen-only-col { width: 42px; }
+.sim-roster-number { color: #475569; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
+.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 35px; height: 35px; padding: 6px 8px; border: 1px solid #d8dee7; border-radius: 7px; outline: none; background: #fff; color: #172033; font: inherit; font-size: 10px; transition: border-color .15s ease, box-shadow .15s ease; }
+.sim-roster-input:hover { border-color: #b8c3d1; }
+.sim-roster-input:focus { border-color: #0f9f72; box-shadow: 0 0 0 3px rgba(16,185,129,.13); }
+.sim-name-input { min-height: 37px; height: 37px; font-weight: 750; }
+.sim-roster-select { padding-right: 4px; cursor: pointer; }
+.sim-roster-nik-hint { display: block; margin: 5px 1px 0; color: #64748b; font-size: 8.5px; }
+.sim-ocr-badge { display: inline-flex; align-items: center; gap: 5px; margin: 6px 0 0 1px; color: #9a6700; font-size: 8px; font-weight: 750; }
+.sim-ocr-badge i { width: 6px; height: 6px; border-radius: 50%; background: #e6a700; }
+.sim-ocr-badge.looks-good { color: #12805c; }
+.sim-ocr-badge.looks-good i { background: #10b981; }
+.sim-ocr-badge.is-manual { color: #667085; }
+.sim-ocr-badge.is-manual i { background: #98a2b3; }
+.sim-roster-details { margin-top: 7px; font-family: var(--font-body); }
+.sim-roster-details summary { width: fit-content; color: #2563eb; font-size: 8.5px; font-weight: 700; cursor: pointer; list-style-position: inside; }
+.sim-roster-details summary:hover { color: #1d4ed8; text-decoration: underline; }
+.sim-roster-details summary span { color: #7c8798; font-weight: 500; }
+.sim-detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px 11px; min-width: 380px; margin-top: 9px; padding: 11px; border: 1px solid #e5e9f0; border-radius: 9px; background: #f8fafc; }
 .sim-detail-field { display: grid; align-content: start; gap: 4px; min-width: 0; color: #475569; font-size: 9px; }
-.sim-detail-field > span:first-child { font-weight: 700; }
-.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; padding: 6px 7px; border: 1px solid #cbd5e1; border-radius: 5px; background: #fff; color: #111827; font: inherit; font-size: 10px; }
+.sim-detail-field > span:first-child { font-weight: 750; }
+.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid #d5dce6; border-radius: 7px; background: #fff; color: #111827; font: inherit; font-size: 10px; }
+.sim-detail-field input:focus, .sim-detail-field textarea:focus { border-color: #0f9f72; outline: 2px solid rgba(16,185,129,.12); }
 .sim-detail-field textarea { resize: vertical; }
 .sim-detail-field-wide { grid-column: 1 / -1; }
 .sim-nik-input-wrap { position: relative; display: block; }
-.sim-nik-input-wrap input { padding-right: 63px; }
-.sim-nik-input-wrap button { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); padding: 4px 5px; border: 0; border-radius: 4px; background: transparent; color: #2563eb; font-size: 8px; cursor: pointer; }
-.sim-ocr-confidence { display: block; grid-column: 1 / -1; color: #64748b; font: 9px Arial, Helvetica, sans-serif; }
+.sim-nik-input-wrap input { padding-right: 67px; }
+.sim-nik-input-wrap button { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); padding: 4px 6px; border: 0; border-radius: 5px; background: #eff6ff; color: #2563eb; font-size: 8px; font-weight: 700; cursor: pointer; }
+.sim-ocr-quality-note, .sim-ocr-conflict-note { grid-column: 1 / -1; margin: 0; color: #64748b; font-size: 8.5px; line-height: 1.5; }
+.sim-ocr-conflict-note { color: #b45309; }
+.sim-retry-ocr { grid-column: 1 / -1; justify-self: start; padding: 7px 10px; border: 1px solid #dbeafe; border-radius: 7px; background: #eff6ff; color: #1d4ed8; font: inherit; font-size: 9px; font-weight: 750; cursor: pointer; }
+.sim-retry-ocr:disabled { opacity: .55; cursor: wait; }
 .sim-roster-photo-cell { text-align: center; }
-.sim-roster-photo { display: block; width: 100%; max-width: 205px; max-height: 125px; margin: 0 auto; object-fit: contain; }
-.sim-no-photo { color: #94a3b8; font-size: 10px; }
-.sim-remove-person { display: grid; place-items: center; width: 27px; height: 27px; margin: auto; border: 1px solid #fecaca; border-radius: 7px; background: #fff; color: #b91c1c; font-size: 20px; line-height: 1; cursor: pointer; }
-.sim-remove-person:hover { background: #fef2f2; }
-.sim-export-panel { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-top: 12px; padding: 13px 14px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.035); }
-.sim-export-heading { min-width: 165px; }
-.sim-export-heading strong, .sim-export-heading span { display: block; }
-.sim-export-heading strong { color: var(--text); font-size: 12px; }
-.sim-export-heading span { margin-top: 4px; color: var(--text-faint); font-size: 10px; line-height: 1.45; }
-.sim-export-actions { flex: 1; grid-template-columns: repeat(5, minmax(68px, 1fr)); margin: 0; }
-.sim-export-button { white-space: nowrap; }
-.sim-export-hint { flex-basis: 100%; margin: -7px 0 0; color: var(--text-faint); font-size: 9.5px; line-height: 1.5; }
-.sim-export-panel { flex-wrap: wrap; }
-.sim-roster-empty { display: grid; justify-items: center; text-align: center; padding: 38px 20px; }
-.sim-empty-icon { display: grid; place-items: center; width: 54px; height: 54px; margin-bottom: 11px; border-radius: 15px; color: var(--accent-soft); background: rgba(99,102,241,.13); }
-.sim-roster-empty h2 { margin: 0; color: var(--text); font-size: 17px; }
-.sim-roster-empty p { max-width: 490px; margin: 8px 0 16px; color: var(--text-faint); font-size: 12px; line-height: 1.55; }
-.sim-collective-footer { display: flex; justify-content: space-between; gap: 15px; margin: 11px 2px 0; color: var(--text-faint); font-size: 10px; line-height: 1.5; }
+.sim-photo-preview-frame { position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1.6; overflow: hidden; border: 1px solid #e5e9ef; border-radius: 5px; background: #f8fafc; }
+.sim-roster-photo { display: block; width: 100%; height: 100%; object-fit: contain; }
+.sim-photo-missing { display: flex; justify-content: center; align-items: center; gap: 6px; min-height: 48px; color: #8892a1; font-size: 9px; }
+.sim-photo-actions { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+.sim-photo-action { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 27px; padding: 0 8px; border: 1px solid #dce3eb; border-radius: 7px; background: #fff; color: #475569; font: inherit; font-size: 8px; font-weight: 700; cursor: pointer; transition: .15s ease; }
+.sim-photo-action:hover { border-color: #a7f3d0; background: #f0fdf4; color: #047857; }
+.sim-photo-action:disabled { opacity: .5; cursor: not-allowed; }
+.sim-photo-action input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.sim-photo-adjust { border-color: #a7f3d0; background: #f0fdf4; color: #047857; }
+.sim-remove-person { display: grid; place-items: center; width: 28px; height: 28px; margin: auto; border: 1px solid #fee2e2; border-radius: 8px; background: #fff; color: #b91c1c; font-size: 19px; line-height: 1; cursor: pointer; transition: .15s ease; }
+.sim-remove-person:hover { border-color: #fecaca; background: #fef2f2; transform: scale(1.04); }
+.sim-export-panel { display: grid; grid-template-columns: 1fr; gap: 11px; margin-top: 13px; padding: 15px 16px; border: 1px solid rgba(148,163,184,.15); border-radius: 16px; background: linear-gradient(135deg, rgba(16,185,129,.045), rgba(99,102,241,.045)); }
+.sim-export-panel-heading { display: flex; align-items: center; gap: 10px; }
+.sim-export-panel-heading p { margin-top: 3px; }
+.sim-export-actions { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 8px; margin: 0; }
+.sim-export-card { display: grid; grid-template-columns: 36px minmax(0,1fr) 15px; align-items: center; gap: 8px; min-width: 0; min-height: 58px; padding: 8px 10px; border: 1px solid var(--border-strong); border-radius: 11px; background: rgba(255,255,255,.035); color: var(--text); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease; }
+.sim-export-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(52,211,153,.38); background: rgba(16,185,129,.07); }
+.sim-export-card:disabled { opacity: .5; cursor: wait; }
+.sim-export-card.is-primary { border-color: rgba(52,211,153,.34); background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(16,185,129,.04)); }
+.sim-export-card > span:nth-child(2) { display: grid; min-width: 0; }
+.sim-export-card strong { overflow: hidden; color: #e5e7eb; font-size: 9.5px; text-overflow: ellipsis; white-space: nowrap; }
+.sim-export-card small { margin-top: 3px; color: #878791; font-size: 8px; }
+.sim-export-card > svg { color: #73737d; }
+.sim-export-format { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(148,163,184,.13); border-radius: 9px; background: rgba(255,255,255,.045); color: #d4d4d8; font-size: 8px; font-weight: 900; letter-spacing: .025em; }
+.sim-format-pdf { color: #fca5a5; background: rgba(239,68,68,.09); }
+.sim-format-docx { color: #93c5fd; background: rgba(59,130,246,.09); }
+.sim-format-xlsx { color: #86efac; background: rgba(34,197,94,.09); }
+.sim-format-csv { color: #fde68a; background: rgba(234,179,8,.09); }
+.sim-format-json { color: #c4b5fd; background: rgba(139,92,246,.09); }
+.sim-export-hint { margin: 0; color: #85858f; font-size: 9px; line-height: 1.5; }
+.sim-roster-empty { display: grid; justify-items: center; padding: 27px 20px 30px; border: 1px solid rgba(148,163,184,.13); border-radius: 17px; background: rgba(255,255,255,.022); text-align: center; }
+.sim-empty-illustration { position: relative; display: grid; place-items: center; width: 90px; height: 74px; margin-bottom: 7px; }
+.sim-empty-illustration > span { z-index: 1; display: grid; place-items: center; width: 53px; height: 53px; border: 1px solid rgba(52,211,153,.21); border-radius: 17px; background: linear-gradient(145deg, rgba(16,185,129,.18), rgba(99,102,241,.1)); color: #6ee7b7; box-shadow: 0 8px 25px rgba(16,185,129,.08); }
+.sim-empty-illustration > i { position: absolute; display: grid; place-items: center; width: 23px; height: 23px; border: 1px solid rgba(148,163,184,.17); border-radius: 8px; background: #11131a; color: #9ca3af; font-size: 7px; font-style: normal; font-weight: 800; }
+.sim-empty-illustration > i:nth-of-type(1) { top: 2px; left: 2px; transform: rotate(-9deg); }
+.sim-empty-illustration > i:nth-of-type(2) { top: 3px; right: 1px; transform: rotate(9deg); }
+.sim-empty-illustration > i:nth-of-type(3) { bottom: 0; left: 34px; }
+.sim-roster-empty h2 { margin: 2px 0 0; color: #f4f4f5; font-size: 15px; }
+.sim-roster-empty p { max-width: 520px; margin: 7px 0 14px; color: #9999a3; font-size: 10.5px; line-height: 1.6; }
+.sim-roster-empty .btn { height: 40px; padding: 0 15px; font-size: 10px; }
+.sim-collective-footer { display: flex; justify-content: space-between; gap: 12px; margin: 12px 2px 0; color: #73737d; font-size: 9px; line-height: 1.5; }
+.sim-collective-footer > span { display: inline-flex; align-items: center; gap: 5px; }
+.sim-collective-footer svg { flex: 0 0 auto; color: #fbbf24; }
+.sim-photo-editor-backdrop { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; padding: 18px; overflow-y: auto; background: rgba(3,7,18,.76); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.sim-photo-editor { width: min(100%, 610px); max-height: calc(100vh - 36px); overflow: auto; padding: 20px; border: 1px solid rgba(148,163,184,.22); border-radius: 19px; background: #11131b; color: #f4f4f5; box-shadow: 0 25px 90px rgba(0,0,0,.55); }
+.sim-photo-editor-header { display: flex; align-items: center; gap: 10px; }
+.sim-photo-editor-icon { display: grid; place-items: center; width: 39px; height: 39px; border: 1px solid rgba(52,211,153,.2); border-radius: 12px; background: rgba(16,185,129,.11); color: #6ee7b7; }
+.sim-photo-editor-header > div:nth-child(2) { flex: 1; }
+.sim-photo-editor-header p { margin: 0 0 3px; color: #7b7b87; font-size: 8px; font-weight: 850; letter-spacing: .13em; }
+.sim-photo-editor-header h2 { color: #fafafa; font-size: 17px; }
+.sim-photo-close { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.04); color: #c4c4cc; font-size: 21px; cursor: pointer; }
+.sim-photo-editor-help { margin: 11px 0; color: #a1a1aa; font-size: 10px; line-height: 1.55; }
+.sim-photo-editor-help strong { color: #e4e4e7; }
+.sim-photo-canvas-wrap { display: grid; place-items: center; min-height: 190px; overflow: hidden; border: 1px solid rgba(148,163,184,.2); border-radius: 12px; background: repeating-conic-gradient(#f8fafc 0% 25%, #e9edf2 0% 50%) 50% / 18px 18px; }
+.sim-photo-editor-canvas { display: block; width: 100%; max-height: 340px; object-fit: contain; cursor: grab; touch-action: none; user-select: none; }
+.sim-photo-editor-canvas:active { cursor: grabbing; }
+.sim-photo-loading { padding: 40px; color: #9ca3af; font-size: 11px; }
+.sim-photo-fit-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; margin: 12px 0; }
+.sim-photo-fit-options button { display: grid; gap: 3px; padding: 9px 11px; border: 1px solid rgba(148,163,184,.18); border-radius: 10px; background: rgba(255,255,255,.025); color: #f4f4f5; text-align: left; cursor: pointer; }
+.sim-photo-fit-options button.is-selected { border-color: rgba(52,211,153,.5); background: rgba(16,185,129,.1); box-shadow: 0 0 0 2px rgba(16,185,129,.07); }
+.sim-photo-fit-options strong { font-size: 10px; }
+.sim-photo-fit-options span { color: #91919b; font-size: 8.5px; }
+.sim-photo-slider { display: block; margin-top: 11px; }
+.sim-photo-slider > span { display: flex; justify-content: space-between; color: #d4d4d8; font-size: 9px; }
+.sim-photo-slider output { color: #a7f3d0; font-variant-numeric: tabular-nums; }
+.sim-photo-slider input { width: 100%; height: 18px; margin: 5px 0 0; accent-color: #34d399; cursor: pointer; }
+.sim-photo-editor-error { margin: 10px 0 0; color: #fca5a5; font-size: 10px; }
+.sim-photo-editor-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; padding-top: 13px; border-top: 1px solid rgba(148,163,184,.14); }
+.sim-photo-editor-footer > div { display: flex; gap: 7px; }
+.sim-photo-editor-footer .btn { height: 38px; padding: 0 12px; border-radius: 9px; font-size: 10px; }
 
-@media (max-width: 850px) {
-  .sim-export-panel { display: block; }
-  .sim-export-actions { margin-top: 9px; }
-  .sim-export-hint { margin-top: 8px; }
+@media (max-width: 920px) {
+  .sim-collective-shell { max-width: 100%; }
+  .sim-sim-counts { display: none; }
+  .sim-export-actions { grid-template-columns: repeat(3,minmax(0,1fr)); }
 }
-@media (max-width: 600px) {
-  .sim-collective-toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: end; }
-  .sim-default-field, .sim-note-default { min-width: 0; flex: initial; }
-  .sim-upload-button { grid-column: 1 / -1; justify-content: center; }
-  .sim-add-row-button, .sim-clear-button { justify-content: center; padding: 0 8px; font-size: 11px; }
-  .sim-drop-zone { align-items: flex-start; padding: 11px; }
-  .sim-drop-icon { width: 35px; height: 35px; }
-  .sim-drop-zone strong { font-size: 11px; }
-  .sim-drop-zone p { font-size: 9.5px; }
-  .sim-roster-controls { align-items: flex-start; flex-direction: column; gap: 7px; }
-  .sim-roster-panel { padding: 9px; }
+@media (max-width: 760px) {
+  .sim-collective-shell { padding-right: 14px; padding-left: 14px; }
+  .sim-upload-card { padding: 15px; }
+  .sim-ocr-settings { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sim-ocr-mode-field { grid-column: 1 / -1; }
+  .sim-drop-zone { grid-template-columns: 40px minmax(0,1fr); gap: 10px; padding: 12px; }
+  .sim-drop-icon { width: 39px; height: 39px; }
+  .sim-drop-actions { grid-column: 1 / -1; justify-content: center; }
+  .sim-drop-zone > small { margin-top: -1px; }
+  .sim-table-scroll { max-height: none; overflow: visible; border: 0; border-radius: 0; }
+  .sim-collective-table, .sim-collective-table.has-nik { display: block; width: 100%; min-width: 0; table-layout: auto; border: 0; }
+  .sim-collective-table thead { display: none; }
+  .sim-collective-table tbody { display: grid; gap: 10px; }
+  .sim-collective-table tbody tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px 11px; padding: 12px; border: 1px solid #e0e5ec; border-radius: 11px; background: #fff !important; box-shadow: 0 3px 12px rgba(15,23,42,.045); }
+  .sim-collective-table td, .sim-collective-table th, .sim-collective-table td:first-child { display: block; width: auto !important; min-width: 0; padding: 0; border: 0; }
+  .sim-collective-table td::before { display: block; margin: 0 0 4px; content: attr(data-label); color: #7b8492; font-family: var(--font-body); font-size: 8px; font-weight: 850; letter-spacing: .09em; }
+  .sim-collective-table .sim-roster-number { display: flex; align-items: center; gap: 7px; color: #64748b; font-size: 9px; text-align: left; }
+  .sim-collective-table .sim-roster-number::before { display: inline; content: 'NO.'; margin: 0; }
+  .sim-collective-table .sim-roster-name-cell { grid-column: 1 / -1; }
+  .sim-collective-table .sim-roster-name-cell::before { display: none; }
+  .sim-collective-table .sim-roster-nik-cell { grid-column: 1 / -1; }
+  .sim-collective-table .sim-roster-photo-cell { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 9px; }
+  .sim-collective-table .sim-roster-photo-cell::before { grid-column: 1 / -1; }
+  .sim-detail-grid { min-width: 0; grid-template-columns: minmax(0,1fr); }
+  .sim-photo-preview-frame { max-width: 330px; }
+  .sim-photo-actions { flex-direction: column; margin: 0; }
+  .sim-photo-action { min-height: 32px; padding: 0 9px; font-size: 8px; }
+  .sim-collective-table .sim-roster-action-cell { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+  .sim-collective-table .sim-roster-action-cell::before { content: ''; }
+  .sim-remove-person { width: 34px; height: 31px; }
+  .sim-roster-input { min-height: 39px; height: 39px; padding: 8px 9px; font-size: 11px; }
+  .sim-name-input { height: 41px; }
   .sim-collective-document { padding: 13px; }
   .sim-collective-footer { flex-direction: column; gap: 5px; }
-  .sim-export-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .sim-export-button { padding: 0 5px; font-size: 10px; }
+}
+@media (max-width: 520px) {
+  .sim-collective-intro { padding: 16px; border-radius: 15px; }
+  .sim-collective-intro > p { font-size: 11px; }
+  .sim-workflow-steps { gap: 7px; margin-top: 14px; }
+  .sim-workflow-steps > div { gap: 5px; }
+  .sim-workflow-steps > div > b { width: 25px; height: 25px; border-radius: 8px; font-size: 8px; }
+  .sim-workflow-steps strong { font-size: 8.5px; }
+  .sim-workflow-steps small { font-size: 7.5px; }
+  .sim-workflow-steps > i { width: 8px; }
+  .sim-privacy-note { padding: 9px 10px; }
+  .sim-privacy-note p { font-size: 9.5px; }
+  .sim-upload-card { padding: 12px; border-radius: 14px; }
+  .sim-upload-card-heading { align-items: flex-start; gap: 8px; }
+  .sim-step-large { width: 31px; height: 31px; border-radius: 9px; }
+  .sim-upload-card-heading h2, .sim-roster-section-heading h2 { font-size: 13px; }
+  .sim-upload-card-heading p, .sim-roster-section-heading p { font-size: 9px; }
+  .sim-local-badge { padding: 5px 7px; font-size: 7px; }
+  .sim-ocr-settings { gap: 7px; }
+  .sim-setting-field .select, .sim-setting-field .input { height: 39px; min-height: 39px; padding-left: 9px; font-size: 10px; }
+  .sim-setting-field > span { font-size: 8.5px; }
+  .sim-ocr-mode-note { font-size: 8.5px; }
+  .sim-drop-copy strong { font-size: 10px; }
+  .sim-drop-copy span { font-size: 8.5px; }
+  .sim-drop-actions .btn { height: 37px; padding: 0 9px; font-size: 9px; }
+  .sim-roster-controls { align-items: flex-start; flex-wrap: wrap; row-gap: 8px; margin-top: 14px; }
+  .sim-roster-tools { width: 100%; justify-content: space-between; }
+  .sim-roster-count-number { min-width: 35px; height: 35px; font-size: 14px; }
+  .sim-roster-section-heading { align-items: flex-start; }
+  .sim-collective-title { font-size: 13px; }
+  .sim-collective-disclaimer { font-size: 6px; }
+  .sim-export-panel { padding: 12px; }
+  .sim-export-actions { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .sim-export-card { min-height: 54px; }
+  .sim-photo-editor-backdrop { padding: 8px; }
+  .sim-photo-editor { max-height: calc(100dvh - 16px); padding: 13px; border-radius: 15px; }
+  .sim-photo-editor-header h2 { font-size: 14px; }
+  .sim-photo-editor-canvas { max-height: 250px; }
+  .sim-photo-editor-footer { flex-wrap: wrap; }
+  .sim-photo-editor-footer .btn { height: 36px; padding: 0 9px; font-size: 9px; }
 }
 
 @media print {
   @page { size: A4 portrait; margin: 9mm; }
-  .sim-collective-document { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
-  .sim-collective-title { margin: 0 0 4mm !important; color: #111 !important; font-size: 13pt !important; }
+  html, body { background: #fff !important; color: #111827 !important; }
+  .sim-collective-document { position: absolute !important; top: 0 !important; left: 0 !important; display: block !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+  .sim-collective-title { margin: 0 0 3mm !important; color: #111 !important; font-size: 13pt !important; }
   .sim-collective-disclaimer { margin: 0 0 4mm !important; color: #444 !important; font-size: 6.5pt !important; }
-  .sim-collective-table, .sim-collective-table.has-nik { width: 100% !important; min-width: 0 !important; table-layout: fixed !important; border-collapse: collapse !important; font-size: 7.5pt !important; }
+  .sim-table-scroll { display: block !important; max-height: none !important; overflow: visible !important; border: 0 !important; }
+  .sim-collective-table, .sim-collective-table.has-nik { display: table !important; width: 100% !important; min-width: 0 !important; table-layout: fixed !important; border-collapse: collapse !important; border-spacing: 0 !important; font-size: 7.5pt !important; }
   .sim-collective-table thead { display: table-header-group !important; }
-  .sim-collective-table tr { break-inside: avoid !important; page-break-inside: avoid !important; }
-  .sim-collective-table th, .sim-collective-table td { padding: 1.5mm 1.2mm !important; border: .6pt solid #222 !important; color: #111 !important; font-size: 7.5pt !important; }
+  .sim-collective-table tbody { display: table-row-group !important; }
+  .sim-collective-table tr { display: table-row !important; break-inside: avoid !important; page-break-inside: avoid !important; background: #fff !important; }
+  .sim-collective-table th, .sim-collective-table td, .sim-collective-table td:first-child { display: table-cell !important; padding: 1.5mm 1.2mm !important; border: .6pt solid #222 !important; color: #111 !important; font-size: 7.5pt !important; }
   .sim-collective-table th { background: #eee !important; font-size: 7pt !important; }
-  .sim-collective-table:not(.has-nik) th:nth-child(1) { width: 8% !important; }
+  .sim-collective-table:not(.has-nik) th:nth-child(1) { width: 7% !important; }
   .sim-collective-table:not(.has-nik) th:nth-child(2) { width: 22% !important; }
   .sim-collective-table:not(.has-nik) th:nth-child(3) { width: 15% !important; }
   .sim-collective-table:not(.has-nik) th:nth-child(4) { width: 21% !important; }
-  .sim-collective-table:not(.has-nik) th:nth-child(5) { width: 34% !important; }
+  .sim-collective-table:not(.has-nik) th:nth-child(5) { width: 35% !important; }
   .sim-collective-table.has-nik th:nth-child(1) { width: 6% !important; }
   .sim-collective-table.has-nik th:nth-child(2) { width: 19% !important; }
-  .sim-collective-table.has-nik th:nth-child(3) { width: 17% !important; }
-  .sim-collective-table.has-nik th:nth-child(4) { width: 15% !important; }
+  .sim-collective-table.has-nik th:nth-child(3) { width: 16% !important; }
+  .sim-collective-table.has-nik th:nth-child(4) { width: 14% !important; }
   .sim-collective-table.has-nik th:nth-child(5) { width: 17% !important; }
-  .sim-collective-table.has-nik th:nth-child(6) { width: 26% !important; }
-  .sim-collective-table .sim-screen-only-col { display: none !important; }
+  .sim-collective-table.has-nik th:nth-child(6) { width: 28% !important; }
+  .sim-collective-table .sim-screen-only-col, .sim-collective-table .sim-photo-actions, .sim-collective-table .sim-roster-details, .sim-collective-table .sim-roster-nik-hint, .sim-collective-table .sim-ocr-badge { display: none !important; }
   .sim-roster-input { min-height: 0 !important; height: auto !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; appearance: none !important; background: transparent !important; color: #111 !important; font-family: Arial, Helvetica, sans-serif !important; font-size: 7.5pt !important; }
-  .sim-roster-select { background-image: none !important; }
-  .sim-roster-photo { width: 100% !important; max-width: none !important; height: 27mm !important; max-height: 27mm !important; object-fit: contain !important; }
-  .sim-roster-photo-cell { height: 30mm !important; }
-  .sim-no-photo { color: #555 !important; }
+  .sim-photo-preview-frame { position: relative !important; display: grid !important; width: 100% !important; aspect-ratio: 1.6 !important; overflow: hidden !important; border: 0 !important; background: #fff !important; }
+  .sim-roster-photo { width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; object-fit: contain !important; }
+  .sim-photo-missing { color: #555 !important; }
 }

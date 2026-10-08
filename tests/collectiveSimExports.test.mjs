@@ -33,6 +33,7 @@ function sampleRoster() {
       simType: 'SIM C',
       note: 'BIKIN BARU',
       photoData: TINY_KTP_IMAGE,
+      photoLayout: { fit: 'contain', zoom: 1.4, positionX: 0, positionY: 1 },
     },
     {
       name: '=HYPERLINK("https://example.invalid")',
@@ -56,6 +57,7 @@ test('collective CSV and JSON contain editable KTP data and photo references saf
   assert.match(csv, /0000000000000000/);
   assert.equal(json.daftarPemohon[0].nik, '0000000000000000');
   assert.equal(json.daftarPemohon[0].fotoKTPDataUrl, TINY_KTP_IMAGE);
+  assert.deepEqual(json.daftarPemohon[0].tataLetakFoto, { fit: 'contain', zoom: 1.4, positionX: 0, positionY: 1 });
   assert.equal(json.daftarPemohon[1].fotoKTPDataUrl, null);
   assert.match(json.keterangan, /bukan SIM/i);
 });
