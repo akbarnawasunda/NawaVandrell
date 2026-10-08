@@ -4,6 +4,7 @@
   <url><loc>https://nawavandrell.vercel.app/games</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://nawavandrell.vercel.app/leaderboard</loc><changefreq>daily</changefreq><priority>0.7</priority></url>
   <url><loc>https://nawavandrell.vercel.app/tools/downloader</loc><priority>0.9</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/sim-application</loc><priority>0.9</priority></url>
   <url><loc>https://nawavandrell.vercel.app/tools/sticker-maker</loc><priority>0.8</priority></url>
   <url><loc>https://nawavandrell.vercel.app/tools/text-sticker</loc><priority>0.8</priority></url>
   <url><loc>https://nawavandrell.vercel.app/tools/stego</loc><priority>0.8</priority></url>

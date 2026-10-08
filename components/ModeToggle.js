@@ -17,24 +17,24 @@ export default function ModeToggle() {
       className="mode-switch"
       role="group"
       aria-label="Pilih tampilan"
-      title="Ganti mode tampilan"
+      title="Ganti tampilan"
     >
       <button
         type="button"
         aria-pressed={mode === 'simple'}
-        aria-label="Mode Simple"
+        aria-label="Tampilan Tenang"
         onClick={() => pick('simple')}
       >
-        Simple
+        Tenang
       </button>
 
       <button
         type="button"
         aria-pressed={mode === 'pro'}
-        aria-label="Mode Pro"
+        aria-label="Tampilan Aura"
         onClick={() => pick('pro')}
       >
-        Pro
+        Aura
       </button>
     </div>
   );

@@ -232,7 +232,7 @@ export default function DownloaderPage() {
         </div>
 
         <p className="hint" style={{ textAlign: 'center', margin: 0 }}>
-          Direct Server-Side Proxy oleh NawaVandrell. Tidak ada iklan popup & tidak ada redirect.
+          Direct Server-Side Proxy oleh Nawa Vandrell. Tidak ada iklan popup & tidak ada redirect.
         </p>
       </div>
     </ToolShell>

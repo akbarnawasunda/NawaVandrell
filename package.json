@@ -2,7 +2,7 @@
   "name": "nawavandrell",
   "version": "3.0.0",
   "private": true,
-  "description": "NawaVandrell 3.0 - NEURO CORE DIGITAL ARSENAL. Super-app tools + games + AI.",
+  "description": "Nawa Vandrell — practical tools, creative workflows, and lightweight games.",
   "scripts": {
     "predev": "node scripts/copy-ocr-assets.mjs",
     "dev": "next dev",
@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@e965/xlsx": "0.20.3",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@fontsource-variable/space-grotesk": "^5.3.0",
     "@tesseract.js-data/ind": "1.0.0",
     "docx": "9.9.0",
     "exceljs": "4.4.0",

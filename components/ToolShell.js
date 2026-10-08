@@ -1,4 +1,5 @@
 'use client';
+
 import Link from 'next/link';
 import { useCallback } from 'react';
 import { useToast } from '@/context/ToastContext';
@@ -6,12 +7,8 @@ import Icon, { iconNames } from './icons';
 
 function RenderIcon({ icon, size = 26 }) {
   if (!icon) return null;
-  // Kalau icon adalah nama SVG yang terdaftar
-  if (typeof icon === 'string' && iconNames.includes(icon)) {
-    return <Icon name={icon} size={size} />;
-  }
-  // Fallback kalau masih ada page lama yang ngirim emoji
-  return <span style={{ fontSize: size * 0.9, lineHeight: 1 }}>{icon}</span>;
+  if (typeof icon === 'string' && iconNames.includes(icon)) return <Icon name={icon} size={size} />;
+  return <span className="tool-emoji-icon">{icon}</span>;
 }
 
 export default function ToolShell({ title, desc, icon, children, backHref = '/', backLabel = 'Kembali', className = '' }) {
@@ -19,17 +16,16 @@ export default function ToolShell({ title, desc, icon, children, backHref = '/',
     <div className={`shell-tool${className ? ` ${className}` : ''}`}>
       <Link href={backHref} className="back">
         <Icon name="arrowLeft" size={15} />
-        {backLabel}
+        <span>{backLabel}</span>
       </Link>
-      <div className="tool-head">
-        <h1 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span aria-hidden="true" style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
-            <RenderIcon icon={icon} size={26} />
-          </span>
-          <span>{title}</span>
-        </h1>
-        {desc ? <p>{desc}</p> : null}
-      </div>
+      <header className="tool-head tool-shell-head">
+        <span className="tool-head-mark" aria-hidden="true"><RenderIcon icon={icon} size={25} /></span>
+        <div className="tool-head-copy">
+          <p className="tool-eyebrow">NAWA VANDRELL <i /> TOOLS</p>
+          <h1>{title}</h1>
+          {desc ? <p className="tool-head-description">{desc}</p> : null}
+        </div>
+      </header>
       {children}
     </div>
   );
@@ -39,16 +35,27 @@ export function CopyButton({ value, label = 'Copy', small = true, icon = 'copy' 
   const { addToast } = useToast();
   const copy = useCallback(async () => {
     const text = typeof value === 'function' ? value() : value;
-    if (!text) { addToast('Belum ada yang bisa dicopy', 'warning'); return; }
+    if (!text) {
+      addToast('Belum ada yang bisa dicopy', 'warning');
+      return;
+    }
     try {
-      if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(text);
-      else {
-        const ta = document.createElement('textarea');
-        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
       }
       addToast('Tercopy ke clipboard', 'success');
-    } catch { addToast('Gagal copy, salin manual ya', 'error'); }
+    } catch {
+      addToast('Gagal copy, salin manual ya', 'error');
+    }
   }, [value, addToast]);
 
   return (
@@ -64,7 +71,7 @@ export function ResultBox({ label = 'Hasil', value, children, actions }) {
     <div className="result">
       <div className="result-head">
         <span>{label}</span>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="result-actions">
           {actions}
           {value ? <CopyButton value={value} /> : null}
         </div>

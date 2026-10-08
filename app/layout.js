@@ -1,3 +1,5 @@
+import '@fontsource-variable/plus-jakarta-sans/wght.css';
+import '@fontsource-variable/space-grotesk/wght.css';
 import './globals.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
@@ -6,37 +8,36 @@ import TopBar from '@/components/TopBar';
 import CommandPalette from '@/components/CommandPalette';
 import MicroAudioController from '@/components/MicroAudioController';
 
+const siteDescription = 'Satu ruang untuk tools harian, kreativitas, rekap SIM kolektif, dan mini game. Gratis tanpa langganan.';
+
 export const metadata = {
   metadataBase: new URL('https://nawavandrell.vercel.app'),
   title: {
-    default: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
-    template: '%s · NawaVandrell 3.0',
+    default: 'Nawa Vandrell — Tools praktis, ide kreatif, arcade',
+    template: '%s · Nawa Vandrell',
   },
-  description:
-    'All-in-one downloader, stiker WA, tools harian, OCR KTP lokal untuk berkas persiapan SIM, dan arcade game. Gratis, tanpa daftar.',
+  description: siteDescription,
   manifest: '/manifest.json',
-  applicationName: 'NawaVandrell 3.0',
+  applicationName: 'Nawa Vandrell',
   icons: { icon: '/icon.svg', apple: '/icon.svg' },
   openGraph: {
     type: 'website',
-    siteName: 'NawaVandrell 3.0',
-    title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
-    description:
-      'Downloader, stiker WA, OCR KTP lokal untuk persiapan permohonan SIM, tools harian, dan arcade game. Gratis, tanpa daftar.',
+    siteName: 'Nawa Vandrell',
+    title: 'Nawa Vandrell — Satu ruang untuk banyak hal',
+    description: siteDescription,
     url: 'https://nawavandrell.vercel.app',
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'NawaVandrell 3.0' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Nawa Vandrell — Satu ruang untuk banyak hal' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
-    description:
-      'Downloader, stiker WA, OCR KTP lokal untuk persiapan permohonan SIM, tools harian, dan arcade game. Gratis, tanpa daftar.',
+    title: 'Nawa Vandrell — Satu ruang untuk banyak hal',
+    description: siteDescription,
     images: ['/og.png'],
   },
 };
 
 export const viewport = {
-  themeColor: '#040408',
+  themeColor: '#080b14',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -47,25 +48,18 @@ export default function RootLayout({ children }) {
     <html lang="id" data-mode="simple" suppressHydrationWarning>
       <head>
         <meta name="color-scheme" content="dark" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
-          rel="stylesheet"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebApplication',
-              name: 'NawaVandrell 3.0',
+              name: 'Nawa Vandrell',
               url: 'https://nawavandrell.vercel.app',
               applicationCategory: 'UtilitiesApplication',
               operatingSystem: 'Any',
-              description:
-                'All-in-one downloader, stiker WA, tools harian, OCR KTP lokal untuk berkas persiapan SIM, dan arcade game. Gratis, tanpa daftar.',
-              offers: { '@type': 'Offer', price: '0' },
+              description: siteDescription,
+              offers: { '@type': 'Offer', price: '0', priceCurrency: 'IDR' },
             }),
           }}
         />
@@ -76,6 +70,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
+        <a className="skip-link" href="#main-content">Lewati ke konten</a>
         <div className="backdrop" aria-hidden="true">
           <span className="orb orb-1" />
           <span className="orb orb-2" />
@@ -87,37 +82,32 @@ export default function RootLayout({ children }) {
         <ModeProvider>
           <ToastProvider>
             <TopBar />
-            <main>{children}</main>
+            <main id="main-content" tabIndex="-1">{children}</main>
             <CommandPalette />
             <MicroAudioController />
-            <footer className="footer">
-              <p style={{ margin: '0 0 6px' }}>
-                <strong>NawaVandrell 3.0</strong> — Neuro Core Digital Arsenal
-              </p>
-              <p style={{ margin: 0 }}>
-                Semua proses jalan di browser kamu. <a href="/admin">Admin</a>
-              </p>
+            <footer className="site-footer">
+              <div className="site-footer-main">
+                <a href="/" className="footer-brand">
+                  <span className="brand-symbol" aria-hidden="true">N</span>
+                  <span>Nawa <strong>Vandrell</strong></span>
+                </a>
+                <p>Tools praktis, ruang kreatif, dan jeda kecil untuk main.</p>
+              </div>
+              <nav className="footer-links" aria-label="Tautan footer">
+                <a href="/#tools">Semua tools</a>
+                <a href="/tools/sim-application">Rekap SIM kolektif</a>
+                <a href="/games">Arcade</a>
+                <a href="/leaderboard">Papan peringkat</a>
+                <a href="/admin">Admin</a>
+              </nav>
+              <div className="site-footer-meta">
+                <span>© {new Date().getFullYear()} Nawa Vandrell</span>
+                <span>Dibuat untuk hari-hari yang lebih ringan.</span>
+              </div>
             </footer>
           </ToastProvider>
         </ModeProvider>
 
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                if (typeof window !== 'undefined') {
-                  window.addEventListener('pointermove', function(e) {
-                    document.querySelectorAll('.bento-card, .card').forEach(function(card) {
-                      var rect = card.getBoundingClientRect();
-                      card.style.setProperty('--mouse-x', (e.clientX - rect.left) + 'px');
-                      card.style.setProperty('--mouse-y', (e.clientY - rect.top) + 'px');
-                    });
-                  }, { passive: true });
-                }
-              })();
-            `,
-          }}
-        />
         <Script id="nawa-sw" strategy="afterInteractive">
           {`if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }); }`}
         </Script>

@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101a2a"/>
+      <stop offset=".55" stop-color="#080d18"/>
+      <stop offset="1" stop-color="#111126"/>
+    </linearGradient>
+    <linearGradient id="mint" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a4f5dc"/>
+      <stop offset=".58" stop-color="#81d8e8"/>
+      <stop offset="1" stop-color="#b39aff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(610 0 0 360 994 129)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#776cc1" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#080b14" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#1b2b3d"/>
+      <stop offset="1" stop-color="#11182a"/>
+    </linearGradient>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0v42" fill="none" stroke="#a9c1df" stroke-opacity=".075" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+  <rect width="1200" height="630" fill="url(#grid)" opacity=".38"/>
+  <circle cx="1002" cy="298" r="245" fill="none" stroke="#a898ef" stroke-opacity=".14" stroke-width="1.5"/>
+  <circle cx="1002" cy="298" r="194" fill="none" stroke="#8de4d1" stroke-opacity=".12" stroke-width="1.5"/>
+  <rect x="82" y="73" width="54" height="54" rx="17" fill="url(#mint)"/>
+  <path d="M98 109V90l25 28V90" fill="none" stroke="#0b1520" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+  <text x="155" y="110" fill="#f2f5fb" font-family="Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="-1">Nawa Vandrell</text>
+  <rect x="82" y="195" width="192" height="34" rx="17" fill="#8ee8d3" fill-opacity=".09" stroke="#9ae9d5" stroke-opacity=".23"/>
+  <circle cx="101" cy="212" r="4" fill="#a1eedb"/>
+  <text x="115" y="216" fill="#b3d9d7" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="2">TOOLS · WORKFLOWS · ARCADE</text>
+  <text x="79" y="316" fill="#f4f6fb" font-family="Arial, sans-serif" font-size="67" font-weight="700" letter-spacing="-3">Beresin hal kecil.</text>
+  <text x="79" y="397" fill="url(#mint)" font-family="Arial, sans-serif" font-size="67" font-weight="700" letter-spacing="-3">Bikin hal besar.</text>
+  <text x="84" y="450" fill="#aeb9ca" font-family="Arial, sans-serif" font-size="20">Tools harian, ruang kreatif, rekap SIM kolektif, dan game ringan.</text>
+  <rect x="83" y="505" width="230" height="46" rx="14" fill="url(#mint)"/>
+  <text x="106" y="534" fill="#0c1720" font-family="Arial, sans-serif" font-size="15" font-weight="700">Gratis, tanpa langganan</text>
+  <g transform="translate(797 133)">
+    <rect width="321" height="362" rx="27" fill="url(#panel)" stroke="#c2d2e8" stroke-opacity=".22"/>
+    <rect x="20" y="20" width="38" height="38" rx="12" fill="url(#mint)"/>
+    <path d="M31 48V30l17 20V30" fill="none" stroke="#101a27" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="70" y="37" fill="#eff3f9" font-family="Arial, sans-serif" font-size="14" font-weight="700">Satu ruang.</text>
+    <text x="70" y="53" fill="#8998ae" font-family="Arial, sans-serif" font-size="10">Banyak kemungkinan.</text>
+    <rect x="19" y="76" width="283" height="153" rx="19" fill="#28354b" fill-opacity=".78" stroke="#c0c8e3" stroke-opacity=".16"/>
+    <text x="39" y="106" fill="#9aacc0" font-family="Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="2">RUANG KERJA</text>
+    <text x="39" y="149" fill="#f0f4f9" font-family="Arial, sans-serif" font-size="25" font-weight="700">Tools</text>
+    <text x="39" y="181" fill="#abeddb" font-family="Arial, sans-serif" font-size="25" font-weight="700">Kolektif</text>
+    <text x="39" y="213" fill="#c2b3f9" font-family="Arial, sans-serif" font-size="25" font-weight="700">Arcade</text>
+    <circle cx="251" cy="154" r="36" fill="#9f8fe2" fill-opacity=".16" stroke="#b5a8ed" stroke-opacity=".32"/>
+    <path d="M251 138v32m-12-12 12 12 12-12" fill="none" stroke="#c8f5e8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="19" y="248" width="135" height="91" rx="16" fill="#17253a" stroke="#b5c7e0" stroke-opacity=".14"/>
+    <rect x="31" y="261" width="29" height="29" rx="9" fill="#80e6cd" fill-opacity=".17"/>
+    <path d="M37 268h17v16H37zM37 274h17M43 268v16" fill="none" stroke="#aaf0dc" stroke-width="1.5"/>
+    <text x="31" y="313" fill="#e5ebf3" font-family="Arial, sans-serif" font-size="12" font-weight="700">Bikin QR</text>
+    <text x="31" y="329" fill="#8e9eb2" font-family="Arial, sans-serif" font-size="9">langsung jadi</text>
+    <rect x="167" y="248" width="135" height="91" rx="16" fill="#1e2038" stroke="#b5b2dc" stroke-opacity=".16"/>
+    <rect x="179" y="261" width="29" height="29" rx="9" fill="#af9af1" fill-opacity=".19"/>
+    <circle cx="193.5" cy="275.5" r="8" fill="none" stroke="#d1c4ff" stroke-width="1.5"/>
+    <path d="M190 275h7m-4-4v8" stroke="#d1c4ff" stroke-width="1.3" stroke-linecap="round"/>
+    <text x="179" y="313" fill="#e5ebf3" font-family="Arial, sans-serif" font-size="12" font-weight="700">Rekap SIM</text>
+    <text x="179" y="329" fill="#8e9eb2" font-family="Arial, sans-serif" font-size="9">banyak KTP, satu</text>
+  </g>
+  <circle cx="1110" cy="166" r="5" fill="#aef1dc"/>
+  <circle cx="756" cy="448" r="4" fill="#c2a8ff"/>
+</svg>

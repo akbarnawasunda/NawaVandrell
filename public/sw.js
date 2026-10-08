@@ -1,5 +1,5 @@
 /**
- * Service worker NawaVandrell.
+ * Service worker Nawa Vandrell.
  *
  * Strategi:
  * - Navigasi (HTML)  -> network-first, fallback cache, terakhir halaman offline.
@@ -10,9 +10,9 @@
  * jadi lebih aman meng-cache saat halaman benar-benar dikunjungi.
  */
 
-const VERSION = 'nawa-v3';
-const SHELL_CACHE = `${VERSION}-shell`;
-const ASSET_CACHE = `${VERSION}-assets`;
+const CACHE_NAMESPACE = 'nawa-vandrell';
+const SHELL_CACHE = `${CACHE_NAMESPACE}-shell`;
+const ASSET_CACHE = `${CACHE_NAMESPACE}-assets`;
 
 const PRECACHE = ['/', '/games', '/manifest.json', '/icon.svg'];
 
@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k)))
+        Promise.all(keys.filter((key) => !key.startsWith(CACHE_NAMESPACE)).map((key) => caches.delete(key)))
       )
       .then(() => self.clients.claim())
   );
@@ -73,8 +73,8 @@ self.addEventListener('fetch', (event) => {
           if (home) return home;
           return new Response(
             '<!doctype html><meta charset="utf-8"><title>Offline</title>' +
-              '<body style="background:#0a0a0b;color:#e5e7eb;font-family:system-ui;text-align:center;padding:60px 20px">' +
-              '<h1 style="color:#10b981">Kamu sedang offline</h1>' +
+              '<body style="background:#080b14;color:#e5eaf4;font-family:system-ui;text-align:center;padding:60px 20px">' +
+              '<h1 style="color:#8bf4de">Kamu sedang offline</h1>' +
               '<p>Halaman ini belum pernah dibuka, jadi belum tersimpan. Coba lagi setelah online.</p></body>',
             { headers: { 'Content-Type': 'text/html; charset=utf-8' }, status: 503 }
           );

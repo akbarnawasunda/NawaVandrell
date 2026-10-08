@@ -1,20 +1,8 @@
-# NawaVandrell 2.0 — Neuro Core Digital Arsenal
+# Nawa Vandrell
 
-Super-app **23 tools + 15 game** yang jalan cuma dengan **GitHub + Vercel**. Tanpa database
-wajib, tanpa kvdb.io, tanpa API key.
+Nawa Vandrell menyatukan tools harian, ruang kreatif, workflow rekap SIM kolektif, dan game ringan dalam satu website. Aplikasi dibangun dengan Next.js dan bisa dijalankan tanpa layanan database wajib. Beberapa fitur integrasi online memerlukan konfigurasi API opsional.
 
-Dua wajah dalam satu app:
-
-| | Simple Mode (default) | Pro Mode |
-|---|---|---|
-| Latar | `#0A0A0B` solid, 1 orb emerald | 3 orb animasi + grid 80px |
-| Aksen | 1 warna (`#10B981`) | emerald + indigo + violet |
-| Font | Plus Jakarta Sans | Space Grotesk |
-| Kaca | — | glassmorphism blur 24px |
-| Game | soal + input + Jawab/Lewati | level, XP, streak 🔥, combo ×2/×3 |
-
-Ganti mode dari tombol kanan atas. Pilihan tersimpan di `localStorage`, dan dibaca
-sebelum halaman dilukis jadi tidak ada kedip tema.
+Pilih tampilan **Tenang** atau **Aura** dari navigasi atas. Pilihan disimpan di `localStorage` dan dipulihkan sebelum halaman dirender.
 
 ---
 
@@ -34,7 +22,7 @@ Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok 
 
 1. **Push ke GitHub**
    ```bash
-   git init && git add . && git commit -m "NawaVandrell 2.0"
+   git init && git add . && git commit -m "Nawa Vandrell"
    git branch -M main
    git remote add origin https://github.com/<user>/<repo>.git
    git push -u origin main
@@ -190,7 +178,7 @@ supaya leaderboard tidak basi.
 
 - TikTok Downloader butuh `UPSTREAM_API_BASE` karena TikTok tidak bisa diakses langsung
   dari browser (CORS). Tanpa env itu, tombolnya balas pesan jelas, bukan gagal diam-diam.
-- Gambar di Galeri Acak diambil dari sumber publik pihak ketiga; NawaVandrell tidak
+- Gambar di Galeri Acak diambil dari sumber publik pihak ketiga; Nawa Vandrell tidak
   menyimpannya.
 
 Butuh Node **≥ 18.17**.

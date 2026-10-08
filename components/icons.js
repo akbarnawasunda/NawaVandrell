@@ -136,6 +136,36 @@ const icons = {
     </Svg>
   ),
 
+  arrowRight: (
+    <Svg>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </Svg>
+  ),
+
+  arrowDown: (
+    <Svg>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </Svg>
+  ),
+
+  home: (
+    <Svg>
+      <path d="m3 10 9-7 9 7" />
+      <path d="M5 9v11h14V9" />
+      <path d="M9 20v-6h6v6" />
+    </Svg>
+  ),
+
+  menu: (
+    <Svg>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </Svg>
+  ),
+
   copy: (
     <Svg>
       <rect x="9" y="9" width="11" height="11" rx="2" />
