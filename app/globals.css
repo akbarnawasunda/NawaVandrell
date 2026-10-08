@@ -76,6 +76,13 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
 [data-mode='pro'] .brand-dot { box-shadow: 0 0 18px rgba(16, 185, 129, 0.5); }
 .brand span.nv-accent { color: var(--accent-soft); }
 
+.topbar-links { display: flex; align-items: center; gap: 4px; }
+.topbar-link { font-size: 13px; font-weight: 600; color: var(--text-dim); padding: 6px 11px; border-radius: var(--radius-pill); transition: all 0.2s ease; text-decoration: none; }
+.topbar-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.06); }
+@media (max-width: 720px) {
+  .topbar-links { display: none !important; }
+}
+
 .mode-switch { display: flex; gap: 2px; padding: 3px; border-radius: var(--radius-pill); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); flex-shrink: 0; }
 .mode-switch button { border: 0; background: transparent; color: var(--text-faint); font: inherit; font-size: 12px; font-weight: 700; padding: 6px 13px; border-radius: var(--radius-pill); cursor: pointer; transition: all 0.22s ease; white-space: nowrap; }
 .mode-switch button[aria-pressed='true'] { background: var(--accent); color: #04120c; }

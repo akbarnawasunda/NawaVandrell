@@ -380,13 +380,25 @@ const toolIconMap = {
   downloader: 'download',
   'qr-code': 'qr',
   'sticker-maker': 'sticker',
+  'text-sticker': 'case',
   'image-compressor': 'image',
   password: 'lock',
+  'wa-direct': 'chat',
+  roasting: 'flame',
   'json-formatter': 'json',
   'text-case': 'case',
   'color-picker': 'palette',
   'text-to-image': 'poster',
-  roasting: 'flame',
+  stego: 'eye',
+  alay: 'smile',
+  base64: 'binary',
+  funfact: 'calendar',
+  gradient: 'sliders',
+  hash: 'hash',
+  'lorem-ipsum': 'fileText',
+  'random-gallery': 'camera',
+  'regex-tester': 'code',
+  uuid: 'fingerprint',
   games: 'gamepad',
 };
 
@@ -536,4 +548,100 @@ icons.eye = (
   </Svg>
 );
 
-iconNames.push('eye');
+icons.hash = (
+  <Svg>
+    <line x1="4" y1="9" x2="20" y2="9" />
+    <line x1="4" y1="15" x2="20" y2="15" />
+    <line x1="10" y1="3" x2="8" y2="21" />
+    <line x1="16" y1="3" x2="14" y2="21" />
+  </Svg>
+);
+
+icons.binary = (
+  <Svg>
+    <rect x="4" y="4" width="6" height="7" rx="1" />
+    <path d="M16 4v7" />
+    <rect x="14" y="13" width="6" height="7" rx="1" />
+    <path d="M7 13v7" />
+  </Svg>
+);
+
+icons.sliders = (
+  <Svg>
+    <line x1="4" y1="21" x2="4" y2="14" />
+    <line x1="4" y1="10" x2="4" y2="3" />
+    <line x1="12" y1="21" x2="12" y2="12" />
+    <line x1="12" y1="8" x2="12" y2="3" />
+    <line x1="20" y1="21" x2="20" y2="16" />
+    <line x1="20" y1="12" x2="20" y2="3" />
+    <line x1="1" y1="14" x2="7" y2="14" />
+    <line x1="9" y1="8" x2="15" y2="8" />
+    <line x1="17" y1="16" x2="23" y2="16" />
+  </Svg>
+);
+
+icons.fingerprint = (
+  <Svg>
+    <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4" />
+    <path d="M5 19.5C5.5 18 6 15 6 12c0-3.3 2.7-6 6-6 2.5 0 4.6 1.5 5.5 3.7" />
+    <path d="M12 10a2 2 0 0 0-2 2c0 3.5-1 6.5-2 8.5" />
+    <path d="M12 14v7" />
+    <path d="M16 13c0 2.5.5 5 1.5 7" />
+    <path d="M20 10c0 4-1 7.5-2.5 10.5" />
+  </Svg>
+);
+
+icons.code = (
+  <Svg>
+    <polyline points="16 18 22 12 16 6" />
+    <polyline points="8 6 2 12 8 18" />
+  </Svg>
+);
+
+icons.fileText = (
+  <Svg>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </Svg>
+);
+
+icons.smile = (
+  <Svg>
+    <circle cx="12" cy="12" r="10" />
+    <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+    <line x1="9" y1="9" x2="9.01" y2="9" />
+    <line x1="15" y1="9" x2="15.01" y2="9" />
+  </Svg>
+);
+
+icons.calendar = (
+  <Svg>
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" />
+    <line x1="8" y1="2" x2="8" y2="6" />
+    <line x1="3" y1="10" x2="21" y2="10" />
+  </Svg>
+);
+
+icons.camera = (
+  <Svg>
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+    <circle cx="12" cy="13" r="4" />
+  </Svg>
+);
+
+iconNames.push(
+  'eye',
+  'hash',
+  'binary',
+  'sliders',
+  'fingerprint',
+  'code',
+  'fileText',
+  'smile',
+  'calendar',
+  'camera'
+);

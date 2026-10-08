@@ -17,9 +17,28 @@ function loadCategories() {
   return cache;
 }
 
+const ALIASES = {
+  tebakkimia: 'kimia',
+  tebaklirik: 'lirik',
+  kimia: 'kimia',
+  lirik: 'lirik',
+  tebaktebakan: 'tebaktebakan',
+  tekateki: 'tekateki',
+  siapakahaku: 'siapakahaku',
+  asahotak: 'asahotak',
+  islamic: 'islamic',
+};
+
+function resolveCat(raw) {
+  if (!raw) return '';
+  const clean = String(raw).toLowerCase().replace(/[^a-z0-9]/g, '');
+  return ALIASES[clean] || clean;
+}
+
 export async function GET(req) {
   const url = new URL(req.url);
   const cat = url.searchParams.get('cat');
+  const resolved = resolveCat(cat);
   const diff = url.searchParams.get('diff') || 'easy';
   const exclude = (url.searchParams.get('exclude') || '').split(',').filter(Boolean);
   const list = url.searchParams.get('list');
@@ -35,11 +54,11 @@ export async function GET(req) {
     return Response.json(summary);
   }
 
-  if (!cat || !categories[cat]) {
+  if (!resolved || !categories[resolved]) {
     return Response.json({ error: 'Kategori tidak ada' }, { status: 404 });
   }
 
-  const mod = categories[cat];
+  const mod = categories[resolved];
   let pool = mod.questions.filter(q => q.d === diff && !exclude.includes(q.id));
   if (pool.length === 0) pool = mod.questions.filter(q => !exclude.includes(q.id));
   if (pool.length === 0) {
@@ -56,9 +75,10 @@ export async function GET(req) {
 
 export async function POST(req) {
   const { id, cat } = await req.json().catch(() => ({}));
+  const resolved = resolveCat(cat);
   const categories = loadCategories();
-  if (!cat || !categories[cat]) return Response.json({ error: 'Kategori tidak ada' }, { status: 404 });
-  const q = categories[cat].questions.find(x => x.id === id);
+  if (!resolved || !categories[resolved]) return Response.json({ error: 'Kategori tidak ada' }, { status: 404 });
+  const q = categories[resolved].questions.find(x => x.id === id);
   if (!q) return Response.json({ error: 'Soal tidak ada' }, { status: 404 });
   return Response.json({ a: q.a, alt: q.alt || [], explain: q.explain });
 }

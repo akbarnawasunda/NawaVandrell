@@ -119,7 +119,7 @@ export default function GameShell({ title, desc, icon, slug, stats, children, so
         </button>
       </div>
 
-      {isPro && stats?.length ? (
+      {stats?.length ? (
         <div className="stat-row">
           {stats.map((s) => (
             <div className="stat" key={s.label}>

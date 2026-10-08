@@ -8,10 +8,11 @@ function loadGames() {
   cache = {};
   for (const mod of chunks) {
     if (mod.game) {
-      if (!cache[mod.game]) {
-        cache[mod.game] = { game: mod.game, displayName: mod.displayName, items: [] };
+      const key = String(mod.game).toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!cache[key]) {
+        cache[key] = { game: mod.game, key, displayName: mod.displayName, items: [] };
       }
-      cache[mod.game].items.push(...(mod.items || []));
+      cache[key].items.push(...(mod.items || []));
     }
   }
   return cache;
@@ -27,15 +28,22 @@ export async function GET(req) {
   const games = loadGames();
 
   if (list === '1') {
-    const summary = Object.values(games).map((g) => ({ slug: g.game, name: g.displayName, count: g.items.length }));
+    const summary = Object.values(games).map((g) => ({
+      slug: g.game,
+      key: g.key,
+      name: g.displayName,
+      count: g.items.length,
+    }));
     return Response.json(summary);
   }
 
-  if (!cat || !games[cat]) {
+  const cleanCat = String(cat || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const g = games[cleanCat];
+
+  if (!cat || !g) {
     return Response.json({ error: 'Game tidak ada' }, { status: 404 });
   }
 
-  const g = games[cat];
   let pool = g.items.filter((q) => q.d === diff && !exclude.includes(q.id));
   if (pool.length === 0) pool = g.items.filter((q) => !exclude.includes(q.id));
   if (pool.length === 0) {

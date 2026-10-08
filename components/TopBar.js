@@ -20,6 +20,13 @@ export default function TopBar() {
         </span>
       </Link>
 
+      <nav className="topbar-links" aria-label="Navigasi Utama">
+        <Link href="/" className="topbar-link">Tools</Link>
+        <Link href="/downloader" className="topbar-link">Downloader</Link>
+        <Link href="/games" className="topbar-link">Games</Link>
+        <Link href="/leaderboard" className="topbar-link">Peringkat</Link>
+      </nav>
+
       <div className="hud-indicators">
         <div className="hud-item">
           <span className="hud-dot" />

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import SearchHome from '@/components/SearchHome';
 import ScrambleText from '@/components/ScrambleText';
 import Icon, { iconNames } from '@/components/icons';
-import { featuredTools } from '@/data/featuredTools';
+import { featuredTools, getToolHref } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
 import { getRanked } from '@/lib/db';
 
@@ -33,9 +33,7 @@ export default async function HomePage() {
   const textSticker = safeTools.find((t) => t.slug === 'text-sticker');
   const gamesTool = safeTools.find((t) => t.slug === 'games');
   
-  const essentialTools = safeTools.filter(
-    (t) => !['downloader', 'sticker-maker', 'text-sticker', 'games'].includes(t.slug)
-  );
+  const allToolItems = safeTools.filter((t) => t.slug !== 'games');
 
   let top3 = [];
   try { top3 = await getRanked(3); } catch { top3 = []; }
@@ -43,7 +41,7 @@ export default async function HomePage() {
   return (
     <div className="shell">
       <section className="hero">
-        <span className="hero-badge simple-only">{safeTools.length} tools · {safeGames.length} game</span>
+        <span className="hero-badge simple-only">{allToolItems.length} tools · {safeGames.length} game</span>
         <span className="hero-badge pro-only">Neuro Core Digital Arsenal</span>
         
         <h1 className="pro-only" style={{ minHeight: '1.2em' }}>
@@ -53,21 +51,21 @@ export default async function HomePage() {
           <span className="grad">Tools yang beneran gampang dipakai</span>
         </h1>
         
-        <p className="sub">Bikin QR, stiker WA, kompres foto, download video, sampai main kuis. Semua gratis, tanpa daftar.</p>
-        <SearchHome tools={essentialTools} />
+        <p className="sub">Bikin QR, stiker WA, kompres foto, download media, sampai 16 game kuis & arcade. 100% gratis, tanpa daftar.</p>
+        <SearchHome tools={allToolItems} />
       </section>
 
       <section style={{ marginTop: 10 }}>
         <div className="section-head">
-          <h2>Showcase</h2>
+          <h2>Showcase Utama</h2>
           <Link href="/games" style={{ fontSize: 13.5, color: 'var(--accent-soft)', fontWeight: 600 }}>
-            Lihat semua game →
+            Lihat semua game ({safeGames.length}) →
           </Link>
         </div>
 
         <div className="bento">
           {downloader ? (
-            <Link href={`/tools/${downloader.slug}`} className="bento-card bento-large" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.05))' }}>
+            <Link href={getToolHref(downloader)} className="bento-card bento-large" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.05))' }}>
               <div className="bento-glow" style={{ background: 'var(--accent)', top: -50, right: -50 }} />
               <span className="bento-tag">Flagship</span>
               <div>
@@ -80,7 +78,7 @@ export default async function HomePage() {
                 <p className="bento-desc">{downloader.desc}</p>
               </div>
               <div style={{ marginTop: 20, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {['TikTok', 'IG', 'YouTube', 'Twitter', 'FB'].map((p) => (
+                {['TikTok', 'IG', 'YouTube', 'Twitter/X', 'FB', 'Spotify'].map((p) => (
                   <span key={p} style={{ fontSize: 11, padding: '4px 10px', background: 'rgba(255,255,255,0.06)', borderRadius: 999, color: 'var(--text-dim)' }}>
                     {p}
                   </span>
@@ -90,26 +88,26 @@ export default async function HomePage() {
           ) : null}
 
           {sticker ? (
-            <Link href={`/tools/${sticker.slug}`} className="bento-card">
+            <Link href={getToolHref(sticker)} className="bento-card">
               <h3 className="bento-title" style={{ fontSize: 18 }}>
                 <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
                   <Icon name="sticker" size={20} />
                 </span>
                 Stiker WA
               </h3>
-              <p className="bento-desc" style={{ fontSize: 12.5 }}>Foto jadi stiker 512x512.</p>
+              <p className="bento-desc" style={{ fontSize: 12.5 }}>Foto jadi stiker 512x512 WebP.</p>
             </Link>
           ) : null}
 
           {textSticker ? (
-            <Link href={`/tools/${textSticker.slug}`} className="bento-card">
+            <Link href={getToolHref(textSticker)} className="bento-card">
               <h3 className="bento-title" style={{ fontSize: 18 }}>
                 <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
                   <Icon name="case" size={20} />
                 </span>
                 Stiker Teks
               </h3>
-              <p className="bento-desc" style={{ fontSize: 12.5 }}>Ala ".brat" bot WA.</p>
+              <p className="bento-desc" style={{ fontSize: 12.5 }}>Ala ".brat" & breaking news.</p>
             </Link>
           ) : null}
 

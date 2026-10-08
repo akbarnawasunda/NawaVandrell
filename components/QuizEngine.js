@@ -13,11 +13,12 @@ function normalize(s) {
   return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
 
-export default function QuizEngine({ cat }) {
+export default function QuizEngine({ cat, category, title, desc, icon }) {
+  const resolvedCat = cat || category;
   const { addToast } = useToast();
   const player = usePlayer();
 
-  const [displayName, setDisplayName] = useState('Quiz');
+  const [displayName, setDisplayName] = useState(title || 'Quiz');
   const [phase, setPhase] = useState('pick');
   const [diff, setDiff] = useState('easy');
   const [current, setCurrent] = useState(null);
@@ -37,18 +38,20 @@ export default function QuizEngine({ cat }) {
     fetch('/api/quiz?list=1')
       .then((r) => r.json())
       .then((list) => {
-        const found = (Array.isArray(list) ? list : []).find((c) => c.slug === cat);
+        const found = (Array.isArray(list) ? list : []).find(
+          (c) => c.slug === resolvedCat || (resolvedCat === 'tebakkimia' && c.slug === 'kimia') || (resolvedCat === 'tebaklirik' && c.slug === 'lirik')
+        );
         if (found) setDisplayName(found.name);
       })
       .catch(() => {});
-  }, [cat]);
+  }, [resolvedCat]);
 
   const nextQuestion = async (d) => {
     lockRef.current = false;
     setPhase('loading');
     try {
       const ex = excludeRef.current.slice(-60).join(',');
-      const res = await fetch(`/api/quiz?cat=${cat}&diff=${d}&exclude=${ex}&_t=${Date.now()}`, { cache: "no-store" });
+      const res = await fetch(`/api/quiz?cat=${resolvedCat}&diff=${d}&exclude=${ex}&_t=${Date.now()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const q = await res.json();
       excludeRef.current.push(q.id);
@@ -58,8 +61,8 @@ export default function QuizEngine({ cat }) {
       setReveal(null);
       setHintShown(false);
       setPhase('question');
-    } catch {
-      addToast(`Gagal: ${err.message} | cat=${cat}`, 'error');
+    } catch (err) {
+      addToast(`Gagal memuat soal: ${err?.message || 'Error'}`, 'error');
       setPhase('pick');
     }
   };
@@ -76,7 +79,7 @@ export default function QuizEngine({ cat }) {
     const res = await fetch('/api/quiz', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: current.id, cat }),
+      body: JSON.stringify({ id: current.id, cat: resolvedCat }),
     });
     const rev = await res.json();
     setReveal(rev);
@@ -124,9 +127,9 @@ export default function QuizEngine({ cat }) {
   return (
     <GameShell
       title={displayName}
-      desc="Jawab sebelum waktu habis. Makin cepet, makin gede poinnya."
-      icon="quiz"
-      slug={cat}
+      desc={desc || 'Jawab sebelum waktu habis. Makin cepet, makin gede poinnya.'}
+      icon={icon || 'quiz'}
+      slug={resolvedCat}
       stats={[
         { label: 'skor sesi', value: score },
         { label: 'streak', value: streak },

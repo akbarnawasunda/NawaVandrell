@@ -9,6 +9,7 @@ const BASE_POINT = { easy: 10, medium: 20, hard: 30 };
 const TEXT_SUBMIT = ['angkaenigma', 'mathrush', 'emojistory'];
 function norm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9]+/g,''); }
 export default function GameEngine({ game }){
+  const cleanGame = String(game || '').toLowerCase().replace(/[^a-z0-9]/g, '');
   const { addToast } = useToast();
   const player = usePlayer();
   const [displayName,setDisplayName]=useState('Game');
@@ -27,23 +28,25 @@ export default function GameEngine({ game }){
   const [built,setBuilt]=useState([]);
   const excludeRef=useRef([]); const lockRef=useRef(false);
   const builtRef=useRef([]);
+
   useEffect(()=>{
     fetch('/api/games?list=1&_t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(list=>{
-      const found=(Array.isArray(list)?list:[]).find(c=>c.slug===game);
+      const found=(Array.isArray(list)?list:[]).find(c=>c.slug===cleanGame || c.key===cleanGame);
       if(found) setDisplayName(found.name);
     }).catch(()=>{});
-  },[game]);
+  },[cleanGame]);
+
   const nextItem=async(d)=>{
     lockRef.current=false; builtRef.current=[];
     setPhase('loading');
     try{
       const ex=excludeRef.current.slice(-60).join(',');
-      const res=await fetch(`/api/games?cat=${game}&diff=${d}&exclude=${ex}&_t=${Date.now()}`,{cache:'no-store'});
+      const res=await fetch(`/api/games?cat=${cleanGame}&diff=${d}&exclude=${ex}&_t=${Date.now()}`,{cache:'no-store'});
       if(!res.ok) throw new Error(`HTTP ${res.status}`);
       const it=await res.json();
       excludeRef.current.push(it.id);
       setItem(it); setAnswer(''); setResult(null); setHintShown(false); setTaps([]); setBuilt([]);
-      setPhase(game==='memorymatrix'?'display':'play');
+      setPhase(cleanGame==='memorymatrix'?'display':'play');
     }catch(err){ addToast(`Gagal: ${err.message}`,'error'); setPhase('pick'); }
   };
   useEffect(()=>{ if(phase!=='display') return; const t=setTimeout(()=>setPhase('play'),2000); return()=>clearTimeout(t); },[phase]);
@@ -88,7 +91,7 @@ export default function GameEngine({ game }){
     });
   };
   const tapTile=(i)=>{
-    if(phase!=='play'||game!=='susunkata') return;
+    if(phase!=='play'||cleanGame!=='susunkata') return;
     if(builtRef.current.includes(i)) return;
     const newBuilt=[...builtRef.current,i];
     builtRef.current=newBuilt;
@@ -97,24 +100,30 @@ export default function GameEngine({ game }){
     const word=newBuilt.map(x=>letters[x]).join('');
     if(word.length===letters.length) setTimeout(()=>settle('auto',word),30);
   };
+  const undoTile=()=>{
+    if(phase!=='play'||cleanGame!=='susunkata'||builtRef.current.length===0) return;
+    const next=builtRef.current.slice(0,-1);
+    builtRef.current=next;
+    setBuilt(next);
+  };
   const limit=(item&&item.timeLimit)||TIME_LIMIT[diff]||20;
   const pct=Math.round((timeLeft/limit)*100);
   const barColor=pct>50?'var(--accent,#6366f1)':pct>25?'#fbbf24':'#f87171';
   const renderBody=()=>{
     if(!item) return null;
-    switch(game){
+    switch(cleanGame){
       case 'angkaenigma': return <><p className="game-prompt">{(item.sequence||[]).join(', ')},...?</p><input className="input" value={answer} onChange={e=>setAnswer(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submitText()} placeholder="Angka selanjutnya..." autoFocus inputMode="numeric"/></>;
       case 'mathrush': return <><p className="game-prompt">{item.question} =?</p><input className="input" value={answer} onChange={e=>setAnswer(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submitText()} placeholder="Jawaban..." autoFocus inputMode="numeric"/></>;
       case 'emojistory': return <><p className="game-emoji">{item.emojis}</p><input className="input" value={answer} onChange={e=>setAnswer(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submitText()} placeholder="Judul / jawaban..." autoFocus/></>;
       case 'typingblitz': return <><p className="game-prompt">{item.word}</p><input className="input" value={answer} onChange={e=>{setAnswer(e.target.value); if(norm(e.target.value)===norm(item.word)) settle('auto',e.target.value);}} placeholder="Ketik kata di atas..." autoFocus/></>;
       case 'katasambung': return <><p className="game-prompt" style={{fontSize:16}}>{item.sentence}</p><div className="opt-grid">{(item.options||[]).map(opt=><button key={opt} type="button" className="btn btn-ghost" onClick={()=>pickOption(opt)}>{opt}</button>)}</div></>;
       case 'memorymatrix': { const [rows,cols]=(item.gridSize||'3x3').split('x').map(Number); const cells=[]; for(let i=1;i<=rows*cols;i++) cells.push(i); return <><p className="hint" style={{textAlign:'center'}}>{phase==='display'?'Ingat pola yang menyala...':'Tap kotak sesuai urutan!'}</p><div className="mm-grid" style={{gridTemplateColumns:`repeat(${cols},1fr)`}}>{cells.map(c=>{const lit=phase==='display'&&(item.pattern||[]).includes(c); const tapped=taps.includes(c); return <button key={c} type="button" className={`mm-cell ${lit?'lit':''} ${tapped?'tapped':''}`} onClick={()=>tapCell(c)}/>;})}</div></>; }
-      case 'susunkata': { const letters=(item.scrambled||'').split('-'); const word=built.map(x=>letters[x]).join(''); return <><p className="game-prompt" style={{fontSize:22, letterSpacing:3}}>{word||'...'}</p><div className="tile-row">{letters.map((l,i)=><button key={i} type="button" className={`tile ${built.includes(i)?'used':''}`} onClick={()=>tapTile(i)}>{l}</button>)}</div><button type="button" className="btn btn-ghost" onClick={()=>{builtRef.current=[]; setBuilt([]);}}>Reset</button></>; }
+      case 'susunkata': { const letters=(item.scrambled||'').split('-'); const word=built.map(x=>letters[x]).join(''); return <><p className="game-prompt" style={{fontSize:22, letterSpacing:3}}>{word||'...'}</p><div className="tile-row">{letters.map((l,i)=><button key={i} type="button" className={`tile ${built.includes(i)?'used':''}`} onClick={()=>tapTile(i)}>{l}</button>)}</div><div style={{display:'flex',gap:8,justifyContent:'center'}}><button type="button" className="btn btn-ghost btn-sm" onClick={undoTile} disabled={built.length===0}>⌫ Hapus</button><button type="button" className="btn btn-ghost btn-sm" onClick={()=>{builtRef.current=[]; setBuilt([]);}} disabled={built.length===0}>Reset</button></div></>; }
       default: return <p className="hint">Game belum didukung</p>;
     }
   };
   return(
-    <GameShell title={displayName} desc="Main sebelum waktu habis." icon="gamepad" slug={game} stats={[{label:'skor sesi',value:score},{label:'streak',value:streak},{label:'benar',value:`${tally.correct}/${tally.total}`}]}>
+    <GameShell title={displayName} desc="Main sebelum waktu habis." icon="gamepad" slug={cleanGame} stats={[{label:'skor sesi',value:score},{label:'streak',value:streak},{label:'benar',value:`${tally.correct}/${tally.total}`}]}>
       {phase==='pick'?(<div className="panel"><p className="label" style={{marginBottom:10}}>Pilih tingkat kesulitan</p><div style={{display:'grid',gap:9}}>{['easy','medium','hard'].map(d=><button key={d} type="button" className="btn btn-ghost btn-full" onClick={()=>{setDiff(d); nextItem(d);}}>{d.toUpperCase()} · {TIME_LIMIT[d]}s · base {BASE_POINT[d]} poin</button>)}</div></div>):null}
       {phase==='loading'?(<div className="panel"><p className="hint">Ngambil soal...</p></div>):null}
       {(phase==='display'||phase==='play')&&item?(
@@ -122,7 +131,7 @@ export default function GameEngine({ game }){
           {phase==='play'?(<><div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}><span className="label">{diff} · sisa</span><strong style={{color:barColor,fontSize:18}}>{timeLeft}s</strong></div><div className="quiz-timer"><div className="quiz-timer-fill" style={{width:`${pct}%`,background:barColor}}/></div></>):null}
           {renderBody()}
           <div className="btn-row" style={{marginTop:12}}>
-            {phase==='play'&&TEXT_SUBMIT.includes(game)?(<button type="button" className="btn btn-primary" onClick={submitText}><Icon name="check" size={16}/> Kunci</button>):null}
+            {phase==='play'&&TEXT_SUBMIT.includes(cleanGame)?(<button type="button" className="btn btn-primary" onClick={submitText}><Icon name="check" size={16}/> Kunci</button>):null}
             {!hintShown&&item.hint?(<button type="button" className="btn btn-ghost" onClick={()=>setHintShown(true)}>Petunjuk</button>):null}
             <button type="button" className="btn btn-ghost" onClick={()=>settle('nyerah')}>Nyerah</button>
           </div>
