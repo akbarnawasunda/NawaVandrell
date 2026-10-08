@@ -13,13 +13,13 @@ export default function MicroAudioController() {
       // Jangan bunyiin hover di layar sentuh (bikin berisik pas scroll)
       if (e.pointerType === 'touch') return;
       
-      if (e.target.closest('.btn, .card, .chip, .mode-switch button, .cmdk-item')) {
+      if (e.target.closest('.btn, .card, .chip, .cmdk-item')) {
         play('hover');
       }
     };
 
     const handleClick = (e) => {
-      if (e.target.closest('.btn, .chip, .mode-switch button')) {
+      if (e.target.closest('.btn, .chip')) {
         play('click');
       }
     };

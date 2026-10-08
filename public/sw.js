@@ -73,7 +73,7 @@ self.addEventListener('fetch', (event) => {
           if (home) return home;
           return new Response(
             '<!doctype html><meta charset="utf-8"><title>Offline</title>' +
-              '<body style="background:#080b14;color:#e5eaf4;font-family:system-ui;text-align:center;padding:60px 20px">' +
+              '<body style="background:#0b0e13;color:#e5eaf4;font-family:system-ui;text-align:center;padding:60px 20px">' +
               '<h1 style="color:#8bf4de">Kamu sedang offline</h1>' +
               '<p>Halaman ini belum pernah dibuka, jadi belum tersimpan. Coba lagi setelah online.</p></body>',
             { headers: { 'Content-Type': 'text/html; charset=utf-8' }, status: 503 }

@@ -2,7 +2,7 @@
 
 Nawa Vandrell menyatukan tools harian, ruang kreatif, workflow rekap SIM kolektif, dan game ringan dalam satu website. Aplikasi dibangun dengan Next.js dan bisa dijalankan tanpa layanan database wajib. Beberapa fitur integrasi online memerlukan konfigurasi API opsional.
 
-Pilih tampilan **Tenang** atau **Aura** dari navigasi atas. Pilihan disimpan di `localStorage` dan dipulihkan sebelum halaman dirender.
+Website memakai satu tampilan konsisten yang dirancang agar ringkas, jelas, dan nyaman digunakan di desktop maupun ponsel.
 
 ---
 
@@ -60,9 +60,9 @@ buat skor yang beneran awet pakai KV.
 
 ```
 app/
-  layout.js            root: font, orb, provider, service worker
-  page.js              beranda: hero + search + preview game
-  globals.css          satu token layer, dua identitas (data-mode)
+  layout.js            root: font, shared shell, toast, service worker
+  page.js              beranda: pintasan, SIM kolektif, peringkat, katalog
+  globals.css          sistem desain responsif, satu tema konsisten
   tools/<slug>/page.js 23 tool
   games/page.js        indeks + filter
   games/<slug>/page.js 8 kuis + 7 arcade
@@ -74,7 +74,7 @@ app/
     admin/             verify, stats, player  (Bearer)
     tool-proxy/        alay, roasting, funfact, lorem, waifu, tiktok
 components/            ToolShell, GameShell, QuizEngine, ConfirmModal, ...
-context/               ModeContext, ToastContext
+context/               ToastContext
 hooks/                 useSound, useStreak, usePlayer
 lib/                   db.js, auth.js, quiz.js, funTools.js
 data/                  featuredTools, quizDatabase, arcadeData, nexrayData

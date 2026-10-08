@@ -112,15 +112,6 @@ export default function GamesCatalogPage() {
             <span><Icon name="trophy" size={15} /> Papan peringkat</span>
           </div>
         </div>
-        <div className="game-catalog-art" aria-hidden="true">
-          <span className="game-art-orbit game-art-orbit-one" />
-          <span className="game-art-orbit game-art-orbit-two" />
-          <span className="game-art-tile game-art-tile-back"><Icon name="bulb" size={25} /></span>
-          <span className="game-art-tile game-art-tile-side"><Icon name="word" size={22} /></span>
-          <span className="game-art-main"><Icon name="gamepad" size={42} /></span>
-          <span className="game-art-spark game-art-spark-one">✦</span>
-          <span className="game-art-spark game-art-spark-two">✧</span>
-        </div>
       </header>
 
       <section className="game-browser" aria-label="Cari dan filter game">

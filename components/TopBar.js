@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useMode } from '@/context/ModeContext';
 import { useMicroSound } from '@/hooks/useMicroSound';
 import Icon from './icons';
 
@@ -15,7 +14,6 @@ const navigation = [
 ];
 
 export default function TopBar() {
-  const { mode, setMode } = useMode();
   const audio = useMicroSound();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -34,7 +32,7 @@ export default function TopBar() {
   };
 
   return (
-    <header className={`topbar${menuOpen ? ' menu-open' : ''}`}>
+    <header className="topbar">
       <Link href="/" className="brand" aria-label="Nawa Vandrell — Beranda" onClick={() => setMenuOpen(false)}>
         <span className="brand-symbol" aria-hidden="true">N</span>
         <span className="brand-name">Nawa <strong>Vandrell</strong></span>
@@ -71,25 +69,6 @@ export default function TopBar() {
         >
           <Icon name={audio.enabled ? 'volumeOn' : 'volumeOff'} size={17} />
         </button>
-
-        <div className="mode-switch" role="group" aria-label="Pilih tampilan">
-          <button
-            type="button"
-            aria-label="Tampilan Tenang"
-            aria-pressed={mode === 'simple'}
-            onClick={() => setMode('simple')}
-          >
-            Tenang
-          </button>
-          <button
-            type="button"
-            aria-label="Tampilan Aura"
-            aria-pressed={mode === 'pro'}
-            onClick={() => setMode('pro')}
-          >
-            Aura
-          </button>
-        </div>
 
         <button
           type="button"

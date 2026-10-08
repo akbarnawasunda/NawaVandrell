@@ -5,11 +5,9 @@ import { useRouter } from 'next/navigation';
 import Icon, { iconNames } from '@/components/icons';
 import { featuredTools, getToolHref } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
-import { useMode } from '@/context/ModeContext';
 
 export default function CommandPalette() {
   const router = useRouter();
-  const { toggle, isPro } = useMode();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -38,20 +36,13 @@ export default function CommandPalette() {
     }));
 
     const actions = [
-      {
-        id: 'act-mode',
-        label: isPro ? 'Ubah tampilan ke Tenang' : 'Ubah tampilan ke Aura',
-        hint: 'Tampilan',
-        icon: 'sparkles',
-        action: () => toggle(),
-      },
       { id: 'act-home', label: 'Kembali ke beranda', hint: 'Halaman', icon: 'home', href: '/' },
       { id: 'act-board', label: 'Papan peringkat', hint: 'Halaman', icon: 'trophy', href: '/leaderboard' },
       { id: 'act-admin', label: 'Area admin', hint: 'Halaman', icon: 'lock', href: '/admin' },
     ];
 
     return [...tools, ...games, ...actions];
-  }, [isPro, toggle]);
+  }, []);
 
   const results = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -100,8 +91,7 @@ export default function CommandPalette() {
 
   const run = (item) => {
     setOpen(false);
-    if (item.action) item.action();
-    else if (item.href) router.push(item.href);
+    if (item.href) router.push(item.href);
   };
 
   const onInputKeyDown = (event) => {

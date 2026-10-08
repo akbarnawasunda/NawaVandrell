@@ -7,10 +7,10 @@
     </linearGradient>
     <radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="matrix(0 260 -260 0 256 176)" gradientUnits="userSpaceOnUse">
       <stop stop-color="#725bda" stop-opacity=".3"/>
-      <stop offset="1" stop-color="#080b14" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0b0e13" stop-opacity="0"/>
     </radialGradient>
   </defs>
-  <rect width="512" height="512" fill="#080b14"/>
+  <rect width="512" height="512" fill="#0b0e13"/>
   <rect width="512" height="512" fill="url(#halo)"/>
   <path d="M196 334V178l120 156V178" fill="none" stroke="url(#mark)" stroke-linecap="round" stroke-linejoin="round" stroke-width="31"/>
 </svg>

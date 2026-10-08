@@ -3,7 +3,6 @@ import '@fontsource-variable/space-grotesk/wght.css';
 import './globals.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
-import { ModeProvider } from '@/context/ModeContext';
 import TopBar from '@/components/TopBar';
 import CommandPalette from '@/components/CommandPalette';
 import MicroAudioController from '@/components/MicroAudioController';
@@ -37,7 +36,7 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: '#080b14',
+  themeColor: '#0b0e13',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -45,7 +44,7 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="id" data-mode="simple" suppressHydrationWarning>
+    <html lang="id">
       <head>
         <meta name="color-scheme" content="dark" />
         <script
@@ -63,50 +62,35 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var m=localStorage.getItem('nawa_mode');document.documentElement.dataset.mode=(m==='pro'?'pro':'simple');}catch(e){}})();`,
-          }}
-        />
       </head>
       <body>
         <a className="skip-link" href="#main-content">Lewati ke konten</a>
-        <div className="backdrop" aria-hidden="true">
-          <span className="orb orb-1" />
-          <span className="orb orb-2" />
-          <span className="orb orb-3" />
-        </div>
-        <div className="grid-bg" aria-hidden="true" />
-        <div className="noise" aria-hidden="true" />
-
-        <ModeProvider>
-          <ToastProvider>
-            <TopBar />
-            <main id="main-content" tabIndex="-1">{children}</main>
-            <CommandPalette />
-            <MicroAudioController />
-            <footer className="site-footer">
-              <div className="site-footer-main">
-                <a href="/" className="footer-brand">
-                  <span className="brand-symbol" aria-hidden="true">N</span>
-                  <span>Nawa <strong>Vandrell</strong></span>
-                </a>
-                <p>Tools praktis, ruang kreatif, dan jeda kecil untuk main.</p>
-              </div>
-              <nav className="footer-links" aria-label="Tautan footer">
-                <a href="/#tools">Semua tools</a>
-                <a href="/tools/sim-application">Rekap SIM kolektif</a>
-                <a href="/games">Arcade</a>
-                <a href="/leaderboard">Papan peringkat</a>
-                <a href="/admin">Admin</a>
-              </nav>
-              <div className="site-footer-meta">
-                <span>© {new Date().getFullYear()} Nawa Vandrell</span>
-                <span>Dibuat untuk hari-hari yang lebih ringan.</span>
-              </div>
-            </footer>
-          </ToastProvider>
-        </ModeProvider>
+        <ToastProvider>
+          <TopBar />
+          <main id="main-content" tabIndex="-1">{children}</main>
+          <CommandPalette />
+          <MicroAudioController />
+          <footer className="site-footer">
+            <div className="site-footer-main">
+              <a href="/" className="footer-brand">
+                <span className="brand-symbol" aria-hidden="true">N</span>
+                <span>Nawa <strong>Vandrell</strong></span>
+              </a>
+              <p>Tools praktis, ruang kreatif, dan jeda kecil untuk main.</p>
+            </div>
+            <nav className="footer-links" aria-label="Tautan footer">
+              <a href="/#tools">Semua tools</a>
+              <a href="/tools/sim-application">Rekap SIM kolektif</a>
+              <a href="/games">Arcade</a>
+              <a href="/leaderboard">Papan peringkat</a>
+              <a href="/admin">Admin</a>
+            </nav>
+            <div className="site-footer-meta">
+              <span>© {new Date().getFullYear()} Nawa Vandrell</span>
+              <span>Dibuat untuk hari-hari yang lebih ringan.</span>
+            </div>
+          </footer>
+        </ToastProvider>
 
         <Script id="nawa-sw" strategy="afterInteractive">
           {`if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }); }`}
