@@ -744,19 +744,44 @@ export default function SimCollectiveBuilder() {
       className={`sim-tool-shell sim-collective-shell${largeText ? ' is-large-text' : ''}`}
     >
       <section className="sim-collective-intro" aria-label="Alur penggunaan">
-        <div className="sim-collective-intro-top">
-          <div className="sim-collective-eyebrow"><span className="sim-live-dot" /> GRATIS · LOKAL · TANPA AKUN</div>
-          <button type="button" className="sim-readable-toggle" onClick={() => setLargeText((current) => !current)} aria-pressed={largeText}>
-            <span aria-hidden="true">A+</span><span>{largeText ? 'Teks normal' : 'Teks besar'}</span>
-          </button>
-        </div>
-        <p>Satu foto KTP jadi satu baris. Rapikan data, atur foto, lalu ekspor daftar yang siap dibagikan.</p>
-        <div className="sim-workflow-steps">
-          <div className={roster.length ? 'is-complete' : 'is-current'}><b>01</b><span><strong>Unggah</strong><small>Foto KTP</small></span></div>
-          <i aria-hidden="true" />
-          <div className={roster.length ? (processing ? 'is-current' : 'is-complete') : ''}><b>02</b><span><strong>Periksa</strong><small>OCR & foto</small></span></div>
-          <i aria-hidden="true" />
-          <div className={roster.length && !processing ? 'is-current' : ''}><b>03</b><span><strong>Ekspor</strong><small>PDF / Excel</small></span></div>
+        <div className="sim-collective-hero-grid">
+          <div className="sim-collective-hero-copy">
+            <div className="sim-collective-intro-top">
+              <div className="sim-collective-eyebrow"><span className="sim-live-dot" /> GRATIS · LOKAL · TANPA AKUN</div>
+              <button type="button" className="sim-readable-toggle" onClick={() => setLargeText((current) => !current)} aria-pressed={largeText}>
+                <span aria-hidden="true">A+</span><span>{largeText ? 'Teks normal' : 'Teks besar'}</span>
+              </button>
+            </div>
+            <h2 className="sim-hero-title">Banyak KTP.<br /><span>Satu rekap.</span></h2>
+            <p>Foto masuk, data dirapikan, lalu jadi daftar kolektif siap diperiksa dan dicetak—tanpa ribet.</p>
+            <div className="sim-workflow-steps">
+              <div className={roster.length ? 'is-complete' : 'is-current'}><b>01</b><span><strong>Unggah</strong><small>Foto KTP</small></span></div>
+              <i aria-hidden="true" />
+              <div className={roster.length ? (processing ? 'is-current' : 'is-complete') : ''}><b>02</b><span><strong>Periksa</strong><small>OCR & foto</small></span></div>
+              <i aria-hidden="true" />
+              <div className={roster.length && !processing ? 'is-current' : ''}><b>03</b><span><strong>Ekspor</strong><small>PDF / Excel</small></span></div>
+            </div>
+          </div>
+          <div className="sim-hero-art" aria-hidden="true">
+            <div className="sim-hero-art-glow" />
+            <div className="sim-hero-orbit sim-hero-orbit-one" />
+            <div className="sim-hero-orbit sim-hero-orbit-two" />
+            <div className="sim-hero-orbit-dot" />
+            <div className="sim-hero-doc-stack">
+              <div className="sim-hero-doc-back sim-hero-doc-back-one" />
+              <div className="sim-hero-doc-back sim-hero-doc-back-two" />
+              <div className="sim-hero-document">
+                <div className="sim-hero-document-top"><span className="sim-hero-mini-icon"><Icon name="image" size={14} /></span><span>REKAP DIGITAL</span><i /></div>
+                <div className="sim-hero-doc-heading"><b>DATA KOLEKTIF</b><span>PRIVAT · LOKAL</span></div>
+                <div className="sim-hero-doc-row"><b>01</b><i /><span /><em /></div>
+                <div className="sim-hero-doc-row"><b>02</b><i /><span /><em /></div>
+                <div className="sim-hero-doc-row"><b>03</b><i /><span /><em /></div>
+                <div className="sim-hero-doc-footer"><span><Icon name="lock" size={13} /></span><b>DATA TETAP DI PERANGKAT</b><i>✓</i></div>
+              </div>
+              <div className="sim-hero-float-badge"><span>✓</span><b>OCR lokal<small>siap membantu</small></b></div>
+            </div>
+            <div className="sim-hero-art-caption"><span>01</span> FOTO <i /> <span>02</span> DATA <i /> <span>03</span> REKAP</div>
+          </div>
         </div>
       </section>
 
