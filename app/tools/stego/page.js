@@ -150,8 +150,8 @@ export default function StegoPage() {
       };
 
       let len = 0;
-      for (let i = 0; i < 32; i++) len = (len << 1) | nextBit();
-      if (len <= 0 || len > 200000) {
+      for (let i = 0; i < 32; i++) len = len * 2 + nextBit();
+      if (len <= 0 || len > 200000 || cursor + len * 8 > data.length) {
         throw new Error('Foto ini gak mengandung pesan dari NawaVandrell.');
       }
 

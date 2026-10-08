@@ -80,6 +80,7 @@ export function ToastProvider({ children }) {
   const value = useMemo(
     () => ({
       addToast,
+      showToast: addToast,
       removeToast,
       toasts,
     }),

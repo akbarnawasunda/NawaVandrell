@@ -36,9 +36,9 @@ export default function RandomGalleryPage() {
           return;
         }
 
-        // waifu -> lewat tool-proxy supaya tidak kena CORS
+        // waifu -> lewat tools-proxy supaya tidak kena CORS
         const type = WAIFU_TYPES[Math.floor(Math.random() * WAIFU_TYPES.length)];
-        const res = await fetch(`/api/tool-proxy?path=waifu&type=${type}`);
+        const res = await fetch(`/api/tools-proxy?path=waifu&type=${type}`);
         const data = await res.json();
         if (!res.ok || !data.status) throw new Error(data.error || 'gagal');
         setImage(data.result);

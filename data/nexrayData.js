@@ -63,6 +63,13 @@ const arcadeGames = [
     icon: '➗',
     type: 'arcade',
   },
+  {
+    slug: 'susunkata',
+    name: 'Susun Kata',
+    desc: 'Susun huruf acak jadi kata bermakna',
+    icon: '🔤',
+    type: 'arcade',
+  },
 ];
 
 export const allGames = [...quizGames, ...arcadeGames];
