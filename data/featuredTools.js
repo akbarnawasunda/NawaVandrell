@@ -59,11 +59,11 @@ export const featuredTools = [
   },
   {
     slug: 'sim-application',
-    title: 'Berkas Persiapan SIM',
-    desc: 'Baca data KTP lokal, koreksi identitas, lalu ekspor berkas persiapan SIM ke PDF, DOCX, XLSX, CSV, atau JSON.',
+    title: 'Rekap SIM Kolektif',
+    desc: 'Unggah banyak KTP, koreksi hasil OCR, lalu susun satu baris per orang dengan foto KTP dan ekspor ke PDF, DOCX, Excel, CSV, atau JSON.',
     icon: 'fingerprint',
     group: ['populer', 'kerja'],
-    keywords: 'ktp nik sim dokumen formulir berkas surat identitas OCR pindai scan permohonan pengajuan SIM A B C D cetak pdf',
+    keywords: 'ktp nik sim kolektif kelompok rekap roster data peserta foto identitas OCR pindai scan pembuatan baru SIM A B C D cetak pdf excel docx',
   },
   {
     slug: 'roasting',

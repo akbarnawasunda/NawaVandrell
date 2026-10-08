@@ -98,7 +98,7 @@ public/                manifest.json, sw.js, icon.svg
 ## Isi
 
 **Tools (23).** All-In-One Downloader · Stiker WhatsApp · Stiker Teks · QR Code ·
-Kompres Foto · Password Generator · WA Direct Chat · Berkas Persiapan SIM · Mesin Roasting ·
+Kompres Foto · Password Generator · WA Direct Chat · Rekap SIM Kolektif · Mesin Roasting ·
 Steganografi · JSON Formatter · Text Case · Color Picker · Gradient Generator · Hash Lab ·
 Base64 · UUID · Regex Tester · Lorem Ipsum · Text to Image · Teks Alay · Funfact Tanggal Lahir ·
 Galeri Acak
@@ -113,17 +113,19 @@ siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
 
 ---
 
-## OCR KTP dan berkas persiapan SIM
+## OCR KTP dan rekap SIM kolektif
 
-Tool **Berkas Persiapan SIM** membaca foto KTP dengan Tesseract.js dan model bahasa Indonesia
-di browser. File mesin OCR disalin dari dependensi npm ke `public/ocr/` oleh `predev` /
-`prebuild`; folder hasil generasi ini sengaja tidak masuk Git. Foto KTP dan data formulir
-tidak dikirim ke API maupun disimpan ke server. Periksa dan koreksi semua hasil OCR.
+Tool **Rekap SIM Kolektif** menerima banyak foto KTP sekaligus, membaca saran nama/NIK/data KTP
+dengan Tesseract.js di browser, lalu membuat tabel yang dapat dikoreksi dengan kolom utama
+**No, NAMA, SIM, KETERANGAN, FOTO KTP**. File mesin OCR disalin dari dependensi npm ke
+`public/ocr/` oleh `predev` / `prebuild`; folder hasil generasi ini sengaja tidak masuk Git.
+Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Foto dikompres
+untuk lampiran dokumen; periksa dan koreksi semua hasil OCR.
 
-Hasil ekspor adalah **lembar persiapan pribadi**, bukan SIM, bukti pendaftaran, atau
-formulir resmi. Tersedia PDF (dialog cetak browser), DOCX, XLSX multi-sheet, CSV, dan JSON;
-semua file dibuat lokal di browser. Syarat dan golongan SIM harus dikonfirmasi lewat kanal
-resmi/Satpas.
+Hasil ekspor adalah **draf rekap pribadi**, bukan SIM, bukti pendaftaran, atau formulir resmi.
+Tersedia PDF (dialog cetak browser), DOCX, Excel dengan foto KTP tertanam dan sheet data,
+CSV berisi seluruh data KTP, serta JSON yang turut memuat foto terkompres; semua file dibuat
+lokal di browser. Syarat dan golongan SIM harus dikonfirmasi lewat kanal resmi/Satpas.
 
 ## Ganti ke database soal penuh
 
