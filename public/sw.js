@@ -10,7 +10,7 @@
  * jadi lebih aman meng-cache saat halaman benar-benar dikunjungi.
  */
 
-const VERSION = 'nawa-v2';
+const VERSION = 'nawa-v3';
 const SHELL_CACHE = `${VERSION}-shell`;
 const ASSET_CACHE = `${VERSION}-assets`;
 
@@ -39,6 +39,7 @@ self.addEventListener('activate', (event) => {
 function isAsset(url) {
   return (
     url.pathname.startsWith('/_next/static/') ||
+    url.pathname.startsWith('/ocr/') ||
     /\.(?:css|js|woff2?|ttf|svg|png|jpe?g|webp|ico)$/i.test(url.pathname)
   );
 }

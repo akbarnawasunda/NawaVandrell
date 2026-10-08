@@ -4,16 +4,21 @@
   "private": true,
   "description": "NawaVandrell 3.0 - NEURO CORE DIGITAL ARSENAL. Super-app tools + games + AI.",
   "scripts": {
+    "predev": "node scripts/copy-ocr-assets.mjs",
     "dev": "next dev",
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:ocr": "node --test tests/ktpOcr.test.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/ind": "1.0.0",
     "next": "14.2.35",
     "qrcode.react": "^3.1.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tesseract.js": "7.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

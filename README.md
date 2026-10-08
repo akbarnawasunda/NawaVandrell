@@ -1,6 +1,6 @@
 # NawaVandrell 2.0 — Neuro Core Digital Arsenal
 
-Super-app **19 tools + 15 game** yang jalan cuma dengan **GitHub + Vercel**. Tanpa database
+Super-app **23 tools + 15 game** yang jalan cuma dengan **GitHub + Vercel**. Tanpa database
 wajib, tanpa kvdb.io, tanpa API key.
 
 Dua wajah dalam satu app:
@@ -75,7 +75,7 @@ app/
   layout.js            root: font, orb, provider, service worker
   page.js              beranda: hero + search + preview game
   globals.css          satu token layer, dua identitas (data-mode)
-  tools/<slug>/page.js 19 tool
+  tools/<slug>/page.js 23 tool
   games/page.js        indeks + filter
   games/<slug>/page.js 8 kuis + 7 arcade
   leaderboard/page.js  top 20
@@ -97,20 +97,32 @@ public/                manifest.json, sw.js, icon.svg
 
 ## Isi
 
-**Tools (19).** QR Code · Password Generator · Base64 · JSON Formatter · Hash Lab
-(SHA-1/256/384/512) · Text Case · UUID · Regex Tester · Lorem Ipsum · Image Compressor ·
-Sticker WhatsApp · Color Picker · Gradient Generator · Text to Image · Teks Alay ·
-Roasting Machine · Funfact Tanggal Lahir · Galeri Acak · TikTok Downloader
+**Tools (23).** All-In-One Downloader · Stiker WhatsApp · Stiker Teks · QR Code ·
+Kompres Foto · Password Generator · WA Direct Chat · Berkas Persiapan SIM · Mesin Roasting ·
+Steganografi · JSON Formatter · Text Case · Color Picker · Gradient Generator · Hash Lab ·
+Base64 · UUID · Regex Tester · Lorem Ipsum · Text to Image · Teks Alay · Funfact Tanggal Lahir ·
+Galeri Acak
 
 **Game (15).** Tebak-tebakan · Teka-teki · Siapakah Aku · Susun Kata · Tebak Kimia ·
 Asah Otak · Tebak Lirik · Islamic Quiz · Logic Gate Puzzle · Angka Enigma ·
 Kata Sambung · Emoji Story · Memory Matrix · Typing Blitz · Math Rush
 
-Semua betulan jalan — bukan mockup. QR pakai canvas asli lalu diunduh PNG, hash pakai
+Semua betulan jalan — bukan mockup. OCR KTP untuk berkas persiapan SIM berjalan di browser, QR pakai canvas asli lalu diunduh PNG, hash pakai
 `crypto.subtle`, password pakai `crypto.getRandomValues`, sticker keluar `.webp` 512×512
 siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
 
 ---
+
+## OCR KTP dan berkas persiapan SIM
+
+Tool **Berkas Persiapan SIM** membaca foto KTP dengan Tesseract.js dan model bahasa Indonesia
+di browser. File mesin OCR disalin dari dependensi npm ke `public/ocr/` oleh `predev` /
+`prebuild`; folder hasil generasi ini sengaja tidak masuk Git. Foto KTP dan data formulir
+tidak dikirim ke API maupun disimpan ke server. Periksa dan koreksi semua hasil OCR.
+
+Hasil cetaknya adalah **lembar persiapan pribadi**, bukan SIM, bukti pendaftaran, atau
+formulir resmi. Tombol cetak membuka dialog browser agar pengguna dapat menyimpan PDF.
+Syarat dan golongan SIM harus dikonfirmasi lewat kanal resmi/Satpas.
 
 ## Ganti ke database soal penuh
 

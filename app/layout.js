@@ -13,7 +13,7 @@ export const metadata = {
     template: '%s · NawaVandrell 3.0',
   },
   description:
-    'All-in-one downloader, stiker WA, steganografi anti-kepo, tools harian, dan 15 arcade game. 100% gratis, tanpa daftar, semua proses di browser.',
+    'All-in-one downloader, stiker WA, tools harian, OCR KTP lokal untuk berkas persiapan SIM, dan arcade game. Gratis, tanpa daftar.',
   manifest: '/manifest.json',
   applicationName: 'NawaVandrell 3.0',
   icons: { icon: '/icon.svg', apple: '/icon.svg' },
@@ -22,7 +22,7 @@ export const metadata = {
     siteName: 'NawaVandrell 3.0',
     title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
     description:
-      'Downloader, stiker WA, anti-kepo, tools harian, arcade game. Gratis, tanpa daftar.',
+      'Downloader, stiker WA, OCR KTP lokal untuk persiapan permohonan SIM, tools harian, dan arcade game. Gratis, tanpa daftar.',
     url: 'https://nawavandrell.vercel.app',
     images: [{ url: '/og.png', width: 1200, height: 630, alt: 'NawaVandrell 3.0' }],
   },
@@ -30,7 +30,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'NawaVandrell 3.0 — Neuro Core Digital Arsenal',
     description:
-      'Downloader, stiker WA, anti-kepo, tools harian, arcade game. Gratis, tanpa daftar.',
+      'Downloader, stiker WA, OCR KTP lokal untuk persiapan permohonan SIM, tools harian, dan arcade game. Gratis, tanpa daftar.',
     images: ['/og.png'],
   },
 };
@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
               applicationCategory: 'UtilitiesApplication',
               operatingSystem: 'Any',
               description:
-                'All-in-one downloader, stiker WA, steganografi, tools harian, dan arcade game. Gratis, tanpa daftar.',
+                'All-in-one downloader, stiker WA, tools harian, OCR KTP lokal untuk berkas persiapan SIM, dan arcade game. Gratis, tanpa daftar.',
               offers: { '@type': 'Offer', price: '0' },
             }),
           }}

@@ -7,6 +7,9 @@ node_modules/
 .next/
 out/
 build/
+
+# Generated locally from npm packages for browser-only KTP OCR
+/public/ocr/
 next-env.d.ts
 
 # environment — JANGAN pernah commit

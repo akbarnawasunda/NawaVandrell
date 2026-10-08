@@ -58,6 +58,14 @@ export const featuredTools = [
     keywords: 'wa whatsapp chat direct nomor kurir olshop tanpa simpan kontak',
   },
   {
+    slug: 'sim-application',
+    title: 'Berkas Persiapan SIM',
+    desc: 'Baca data KTP otomatis di browser, koreksi identitas, lalu cetak lembar persiapan SIM ke PDF.',
+    icon: 'fingerprint',
+    group: ['populer', 'kerja'],
+    keywords: 'ktp nik sim dokumen formulir berkas surat identitas OCR pindai scan permohonan pengajuan SIM A B C D cetak pdf',
+  },
+  {
     slug: 'roasting',
     title: 'Mesin Roasting',
     desc: 'Minta di-roasting savage, siap-siap sakit hati buat seru-seruan.',

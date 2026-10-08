@@ -14,9 +14,9 @@ function RenderIcon({ icon, size = 26 }) {
   return <span style={{ fontSize: size * 0.9, lineHeight: 1 }}>{icon}</span>;
 }
 
-export default function ToolShell({ title, desc, icon, children, backHref = '/', backLabel = 'Kembali' }) {
+export default function ToolShell({ title, desc, icon, children, backHref = '/', backLabel = 'Kembali', className = '' }) {
   return (
-    <div className="shell-tool">
+    <div className={`shell-tool${className ? ` ${className}` : ''}`}>
       <Link href={backHref} className="back">
         <Icon name="arrowLeft" size={15} />
         {backLabel}

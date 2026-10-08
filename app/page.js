@@ -51,7 +51,7 @@ export default async function HomePage() {
           <span className="grad">Tools yang beneran gampang dipakai</span>
         </h1>
         
-        <p className="sub">Bikin QR, stiker WA, kompres foto, download media, sampai 16 game kuis & arcade. 100% gratis, tanpa daftar.</p>
+        <p className="sub">Bikin QR, stiker WA, kompres foto, siapkan berkas SIM dari data KTP, download media, sampai game kuis & arcade. Gratis, tanpa daftar.</p>
         <SearchHome tools={allToolItems} />
       </section>
 

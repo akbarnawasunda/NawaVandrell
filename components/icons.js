@@ -548,6 +548,16 @@ icons.eye = (
   </Svg>
 );
 
+icons.eyeOff = (
+  <Svg>
+    <path d="m3 3 18 18" />
+    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+    <path d="M9.9 5.2A11 11 0 0 1 12 5c7 0 11 7 11 7a17 17 0 0 1-3.1 3.7" />
+    <path d="M6.2 6.2C3.4 8.1 1 12 1 12s4 7 11 7c1.2 0 2.3-.2 3.3-.6" />
+  </Svg>
+);
+iconNames.push('eyeOff');
+
 icons.hash = (
   <Svg>
     <line x1="4" y1="9" x2="20" y2="9" />
