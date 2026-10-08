@@ -14,7 +14,7 @@ function sampleRoster() {
   return [
     {
       name: 'Contoh Peserta',
-      nik: '3174010101900001',
+      nik: '0000000000000000',
       placeOfBirth: 'Bandung',
       birthDate: '01-01-1990',
       gender: 'LAKI-LAKI',
@@ -53,8 +53,8 @@ test('collective CSV and JSON contain editable KTP data and photo references saf
   assert.ok(csv.startsWith('\uFEFF'));
   assert.match(csv, /"'=/, 'CSV formula-like values are prefixed to prevent spreadsheet formula execution');
   assert.match(csv, /"FOTO KTP"/);
-  assert.match(csv, /3174010101900001/);
-  assert.equal(json.daftarPemohon[0].nik, '3174010101900001');
+  assert.match(csv, /0000000000000000/);
+  assert.equal(json.daftarPemohon[0].nik, '0000000000000000');
   assert.equal(json.daftarPemohon[0].fotoKTPDataUrl, TINY_KTP_IMAGE);
   assert.equal(json.daftarPemohon[1].fotoKTPDataUrl, null);
   assert.match(json.keterangan, /bukan SIM/i);
@@ -72,7 +72,7 @@ test('creates an Excel workbook with roster photos, detailed KTP sheet, and summ
   assert.deepEqual(workbook.worksheets.map((sheet) => sheet.name), ['Rekap Kolektif', 'Data KTP', 'Ringkasan']);
   assert.equal(workbook.getWorksheet('Rekap Kolektif').getImages().length, 1);
   assert.equal(workbook.getWorksheet('Rekap Kolektif').getCell('C1').value, 'NIK');
-  assert.equal(workbook.getWorksheet('Data KTP').getCell('C2').value, '3174010101900001');
+  assert.equal(workbook.getWorksheet('Data KTP').getCell('C2').value, '0000000000000000');
   assert.equal(workbook.getWorksheet('Ringkasan').getCell('B2').value, 2);
 });
 
