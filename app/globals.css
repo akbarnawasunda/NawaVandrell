@@ -363,7 +363,9 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
 .sim-preview-column { position: sticky; top: 90px; }
 .sim-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 10px; }
 .sim-preview-toolbar > div { display: flex; gap: 10px; align-items: center; }
-.sim-print-button { height: 40px; min-width: 158px; padding: 0 13px; font-size: 12px; }
+.sim-export-actions { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; margin: 0 0 7px; }
+.sim-export-button { height: 40px; min-width: 0; padding: 0 8px; font-size: 11px; }
+.sim-export-status { min-height: 20px; margin: 0 0 9px; color: var(--text-faint); font-size: 11px; }
 .sim-print-hint { margin: 0 0 10px; padding: 9px 11px; border-radius: 10px; color: #fde68a; background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.18); font-size: 11.5px; }
 .sim-print-sheet { position: relative; overflow: hidden; padding: 26px; border-radius: 15px; border: 1px solid #d8dee8; background: #fff; color: #182334; box-shadow: 0 15px 42px rgba(0,0,0,0.22); font-family: Arial, Helvetica, sans-serif; line-height: 1.42; }
 .sim-doc-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -405,7 +407,7 @@ img, canvas, svg, video { max-width: 100%; height: auto; }
   .sim-form-grid { grid-template-columns: minmax(0, 1fr); }
   .sim-field-wide { grid-column: auto; }
   .sim-preview-toolbar { align-items: flex-start; flex-direction: column; }
-  .sim-print-button { width: 100%; }
+  .sim-export-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .sim-print-sheet { padding: 19px; }
   .sim-doc-header h2 { font-size: 19px; }
   .sim-doc-meta, .sim-doc-grid { gap: 7px 9px; }

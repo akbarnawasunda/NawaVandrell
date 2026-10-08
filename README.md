@@ -120,9 +120,10 @@ di browser. File mesin OCR disalin dari dependensi npm ke `public/ocr/` oleh `pr
 `prebuild`; folder hasil generasi ini sengaja tidak masuk Git. Foto KTP dan data formulir
 tidak dikirim ke API maupun disimpan ke server. Periksa dan koreksi semua hasil OCR.
 
-Hasil cetaknya adalah **lembar persiapan pribadi**, bukan SIM, bukti pendaftaran, atau
-formulir resmi. Tombol cetak membuka dialog browser agar pengguna dapat menyimpan PDF.
-Syarat dan golongan SIM harus dikonfirmasi lewat kanal resmi/Satpas.
+Hasil ekspor adalah **lembar persiapan pribadi**, bukan SIM, bukti pendaftaran, atau
+formulir resmi. Tersedia PDF (dialog cetak browser), DOCX, XLSX multi-sheet, CSV, dan JSON;
+semua file dibuat lokal di browser. Syarat dan golongan SIM harus dikonfirmasi lewat kanal
+resmi/Satpas.
 
 ## Ganti ke database soal penuh
 

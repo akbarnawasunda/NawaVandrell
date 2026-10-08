@@ -60,7 +60,7 @@ export const featuredTools = [
   {
     slug: 'sim-application',
     title: 'Berkas Persiapan SIM',
-    desc: 'Baca data KTP otomatis di browser, koreksi identitas, lalu cetak lembar persiapan SIM ke PDF.',
+    desc: 'Baca data KTP lokal, koreksi identitas, lalu ekspor berkas persiapan SIM ke PDF, DOCX, XLSX, CSV, atau JSON.',
     icon: 'fingerprint',
     group: ['populer', 'kerja'],
     keywords: 'ktp nik sim dokumen formulir berkas surat identitas OCR pindai scan permohonan pengajuan SIM A B C D cetak pdf',

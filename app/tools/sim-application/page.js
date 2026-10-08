@@ -5,6 +5,13 @@ import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import { useToast } from '@/context/ToastContext';
 import { extractKtpFields } from '@/lib/ktpOcr.mjs';
+import {
+  createSimExportData,
+  exportSimCsv,
+  exportSimDocx,
+  exportSimJson,
+  exportSimXlsx,
+} from '@/lib/simDocumentExports.mjs';
 
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024;
 
@@ -165,6 +172,7 @@ export default function SimApplicationPage() {
   const [detectedFields, setDetectedFields] = useState([]);
   const [showNik, setShowNik] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState('');
   const fileInputRef = useRef(null);
   const previewUrlRef = useRef('');
   const recognitionRef = useRef({ id: 0, worker: null });
@@ -323,30 +331,65 @@ export default function SimApplicationPage() {
   const simChoiceIsComplete = Boolean(form.simType && (form.simType !== 'Lainnya' || form.otherSim.trim()));
   const canPrint = Boolean(form.name.trim() && nikIsValid && simChoiceIsComplete);
 
-  const printDocument = () => {
+  const validateExport = () => {
     if (!form.name.trim()) {
       addToast('Isi nama pemohon terlebih dahulu.', 'warning');
-      return;
+      return false;
     }
     if (!nikIsValid) {
       addToast('NIK harus berisi 16 digit. Periksa hasil OCR atau isi manual.', 'warning');
-      return;
+      return false;
     }
     if (!form.simType) {
       addToast('Pilih golongan SIM yang akan diajukan.', 'warning');
-      return;
+      return false;
     }
     if (form.simType === 'Lainnya' && !form.otherSim.trim()) {
       addToast('Jelaskan golongan SIM yang dimaksud.', 'warning');
+      return false;
+    }
+    return true;
+  };
+
+  const exportDocument = async (format) => {
+    if (!validateExport()) return;
+
+    if (format === 'pdf') {
+      const previousTitle = document.title;
+      document.title = 'Berkas-Persiapan-SIM';
+      window.addEventListener('afterprint', () => { document.title = previousTitle; }, { once: true });
+      window.print();
       return;
     }
-    window.print();
+
+    setExportingFormat(format);
+    try {
+      const data = createSimExportData({
+        form,
+        simLabel: selectedSimLabel,
+        checklist,
+        dateLabel: formatDate(form.applicationDate),
+      });
+      const formatNames = { docx: 'Word', xlsx: 'Excel', csv: 'CSV', json: 'JSON' };
+
+      if (format === 'docx') await exportSimDocx(data);
+      else if (format === 'xlsx') await exportSimXlsx(data);
+      else if (format === 'csv') exportSimCsv(data);
+      else if (format === 'json') exportSimJson(data);
+      else throw new Error('Format file tidak didukung.');
+
+      addToast(`File ${formatNames[format]} berhasil dibuat di perangkat ini.`, 'success');
+    } catch {
+      addToast('Gagal membuat file. Coba lagi atau gunakan opsi PDF.', 'error');
+    } finally {
+      setExportingFormat('');
+    }
   };
 
   return (
     <ToolShell
       title="Berkas Persiapan SIM"
-      desc="Unggah foto KTP untuk membaca data otomatis, koreksi hasilnya, lalu cetak lembar persiapan pribadi."
+      desc="Unggah KTP untuk membaca data otomatis, koreksi hasilnya, lalu ekspor berkas persiapan pribadi ke PDF, DOCX, XLSX, CSV, atau JSON."
       icon="fingerprint"
       className="sim-tool-shell"
     >
@@ -543,11 +586,31 @@ export default function SimApplicationPage() {
                 <p>Perubahan data langsung terlihat di sini.</p>
               </div>
             </div>
-            <button type="button" className="btn btn-primary sim-print-button" onClick={printDocument} disabled={!canPrint}>
-              <Icon name="fileText" size={16} /> Cetak / Simpan PDF
+          </div>
+          <div className="sim-export-actions" role="group" aria-label="Pilih format ekspor">
+            <button type="button" className="btn btn-primary sim-export-button" onClick={() => exportDocument('pdf')} disabled={!canPrint || Boolean(exportingFormat)} title="Cetak atau simpan sebagai PDF">
+              <Icon name="fileText" size={15} /> PDF
+            </button>
+            <button type="button" className="btn btn-ghost sim-export-button" onClick={() => exportDocument('docx')} disabled={!canPrint || Boolean(exportingFormat)} title="Unduh dokumen Microsoft Word">
+              <Icon name="fileText" size={15} /> DOCX
+            </button>
+            <button type="button" className="btn btn-ghost sim-export-button" onClick={() => exportDocument('xlsx')} disabled={!canPrint || Boolean(exportingFormat)} title="Unduh workbook Excel multi-sheet">
+              <Icon name="clipboard" size={15} /> XLSX
+            </button>
+            <button type="button" className="btn btn-ghost sim-export-button" onClick={() => exportDocument('csv')} disabled={!canPrint || Boolean(exportingFormat)} title="Unduh data sebagai CSV">
+              <Icon name="clipboard" size={15} /> CSV
+            </button>
+            <button type="button" className="btn btn-ghost sim-export-button" onClick={() => exportDocument('json')} disabled={!canPrint || Boolean(exportingFormat)} title="Unduh data sebagai JSON">
+              <Icon name="json" size={15} /> JSON
             </button>
           </div>
-          {!canPrint ? <p className="sim-print-hint">Untuk mencetak, lengkapi nama, NIK 16 digit, dan golongan SIM.</p> : null}
+          {exportingFormat ? (
+            <p className="sim-export-status" role="status" aria-live="polite">Menyiapkan file {exportingFormat.toUpperCase()} di perangkat ini…</p>
+          ) : !canPrint ? (
+            <p className="sim-print-hint">Lengkapi nama, NIK 16 digit, dan golongan SIM untuk mengaktifkan ekspor.</p>
+          ) : (
+            <p className="sim-export-status">DOCX, XLSX, CSV, dan JSON dibuat lokal di browser.</p>
+          )}
 
           <article className="sim-print-sheet" aria-label="Pratinjau lembar persiapan permohonan SIM">
             <header className="sim-doc-header">
