@@ -954,18 +954,6 @@ export default function SimCollectiveBuilder() {
               <div className={roster.length && !processing ? 'is-current' : ''}><b>03</b><span><strong>Ekspor</strong><small>PDF / Excel</small></span></div>
             </div>
           </div>
-          <div className="sim-hero-art" aria-hidden="true">
-            <div className="sim-hero-document">
-              <div className="sim-hero-document-top"><span className="sim-hero-mini-icon"><Icon name="image" size={14} /></span><span>REKAP DIGITAL</span><i /></div>
-              <div className="sim-hero-doc-heading"><b>DATA KOLEKTIF</b><span>PRIVAT · LOKAL</span></div>
-              <div className="sim-hero-doc-row"><b>01</b><i /><span /><em /></div>
-              <div className="sim-hero-doc-row"><b>02</b><i /><span /><em /></div>
-              <div className="sim-hero-doc-row"><b>03</b><i /><span /><em /></div>
-              <div className="sim-hero-doc-footer"><span><Icon name="lock" size={13} /></span><b>DATA TETAP DI PERANGKAT</b><i>✓</i></div>
-            </div>
-            <div className="sim-hero-float-badge"><span>✓</span><b>OCR lokal<small>siap membantu</small></b></div>
-            <div className="sim-hero-art-caption"><span>01</span> FOTO <i /> <span>02</span> DATA <i /> <span>03</span> REKAP</div>
-          </div>
         </div>
       </section>
 
