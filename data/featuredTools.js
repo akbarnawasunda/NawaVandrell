@@ -190,6 +190,133 @@ export const featuredTools = [
     keywords: 'galeri foto cecan waifu anime aesthetic wallpaper gambar acak photos',
   },
 
+  // ================= KERJA, UMKM, UANG, BELAJAR, KOMUNITAS, HARIAN =================
+  {
+    slug: 'hpp-harga',
+    title: 'Kalkulator HPP & Harga',
+    desc: 'Hitung HPP per produk, harga jual, diskon, laba, dan titik impas usaha kecil.',
+    icon: 'calculator',
+    group: ['umkm'],
+    keywords: 'hpp harga pokok produksi modal margin markup diskon laba titik impas bep umkm usaha jualan dagang produk biaya tetap',
+  },
+
+  {
+    slug: 'invoice',
+    title: 'Invoice, Penawaran & Kuitansi',
+    desc: 'Buat invoice, penawaran harga, atau kuitansi dengan total otomatis. Cetak PDF atau unduh Excel.',
+    icon: 'receipt',
+    group: ['umkm'],
+    keywords: 'invoice tagihan penawaran kuitansi nota faktur bon umkm usaha pdf excel ppn diskon terbilang pembeli penjual',
+  },
+
+  {
+    slug: 'pelacak-lamaran',
+    title: 'Pelacak Lamaran Kerja',
+    desc: 'Catat lamaran, status, dan tanggal tindak lanjut. Unduh pengingat ke kalender atau CSV.',
+    icon: 'briefcase',
+    group: ['kerja'],
+    keywords: 'lamaran kerja pelacak tracker status wawancara loker lowongan tindak lanjut follow up pengingat hrd karir melamar csv kalender',
+  },
+
+  {
+    slug: 'kalkulator-gaji',
+    title: 'Gaji Bersih, THR & Lembur',
+    desc: 'Estimasi take-home pay dengan PPh 21, BPJS, THR, dan lembur. Aturan dan sumbernya ditampilkan.',
+    icon: 'wallet',
+    group: ['kerja'],
+    keywords: 'gaji bersih take home pay thr lembur pph 21 pajak bpjs jht jp jkes ptkp npwp slip gaji tunjangan upah minimum estimasi',
+  },
+
+  {
+    slug: 'cv-builder',
+    title: 'Pembuat CV & Cek ATS',
+    desc: 'Susun CV satu kolom yang rapi. Cek kelengkapan dan kata kunci, lalu cetak PDF, unduh DOCX, atau salin teks.',
+    icon: 'file',
+    group: ['kerja'],
+    keywords: 'cv curriculum vitae resume ats cek keterbacaan lamaran kerja pengalaman pendidikan keterampilan pdf docx word kata kunci posisi',
+  },
+
+  {
+    slug: 'surat-lamaran',
+    title: 'Pembuat Surat Lamaran & Resmi',
+    desc: 'Surat lamaran kerja dan template surat administrasi: kuasa, pernyataan, dan undangan. Cetak PDF atau unduh DOCX.',
+    icon: 'mail',
+    group: ['kerja'],
+    keywords: 'surat lamaran kerja cover letter surat kuasa surat pernyataan surat undangan rapat administrasi template dokumen docx pdf',
+  },
+
+  {
+    slug: 'cicilan-tabungan',
+    title: 'Cicilan & Target Tabungan',
+    desc: 'Hitung angsuran, total bunga, dan setoran tabungan untuk mencapai target. Hasil berupa estimasi.',
+    icon: 'chart',
+    group: ['uang'],
+    keywords: 'cicilan kredit pinjaman angsuran bunga flat anuitas tabungan target setoran bulanan simulasi kpr motor elektronik paylater estimasi',
+  },
+
+  {
+    slug: 'pembagi-tagihan',
+    title: 'Pembagi Tagihan & Patungan',
+    desc: 'Bagi tagihan makan, belanja, atau biaya kegiatan kelompok sampai ke rupiah. Lihat siapa harus transfer ke siapa.',
+    icon: 'users',
+    group: ['uang'],
+    keywords: 'pembagi tagihan split bill patungan bagi tagihan makan bareng kelompok kegiatan iuran ppn service charge utang transfer',
+  },
+
+  {
+    slug: 'flashcard',
+    title: 'Flashcard Pengulangan',
+    desc: 'Hafalkan materi dengan jadwal ulang otomatis. Kartu yang sulit muncul lebih sering. Tersimpan di perangkat.',
+    icon: 'book',
+    group: ['belajar'],
+    keywords: 'flashcard kartu hafalan hafal belajar spaced repetition ulang jadwal anki kosakata rumus materi ujian sm-2 pengulangan',
+  },
+
+  {
+    slug: 'fokus',
+    title: 'Timer Fokus & Rencana Belajar',
+    desc: 'Timer fokus dengan jeda otomatis, catatan waktu belajar, dan rencana belajar dari daftar topik.',
+    icon: 'timer',
+    group: ['belajar'],
+    keywords: 'timer fokus pomodoro belajar rencana belajar jadwal belajar konsentrasi produktivitas istirahat catatan sesi ujian',
+  },
+
+  {
+    slug: 'daftar-hadir',
+    title: 'Daftar Hadir & Sertifikat',
+    desc: 'Catat peserta dan kehadiran kegiatan. Ekspor ke Excel atau CSV, lalu cetak sertifikat untuk yang hadir.',
+    icon: 'users',
+    group: ['komunitas'],
+    keywords: 'daftar hadir absensi absen kehadiran peserta roster sertifikat pelatihan kegiatan acara komunitas rt rw karang taruna event tanda tangan excel',
+  },
+
+  {
+    slug: 'rutinitas',
+    title: 'Checklist Rutinitas & Pengingat',
+    desc: 'Atur kebiasaan harian, centang langkahnya, lihat streak, dan terima pengingat selama halaman terbuka.',
+    icon: 'check',
+    group: ['harian'],
+    keywords: 'rutinitas checklist kebiasaan harian habit tracker pengingat jadwal streak olahraga minum air ibadah belajar rumah kebiasaan sehat',
+  },
+
+  {
+    slug: 'sensor-data',
+    title: 'Sensor Data Sebelum Dibagikan',
+    desc: 'Cari dan sensor NIK, NPWP, nomor telepon, dan email di dalam teks sebelum dibagikan. Diproses di perangkat.',
+    icon: 'shield',
+    group: ['dokumen'],
+    keywords: 'sensor redaksi redact sembunyikan data pribadi nik npwp telepon email dokumen privasi bagikan aman masking teks',
+  },
+
+  {
+    slug: 'latihan-wawancara',
+    title: 'Latihan Wawancara',
+    desc: 'Latih jawaban wawancara dengan pertanyaan umum, timer dua menit, dan panduan STAR. Tersimpan di perangkat.',
+    icon: 'mic',
+    group: ['kerja'],
+    keywords: 'latihan wawancara interview pertanyaan wawancara kerja jawaban star perkenalan kelemahan kekuatan simulasi karir melamar',
+  },
+
   // ================= GAMES =================
   {
     slug: 'games',
@@ -206,8 +333,16 @@ export const toolCategories = [
   { id: 'all', label: 'Semua' },
   { id: 'populer', label: 'Populer' },
   { id: 'kerja', label: 'Buat Kerja' },
+  { id: 'umkm', label: 'UMKM' },
+  { id: 'uang', label: 'Keuangan' },
+  { id: 'dokumen', label: 'Dokumen' },
+  { id: 'belajar', label: 'Belajar' },
+  { id: 'komunitas', label: 'Komunitas' },
+  { id: 'harian', label: 'Harian' },
   { id: 'fun', label: 'Buat Fun' },
 ];
+
+
 
 export function getToolHref(tool) {
   if (!tool) return '/';

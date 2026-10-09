@@ -1,6 +1,6 @@
 # Nawa Vandrell
 
-Nawa Vandrell menyatukan tools harian, ruang kreatif, workflow rekap SIM kolektif, dan game ringan dalam satu website. Aplikasi dibangun dengan Next.js dan bisa dijalankan tanpa layanan database wajib. Beberapa fitur integrasi online memerlukan konfigurasi API opsional.
+Nawa Vandrell menyatukan tools kerja dan harian, alat usaha kecil, pengelola keuangan pribadi, ruang belajar, workflow rekap SIM kolektif, dan game ringan dalam satu website. Aplikasi dibangun dengan Next.js dan bisa dijalankan tanpa layanan database wajib. Beberapa fitur integrasi online memerlukan konfigurasi API opsional.
 
 Website memakai satu tampilan konsisten yang dirancang agar ringkas, jelas, dan nyaman digunakan di desktop maupun ponsel.
 
@@ -86,19 +86,47 @@ public/                manifest.json, sw.js, icon.svg
 
 ## Isi
 
-**Tools (23).** All-In-One Downloader · Stiker WhatsApp · Stiker Teks · QR Code ·
+**Tools (37).** Yang sudah ada: All-In-One Downloader · Stiker WhatsApp · Stiker Teks · QR Code ·
 Kompres Foto · Password Generator · WA Direct Chat · Rekap SIM Kolektif · Mesin Roasting ·
 Steganografi · JSON Formatter · Text Case · Color Picker · Gradient Generator · Hash Lab ·
 Base64 · UUID · Regex Tester · Lorem Ipsum · Text to Image · Teks Alay · Funfact Tanggal Lahir ·
-Galeri Acak
+Galeri Acak.
+
+Yang baru, dikelompokkan per kebutuhan:
+
+- **Kerja dan karier:** Pembuat CV & Cek ATS (heuristik, bukan jaminan lolos) · Pelacak Lamaran Kerja
+  (status, tindak lanjut, ekspor `.ics`) · Pembuat Surat Lamaran & Resmi · Gaji Bersih, THR & Lembur
+  (estimasi PPh 21, BPJS, THR, lembur; aturan dan sumber ditampilkan) · Latihan Wawancara.
+- **UMKM:** Kalkulator HPP & Harga (margin, markup, diskon, titik impas) · Invoice, Penawaran & Kuitansi
+  (PDF lewat dialog cetak, Excel, terbilang).
+- **Keuangan:** Cicilan & Target Tabungan (anuitas dan flat) · Pembagi Tagihan & Patungan.
+- **Dokumen:** Sensor Data Sebelum Dibagikan (NIK, NPWP, telepon, email di dalam teks).
+- **Belajar:** Flashcard Pengulangan (jadwal SM-2) · Timer Fokus & Rencana Belajar.
+- **Komunitas:** Daftar Hadir & Sertifikat (ekspor roster Excel/CSV dan cetak sertifikat).
+- **Harian:** Checklist Rutinitas & Pengingat.
 
 **Game (15).** Tebak-tebakan · Teka-teki · Siapakah Aku · Susun Kata · Tebak Kimia ·
 Asah Otak · Tebak Lirik · Islamic Quiz · Logic Gate Puzzle · Angka Enigma ·
 Kata Sambung · Emoji Story · Memory Matrix · Typing Blitz · Math Rush
 
-Semua betulan jalan — bukan mockup. OCR KTP untuk berkas persiapan SIM berjalan di browser, QR pakai canvas asli lalu diunduh PNG, hash pakai
+Semua betulan jalan — bukan mockup. Alat baru diuji dengan tes unit (`npm test`) dan dijalankan di Chromium headless untuk alur utamanya. OCR KTP untuk berkas persiapan SIM berjalan di browser, QR pakai canvas asli lalu diunduh PNG, hash pakai
 `crypto.subtle`, password pakai `crypto.getRandomValues`, sticker keluar `.webp` 512×512
 siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
+
+---
+
+## Data lokal, cadangan, dan privasi
+
+- Alat yang menyimpan data (CV, pelacak lamaran, invoice, flashcard, rutinitas, daftar hadir, latihan wawancara,
+  catatan sesi fokus) menyimpan **di browser ini** (`localStorage`, kunci `nawa:v1:*`). Tidak ada akun dan tidak ada
+  pengiriman ke server atau layanan AI.
+- Setiap koleksi punya **Ekspor cadangan (JSON)**, **Impor** (gabung atau ganti, dengan validasi), dan **Hapus semua data**.
+  Data yang rusak tidak ditimpa diam-diam.
+- Alat yang tidak menyimpan apa pun: Kalkulator HPP, Gaji, Cicilan, Pembagi Tagihan, Sensor Data, dan Surat
+  (unduh atau cetak sebelum menutup halaman).
+- Pengingat (pelacak lamaran, rutinitas, timer fokus) hanya berjalan selama halaman terbuka. Untuk pengingat yang tetap
+  muncul, unduh berkas kalender `.ics` atau gunakan alarm di HP.
+- Hasil hitung gaji, pajak, dan BPJS adalah **estimasi**. Aturan dan sumbernya tampil di halaman; periksa ulang sebelum dipakai untuk keputusan.
 
 ---
 
@@ -151,6 +179,10 @@ pun tanpa state server sama sekali.
 `switch` menangani alay, roasting, funfact, lorem (lokal) plus waifu dan tiktok (jaringan,
 dengan timeout `AbortController`), dan aksi tak dikenal dapat pesan yang jelas.
 
+**5. Proxy unduhan bisa diarahkan ke jaringan internal (SSRF).** Dulu `/api/download-proxy` mengambil URL apa pun
+dan mengikuti redirect otomatis. Sekarang hanya http/https ke host publik yang diizinkan, port 80/443, IP privat dan
+metadata cloud ditolak, dan setiap redirect diperiksa ulang (`lib/safeUrl.mjs`).
+
 **4. Base64 rusak kena emoji.** `btoa()` mentah melempar error untuk karakter non-Latin1.
 Sekarang lewat `TextEncoder` + chunking, jadi emoji dan huruf Jawa pun aman bolak-balik.
 
@@ -170,6 +202,16 @@ Sekarang lewat `TextEncoder` + chunking, jadi emoji dan huruf Jawa pun aman bola
 - `ADMIN_API_TOKEN` hanya opsional untuk otomasi server-ke-server. Rotasi `ADMIN_SESSION_SECRET`
   akan membatalkan seluruh sesi yang masih berlaku.
 - Area admin tanpa indeks, tidak dicantumkan di sitemap, dan tidak ditautkan dari footer/pencarian.
+- Proxy unduhan memeriksa setiap tujuan (lihat “Bug lama yang diperbaiki” nomor 5).
+
+## Pengujian
+
+```bash
+npm test          # tes unit: logika hitung, validasi, ekspor, penyimpanan lokal, keamanan, katalog
+npm run build     # build produksi
+```
+
+Audit dan rencana selanjutnya ada di `docs/AUDIT.md` dan `docs/BACKLOG.md`.
 
 ---
 

@@ -1024,6 +1024,7 @@ export default function SimCollectiveBuilder() {
           ref={fileInputRef}
           className="sim-file-input"
           type="file"
+          aria-label="Pilih foto KTP (bisa beberapa file)"
           accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
           multiple
           onChange={(event) => {
