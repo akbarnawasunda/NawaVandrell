@@ -33,7 +33,7 @@ export default function TopBar() {
 
   return (
     <header className="topbar">
-      <Link href="/" className="brand" aria-label="Nawa Vandrell — Beranda" onClick={() => setMenuOpen(false)}>
+      <Link href="/" className="brand" onClick={() => setMenuOpen(false)}>
         <span className="brand-symbol" aria-hidden="true">N</span>
         <span className="brand-name">Nawa <strong>Vandrell</strong></span>
       </Link>
@@ -51,8 +51,8 @@ export default function TopBar() {
           type="button"
           className="command-trigger"
           onClick={openCommandPalette}
-          aria-label="Cari tools, game, atau halaman"
-          title="Cari apa saja (Ctrl atau Command + K)"
+          aria-keyshortcuts="Control+K Meta+K"
+          title="Cari tools, game, atau halaman (Ctrl atau Command + K)"
         >
           <Icon name="search" size={17} />
           <span className="command-trigger-label">Cari</span>

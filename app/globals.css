@@ -1484,27 +1484,27 @@ h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -.035em; }
 .sim-draft-delete:disabled { opacity: .6; cursor: wait; }
 
 /* Keep the smallest catalog and navigation copy comfortable to read. */
-.home-kicker { font-size: 9px; }
-.home-quick-heading .section-eyebrow, .section-intro .section-eyebrow { font-size: 10px; }
-.quick-sim-copy small { font-size: 9px; }
-.featured-card-label { font-size: 9px; }
+.home-kicker { font-size: 11px; }
+.home-quick-heading .section-eyebrow, .section-intro .section-eyebrow { font-size: 11px; }
+.quick-sim-copy small { font-size: 11px; }
+.featured-card-label { font-size: 11px; }
 .featured-card > p { font-size: 11px; }
-.featured-card-action { font-size: 10px; }
-.rank-preview-list li, .rank-preview-list li strong { font-size: 9px; }
-.catalog-total, .catalog-results-meta, .catalog-reset { font-size: 10px; }
-.chip-count { font-size: 9px; }
-.catalog-section-label { font-size: 9px; }
+.featured-card-action { font-size: 11px; }
+.rank-preview-list li, .rank-preview-list li strong { font-size: 11px; }
+.catalog-total, .catalog-results-meta, .catalog-reset { font-size: 11px; }
+.chip-count { font-size: 11px; }
+.catalog-section-label { font-size: 11px; }
 .tool-card-copy h3 { font-size: 12px; }
-.tool-card-copy p { font-size: 10px; }
-.tool-card .card-tag { font-size: 9px; }
-.game-catalog-copy .tool-eyebrow { font-size: 9px; }
-.game-catalog-highlights span { font-size: 10px; }
-.game-card-category { font-size: 9px; }
-.game-card p { font-size: 10px; }
-.game-card-action { font-size: 10px; }
-.cmdk-results-heading h2, .cmdk-item-hint, .cmdk-foot { font-size: 9px; }
-.cmdk-foot kbd { font-size: 9px; }
-.site-footer-main p, .footer-links a, .site-footer-meta { font-size: 10px; }
+.tool-card-copy p { font-size: 11px; }
+.tool-card .card-tag { font-size: 11px; }
+.game-catalog-copy .tool-eyebrow { font-size: 11px; }
+.game-catalog-highlights span { font-size: 11px; }
+.game-card-category { font-size: 11px; }
+.game-card p { font-size: 11px; }
+.game-card-action { font-size: 11px; }
+.cmdk-results-heading h2, .cmdk-item-hint, .cmdk-foot { font-size: 11px; }
+.cmdk-foot kbd { font-size: 11px; }
+.site-footer-main p, .footer-links a, .site-footer-meta { font-size: 11px; }
 
 @media (max-width: 600px) {
   .content-page { padding-top: 18px; }
@@ -1520,19 +1520,19 @@ h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -.035em; }
   .sim-draft-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
   .sim-draft-toggle { min-height: 42px; }
   .sim-draft-status, .sim-draft-error { font-size: 12px; }
-  .home-kicker { font-size: 9px; }
-  .featured-card-label { font-size: 9px; }
-  .featured-card-action { font-size: 10px; }
-  .catalog-chips .chip, .game-filter-chips .chip { font-size: 10px; }
+  .home-kicker { font-size: 11px; }
+  .featured-card-label { font-size: 11px; }
+  .featured-card-action { font-size: 11px; }
+  .catalog-chips .chip, .game-filter-chips .chip { font-size: 11px; }
   .tool-card-copy h3 { font-size: 12px; }
-  .tool-card-copy p, .game-card p { font-size: 10px; }
-  .game-card-category, .game-card-action { font-size: 9px; }
-  .cmdk-item-hint { font-size: 8px; }
-  .site-footer-meta { font-size: 9px; }
+  .tool-card-copy p, .game-card p { font-size: 11px; }
+  .game-card-category, .game-card-action { font-size: 11px; }
+  .cmdk-item-hint { font-size: 10.5px; }
+  .site-footer-meta { font-size: 11px; }
 }
 
 @media (max-width: 430px) {
-  .featured-card-label { font-size: 9px; }
-  .catalog-results-meta, .catalog-reset { font-size: 9px; }
-  .tool-card-copy p, .game-card p { font-size: 10px; }
+  .featured-card-label { font-size: 11px; }
+  .catalog-results-meta, .catalog-reset { font-size: 11px; }
+  .tool-card-copy p, .game-card p { font-size: 11px; }
 }

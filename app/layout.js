@@ -1,6 +1,7 @@
 import '@fontsource-variable/plus-jakarta-sans/wght.css';
 import '@fontsource-variable/space-grotesk/wght.css';
 import './globals.css';
+import './nv-tools.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
 import TopBar from '@/components/TopBar';
@@ -95,7 +96,7 @@ export default function RootLayout({ children }) {
         </ToastProvider>
 
         <Script id="nawa-sw" strategy="afterInteractive">
-          {`if ('serviceWorker' in navigator) { window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }); }`}
+          {`if ('serviceWorker' in navigator) { var nvRegisterSw = function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); }; if (document.readyState === 'complete') { nvRegisterSw(); } else { window.addEventListener('load', nvRegisterSw); } }`}
         </Script>
       </body>
     </html>

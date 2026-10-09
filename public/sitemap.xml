@@ -44,4 +44,18 @@
   <url><loc>https://nawavandrell.vercel.app/leaderboard</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://nawavandrell.vercel.app/privacy</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://nawavandrell.vercel.app/terms</loc><changefreq>monthly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/hpp-harga</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/invoice</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/pelacak-lamaran</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/kalkulator-gaji</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/cv-builder</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/surat-lamaran</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/latihan-wawancara</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/cicilan-tabungan</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/pembagi-tagihan</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/flashcard</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/fokus</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/daftar-hadir</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/rutinitas</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawavandrell.vercel.app/tools/sensor-data</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
 </urlset>

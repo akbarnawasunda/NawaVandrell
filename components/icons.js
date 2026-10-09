@@ -685,3 +685,186 @@ iconNames.push(
   'calendar',
   'camera'
 );
+
+// ===== ikon fitur baru (Nawa Vandrell v-berikutnya: kerja, UMKM, uang, belajar, komunitas) =====
+icons.briefcase = (
+  <Svg>
+    <rect x="3" y="7" width="18" height="13" rx="2" />
+    <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+    <path d="M3 12h18" />
+  </Svg>
+);
+
+icons.receipt = (
+  <Svg>
+    <path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2Z" />
+    <path d="M9 7h6" />
+    <path d="M9 11h6" />
+    <path d="M9 15h3" />
+  </Svg>
+);
+
+icons.calculator = (
+  <Svg>
+    <rect x="4" y="2" width="16" height="20" rx="2" />
+    <rect x="8" y="5" width="8" height="4" rx="1" />
+    <path d="M8 14h.01" />
+    <path d="M12 14h.01" />
+    <path d="M16 14h.01" />
+    <path d="M8 18h.01" />
+    <path d="M12 18h.01" />
+    <path d="M16 18h.01" />
+  </Svg>
+);
+
+icons.wallet = (
+  <Svg>
+    <path d="M3 7a2 2 0 0 1 2-2h13v4" />
+    <rect x="3" y="7" width="18" height="13" rx="2" />
+    <path d="M16 13.5h.01" />
+  </Svg>
+);
+
+icons.chart = (
+  <Svg>
+    <path d="M4 20V10" />
+    <path d="M10 20V4" />
+    <path d="M16 20v-7" />
+    <path d="M22 20H2" />
+  </Svg>
+);
+
+icons.book = (
+  <Svg>
+    <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v15H6.5A2.5 2.5 0 0 0 4 19.5v-15Z" />
+    <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5" />
+  </Svg>
+);
+
+icons.timer = (
+  <Svg>
+    <circle cx="12" cy="13" r="8" />
+    <path d="M12 9v4l2.5 2" />
+    <path d="M9 2h6" />
+    <path d="M12 2v3" />
+  </Svg>
+);
+
+icons.users = (
+  <Svg>
+    <circle cx="9" cy="8" r="3.5" />
+    <path d="M2.5 20a6.5 6.5 0 0 1 13 0" />
+    <path d="M16 4.5a3.5 3.5 0 0 1 0 7" />
+    <path d="M18 14.2A6.5 6.5 0 0 1 21.5 20" />
+  </Svg>
+);
+
+icons.shield = (
+  <Svg>
+    <path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z" />
+    <path d="M8 12h8" />
+  </Svg>
+);
+
+icons.bell = (
+  <Svg>
+    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8" />
+    <path d="M10.3 21a2 2 0 0 0 3.4 0" />
+  </Svg>
+);
+
+icons.target = (
+  <Svg>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1" />
+  </Svg>
+);
+
+icons.file = (
+  <Svg>
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+  </Svg>
+);
+
+icons.mail = (
+  <Svg>
+    <rect x="2" y="4" width="20" height="16" rx="2" />
+    <path d="m22 6-10 7L2 6" />
+  </Svg>
+);
+
+icons.printer = (
+  <Svg>
+    <path d="M6 9V2h12v7" />
+    <rect x="6" y="14" width="12" height="8" rx="1" />
+    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+  </Svg>
+);
+
+icons.trash = (
+  <Svg>
+    <path d="M3 6h18" />
+    <path d="M8 6V4h8v2" />
+    <path d="M6 6l1 14h10l1-14" />
+  </Svg>
+);
+
+icons.plus = (
+  <Svg>
+    <path d="M12 5v14" />
+    <path d="M5 12h14" />
+  </Svg>
+);
+
+icons.upload = (
+  <Svg>
+    <path d="M12 21V9" />
+    <path d="m7 14 5-5 5 5" />
+    <path d="M5 3h14" />
+  </Svg>
+);
+
+icons.clock = (
+  <Svg>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </Svg>
+);
+
+icons.repeat = (
+  <Svg>
+    <path d="M17 2l4 4-4 4" />
+    <path d="M3 11V9a3 3 0 0 1 3-3h15" />
+    <path d="m7 22-4-4 4-4" />
+    <path d="M21 13v2a3 3 0 0 1-3 3H3" />
+  </Svg>
+);
+
+icons.star = (
+  <Svg>
+    <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3 6.4 20.2l1.1-6.2-4.5-4.4 6.2-.9L12 3Z" />
+  </Svg>
+);
+
+icons.edit = (
+  <Svg>
+    <path d="M12 20h9" />
+    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z" />
+  </Svg>
+);
+
+icons.mic = (
+  <Svg>
+    <rect x="9" y="2" width="6" height="12" rx="3" />
+    <path d="M5 11a7 7 0 0 0 14 0" />
+    <path d="M12 18v4" />
+  </Svg>
+);
+
+iconNames.push(
+  'briefcase', 'receipt', 'calculator', 'wallet', 'chart', 'book', 'timer', 'users', 'shield',
+  'bell', 'target', 'file', 'mail', 'printer', 'trash', 'plus', 'upload', 'clock', 'repeat',
+  'star', 'edit', 'mic'
+);

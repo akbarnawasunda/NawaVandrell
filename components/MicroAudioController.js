@@ -9,17 +9,20 @@ export default function MicroAudioController() {
   useEffect(() => {
     if (!enabled) return;
 
+    // Target peristiwa bisa berupa node teks atau dokumen; cari elemen terdekat dengan aman.
+    const elementOf = (target) => (target instanceof Element ? target : target?.parentElement || null);
+
     const handleHover = (e) => {
       // Jangan bunyiin hover di layar sentuh (bikin berisik pas scroll)
       if (e.pointerType === 'touch') return;
       
-      if (e.target.closest('.btn, .card, .chip, .cmdk-item')) {
+      if (elementOf(e.target)?.closest?.('.btn, .card, .chip, .cmdk-item')) {
         play('hover');
       }
     };
 
     const handleClick = (e) => {
-      if (e.target.closest('.btn, .chip')) {
+      if (elementOf(e.target)?.closest?.('.btn, .chip')) {
         play('click');
       }
     };

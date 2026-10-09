@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { fetchPublicUrl, UnsafeUrlError } from '@/lib/safeUrl.mjs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -6,6 +7,7 @@ export const runtime = 'nodejs';
 export async function GET(req) {
   const targetUrl = new URL(req.url).searchParams.get('url');
   if (!targetUrl) return NextResponse.json({ error: 'URL target kosong' }, { status: 400 });
+  if (targetUrl.length > 2048) return NextResponse.json({ error: 'URL terlalu panjang' }, { status: 400 });
 
   try {
     const isTiktok = targetUrl.includes('tiktok');
@@ -33,7 +35,8 @@ export async function GET(req) {
       headers['Origin'] = 'https://www.instagram.com';
     }
 
-    const res = await fetch(targetUrl, { headers, redirect: 'follow' });
+    // Hanya host publik yang boleh diambil; setiap redirect diperiksa ulang (mencegah SSRF).
+    const res = await fetchPublicUrl(targetUrl, { headers });
 
     if (!res.ok) {
       console.error('[PROXY] CDN rejected:', res.status);
@@ -53,7 +56,10 @@ export async function GET(req) {
 
     return new NextResponse(res.body, { headers: responseHeaders });
   } catch (e) {
+    if (e instanceof UnsafeUrlError) {
+      return NextResponse.json({ error: e.message }, { status: 400 });
+    }
     console.error('[PROXY ERROR]', e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+    return NextResponse.json({ error: 'Gagal mengambil media' }, { status: 500 });
   }
 }
