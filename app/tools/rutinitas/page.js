@@ -20,8 +20,8 @@ import {
   toggleStep,
 } from '@/lib/routines.mjs';
 
-const store = createLocalCollection({ name: 'rutinitas', version: 1, sanitize: sanitizeRoutine, maxItems: 20 });
 const NOTIFIED_KEY = 'nawa:v1:rutinitas-notif';
+const store = createLocalCollection({ name: 'rutinitas', version: 1, sanitize: sanitizeRoutine, maxItems: 20, auxKeys: [NOTIFIED_KEY] });
 
 function readNotified() {
   try {

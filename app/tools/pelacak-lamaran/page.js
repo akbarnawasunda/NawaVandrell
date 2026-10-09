@@ -24,8 +24,8 @@ import {
   validateApplication,
 } from '@/lib/jobApplications.mjs';
 
-const store = createLocalCollection({ name: 'lamaran', version: 1, sanitize: sanitizeApplication, maxItems: 500 });
 const NOTIFIED_KEY = 'nawa:v1:lamaran-notif';
+const store = createLocalCollection({ name: 'lamaran', version: 1, sanitize: sanitizeApplication, maxItems: 500, auxKeys: [NOTIFIED_KEY] });
 
 const FOLLOW_UP_LABEL = {
   terlambat: 'Terlambat',

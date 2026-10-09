@@ -24,8 +24,8 @@ import {
   startPhase,
 } from '@/lib/focusPlanner.mjs';
 
-const sessionStore = createLocalCollection({ name: 'fokus', version: 1, sanitize: sanitizeSession, maxItems: 1000 });
 const TIMER_KEY = 'nawa:v1:fokus-timer';
+const sessionStore = createLocalCollection({ name: 'fokus', version: 1, sanitize: sanitizeSession, maxItems: 1000, auxKeys: [TIMER_KEY] });
 const WEEKDAYS = [
   { value: 1, label: 'Sen' }, { value: 2, label: 'Sel' }, { value: 3, label: 'Rab' },
   { value: 4, label: 'Kam' }, { value: 5, label: 'Jum' }, { value: 6, label: 'Sab' }, { value: 0, label: 'Min' },
@@ -317,6 +317,7 @@ export default function FokusPage() {
             available={meta.available}
             updatedAt={meta.updatedAt}
             fileBase="fokus"
+            onAfterChange={() => setTimer(null)}
           />
         ) : null}
       </div>

@@ -120,7 +120,7 @@ siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
 - Alat yang menyimpan data (CV, pelacak lamaran, invoice, flashcard, rutinitas, daftar hadir, latihan wawancara,
   catatan sesi fokus) menyimpan **di browser ini** (`localStorage`, kunci `nawa:v1:*`). Tidak ada akun dan tidak ada
   pengiriman ke server atau layanan AI.
-- Setiap koleksi punya **Ekspor cadangan (JSON)**, **Impor** (gabung atau ganti, dengan validasi), dan **Hapus semua data**.
+- Setiap koleksi punya **Ekspor cadangan (JSON)**, **Impor** (gabung atau ganti, dengan validasi), dan **Hapus semua data**. Hapus semua data juga menghapus penanda pengingat dan status timer milik fitur itu.
   Data yang rusak tidak ditimpa diam-diam.
 - Alat yang tidak menyimpan apa pun: Kalkulator HPP, Gaji, Cicilan, Pembagi Tagihan, Sensor Data, dan Surat
   (unduh atau cetak sebelum menutup halaman).

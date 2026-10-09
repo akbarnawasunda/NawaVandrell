@@ -64,6 +64,8 @@ export default function LocalDataPanel({ title, store, items, setItems, corrupt 
 
   const clearAll = () => {
     if (!items.length && !corrupt) {
+      // Tidak ada isi yang bisa hilang; penanda pengingat dan timer yang tersisa ikut dibersihkan.
+      store.clear();
       addToast('Belum ada data tersimpan di perangkat ini.', 'info');
       return;
     }

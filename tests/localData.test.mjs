@@ -108,3 +108,37 @@ test('clear removes the stored collection', () => {
   assert.equal(store.load().items.length, 0);
   assert.equal(storage.map.size, 0);
 });
+
+test('clear also removes the feature\'s auxiliary keys but nothing else', () => {
+  const storage = memoryStorage();
+  const store = createLocalCollection({
+    name: 'contoh',
+    sanitize,
+    storage,
+    auxKeys: ['nawa:v1:contoh-notif', 'nawa:v1:contoh-timer'],
+  });
+  store.save([{ id: 'a', nama: 'x' }]);
+  storage.setItem('nawa:v1:contoh-notif', '{"2026-10-09":["a"]}');
+  storage.setItem('nawa:v1:contoh-timer', '{"running":true}');
+  storage.setItem('nawa:v1:lainnya', 'tetap');
+  storage.setItem('catatan-lain', 'tetap');
+  store.clear();
+  assert.equal(storage.map.has('nawa:v1:contoh'), false);
+  assert.equal(storage.map.has('nawa:v1:contoh-notif'), false);
+  assert.equal(storage.map.has('nawa:v1:contoh-timer'), false);
+  assert.equal(storage.map.get('nawa:v1:lainnya'), 'tetap');
+  assert.equal(storage.map.get('catatan-lain'), 'tetap');
+});
+
+test('auxiliary keys must live under the app prefix and use safe characters', () => {
+  const base = { name: 'contoh', sanitize, storage: memoryStorage() };
+  for (const bad of ['contoh-notif', 'nawa:v2:contoh', 'nawa:v1:', 'nawa:v1:../../x', 'nawa:v1:A B', 42]) {
+    assert.throws(
+      () => createLocalCollection({ ...base, auxKeys: [bad] }),
+      (error) => error instanceof LocalDataError && error.code === 'bad-aux-key',
+      `kunci ${String(bad)} seharusnya ditolak`,
+    );
+  }
+  assert.throws(() => createLocalCollection({ ...base, auxKeys: 'nawa:v1:contoh-notif' }), LocalDataError);
+  assert.doesNotThrow(() => createLocalCollection({ ...base, auxKeys: ['nawa:v1:contoh-notif'] }));
+});

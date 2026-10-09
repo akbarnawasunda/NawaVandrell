@@ -65,6 +65,7 @@ Batasan yang disengaja: PPh 21 memakai **metode tahunan (Pasal 17) dibagi 12**, 
 | A13 | Service worker tidak pernah terdaftar: pendaftaran memakai `window.addEventListener('load')` di dalam skrip `afterInteractive`, sehingga bisa melewatkan event `load` | Dukungan offline tidak andal untuk semua pengunjung (diverifikasi: `registrations: []` sebelum perbaikan) | Pendaftaran langsung bila dokumen sudah `complete`; setelah perbaikan SW aktif; halaman HPP terverifikasi tampil saat offline (alat lain belum diuji offline) |
 | A14 | Cetak PDF: margin tercetak gelap (#121212) karena `color-scheme: dark` pada `:root` | Dokumen cetak tampak berbingkai gelap bila browser mencetak latar | Kanvas cetak dipaksa putih (`html:has(body.nv-printing)`); diverifikasi piksel margin 255,255,255 |
 | A15 | Cetak memakai `visibility: hidden` untuk menyembunyikan halaman | Halaman kosong ikut tercetak (invoice satu barang menjadi 3 halaman) | Diganti `display: none` untuk semua yang di luar lembar; invoice dan CV kini 1 halaman |
+| A16 | “Hapus semua data” hanya menghapus koleksi utama; penanda pengingat (`nawa:v1:lamaran-notif`, `nawa:v1:rutinitas-notif`) dan status timer fokus (`nawa:v1:fokus-timer`) tetap tersisa, dan timer yang masih berjalan bisa menulis ulang statusnya | Sisa data lokal setelah “hapus semua” (berisi ID dan tanggal, bukan nama atau teks pribadi) | `createLocalCollection({ auxKeys })` menghapus kunci tambahan bersama koleksi (hanya kunci berawalan `nawa:v1:`); halaman fokus mereset timer saat data dihapus; 2 tes unit dan 18 pemeriksaan browser |
 
 Temuan yang **belum** diubah (dicatat di backlog):
 - File `n` di root repositori adalah salinan rute `quiz/reveal` yang tidak diimpor di mana pun. Tidak dihapus karena bukan keputusan teknis saya; konfirmasi pemilik repo.
@@ -81,7 +82,7 @@ Temuan yang **belum** diubah (dicatat di backlog):
 
 ## 6. Verifikasi
 
-- `npm test`: **163/163 lulus** (22 baseline + 141 baru).
+- `npm test`: **165/165 lulus** (22 baseline + 143 baru).
 - `npm run build`: lulus (Next.js 14.2.35, rute baru tercantum sebagai statis).
 - Browser (Chromium headless, server produksi), pemeriksaan otomatis:
   - 36 kombinasi halaman × viewport (14 alat baru, beranda, games, leaderboard, SIM kolektif; 390px dan 1280px): status 200/304, **0 overflow horizontal**, **0 error console**, **0 pelanggaran axe-core** (serius, kritis, maupun kecil).
