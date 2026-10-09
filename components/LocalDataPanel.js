@@ -56,7 +56,7 @@ export default function LocalDataPanel({ title, store, items, setItems, corrupt 
         : `${result.added} baru, ${result.updated} diperbarui`;
       addToast(`Impor selesai: ${detail}${result.skipped ? `, ${result.skipped} dilewati karena tidak valid` : ''}.`, 'success', 6000);
     } catch (error) {
-      addToast(error?.message || 'Impor gagal. Pastikan file cadangan dari Nawa Vandrell.', 'error', 6000);
+      addToast(error?.message || 'Impor gagal. Pastikan file cadangan dari Nawa Editor.', 'error', 6000);
     } finally {
       setBusy(false);
     }

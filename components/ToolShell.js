@@ -11,7 +11,7 @@ function RenderIcon({ icon, size = 26 }) {
   return <span className="tool-emoji-icon">{icon}</span>;
 }
 
-export default function ToolShell({ title, desc, icon, children, backHref = '/', backLabel = 'Kembali', className = '' }) {
+export default function ToolShell({ title, desc, icon, children, backHref = '/#tools', backLabel = 'Semua alat', className = '' }) {
   return (
     <div className={`shell-tool${className ? ` ${className}` : ''}`}>
       <Link href={backHref} className="back">
@@ -21,7 +21,6 @@ export default function ToolShell({ title, desc, icon, children, backHref = '/',
       <header className="tool-head tool-shell-head">
         <span className="tool-head-mark" aria-hidden="true"><RenderIcon icon={icon} size={25} /></span>
         <div className="tool-head-copy">
-          <p className="tool-eyebrow">NAWA VANDRELL <i /> TOOLS</p>
           <h1>{title}</h1>
           {desc ? <p className="tool-head-description">{desc}</p> : null}
         </div>

@@ -2,19 +2,15 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useMicroSound } from '@/hooks/useMicroSound';
 import Icon from './icons';
 
 const navigation = [
-  { href: '/', label: 'Beranda' },
-  { href: '/#tools', label: 'Tools' },
-  { href: '/tools/sim-application', label: 'SIM kolektif' },
-  { href: '/games', label: 'Arcade' },
+  { href: '/#tools', label: 'Alat' },
+  { href: '/games', label: 'Game' },
   { href: '/leaderboard', label: 'Peringkat' },
 ];
 
 export default function TopBar() {
-  const audio = useMicroSound();
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -33,9 +29,10 @@ export default function TopBar() {
 
   return (
     <header className="topbar">
-      <Link href="/" className="brand" onClick={() => setMenuOpen(false)}>
+      <Link href="/" className="brand" onClick={() => setMenuOpen(false)} aria-label="Nawa Editor — beranda">
         <span className="brand-symbol" aria-hidden="true">N</span>
-        <span className="brand-name">Nawa <strong>Vandrell</strong></span>
+        <span className="brand-name">Nawa <strong>Editor</strong></span>
+        <span className="brand-cursor" aria-hidden="true" />
       </Link>
 
       <nav className={`topbar-links${menuOpen ? ' is-open' : ''}`} id="primary-navigation" aria-label="Navigasi utama">
@@ -52,22 +49,11 @@ export default function TopBar() {
           className="command-trigger"
           onClick={openCommandPalette}
           aria-keyshortcuts="Control+K Meta+K"
-          title="Cari tools, game, atau halaman (Ctrl atau Command + K)"
+          title="Cari alat, game, atau halaman (Ctrl atau Command + K)"
         >
           <Icon name="search" size={17} />
           <span className="command-trigger-label">Cari</span>
-          <kbd>⌘ K</kbd>
-        </button>
-
-        <button
-          type="button"
-          className="audio-toggle"
-          onClick={audio.toggle}
-          aria-label={audio.enabled ? 'Matikan suara antarmuka' : 'Nyalakan suara antarmuka'}
-          aria-pressed={audio.enabled}
-          title={audio.enabled ? 'Matikan suara antarmuka' : 'Nyalakan suara antarmuka'}
-        >
-          <Icon name={audio.enabled ? 'volumeOn' : 'volumeOff'} size={17} />
+          <kbd>⌘K</kbd>
         </button>
 
         <button

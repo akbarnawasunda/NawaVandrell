@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
-import { Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/NvUi';
+import { Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
 import { printNvDocument } from '@/lib/printDoc.mjs';

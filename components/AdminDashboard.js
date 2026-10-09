@@ -204,7 +204,7 @@ export default function AdminDashboard() {
       <header className="tool-head admin-dashboard-heading">
         <div>
           <h1><span aria-hidden="true"><Icon name="lock" size={22} /></span>Area terbatas</h1>
-          <p>Kelola papan peringkat Nawa Vandrell.</p>
+          <p>Kelola papan peringkat Nawa Editor.</p>
         </div>
         <button type="button" className="btn btn-ghost btn-sm" onClick={logout} disabled={loggingOut}>
           {loggingOut ? 'Keluar…' : 'Keluar'}

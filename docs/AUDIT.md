@@ -1,7 +1,7 @@
-# Audit Nawa Vandrell — sesi pengembangan toolbox
+# Audit Nawa Editor — sesi pengembangan toolbox
 
-Basis: branch `arena/75a4758e-nawavandrell` dari `main` @ `7381d35`.
-Stack: Next.js 14.2 (App Router), React 18, CSS global di `app/globals.css`, Node `>=24` (sandbox memakai Node 22; build dan tes lulus di 22).
+Basis: branch `arena/d74fd8e1-nawaeditor` dari `main` @ `7381d35`.
+Stack: Next.js 14.2 (App Router), React 18, CSS global di `app/globals.css`, Node `>=18.17`.
 
 ## 1. Fitur yang sudah ada (sebelum sesi)
 

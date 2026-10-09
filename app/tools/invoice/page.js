@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import LocalDataPanel from '@/components/LocalDataPanel';
-import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField, TextAreaField, TextField } from '@/components/NvUi';
+import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { downloadBlob, safeFileName } from '@/lib/fileDownload.mjs';

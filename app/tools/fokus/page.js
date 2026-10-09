@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import LocalDataPanel from '@/components/LocalDataPanel';
-import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/NvUi';
+import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadText, safeFileName } from '@/lib/fileDownload.mjs';
 import { csvLine, formatDateId, todayIso } from '@/lib/format.mjs';
@@ -110,7 +110,7 @@ export default function FokusPage() {
 
   useEffect(() => {
     if (!timer?.running) {
-      if (timer) document.title = 'Timer Fokus · Nawa Vandrell';
+      if (timer) document.title = 'Timer Fokus · Nawa Editor';
       return undefined;
     }
     const id = window.setInterval(() => setNow(Date.now()), 500);
@@ -120,7 +120,7 @@ export default function FokusPage() {
   const left = timer ? remainingMs(timer, now || Date.now()) : 0;
 
   useEffect(() => {
-    if (timer?.running) document.title = `${format(left)} · ${PHASE_LABEL[timer.phase]} · Nawa Vandrell`;
+    if (timer?.running) document.title = `${format(left)} · ${PHASE_LABEL[timer.phase]} · Nawa Editor`;
   }, [left, timer]);
 
   // Saat waktu habis: catat sesi fokus, lalu lanjut ke fase berikutnya secara otomatis.

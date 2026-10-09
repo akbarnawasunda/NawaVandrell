@@ -44,7 +44,7 @@ export default function AdminLogin() {
           <span aria-hidden="true"><Icon name="lock" size={23} /></span>
           Akses terbatas
         </h1>
-        <p>Area ini hanya untuk pengelola Nawa Vandrell.</p>
+        <p>Area ini hanya untuk pengelola Nawa Editor.</p>
       </div>
       <form className="panel admin-access-form" onSubmit={submit}>
         <label className="field" htmlFor="admin-secret">

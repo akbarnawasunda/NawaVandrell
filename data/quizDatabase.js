@@ -233,7 +233,7 @@ export const quizDatabase = {
       { soal: 'Berapa menit dalam 2 jam?', jawaban: '120', alt: ['seratus dua puluh'] },
       { soal: 'Lanjutkan pola: 5, 10, 15, 20, ...', jawaban: '25' },
       { soal: 'Berapa hasil 100 - 37?', jawaban: '63' },
-      { soal: 'Berapa jumlah huruf dalam kata NAWA VANDRELL?', jawaban: '12', alt: ['dua belas'] },
+      { soal: 'Berapa jumlah huruf dalam kata NAWA EDITOR?', jawaban: '12', alt: ['dua belas'] },
       { soal: 'Berapa sisi pada kubus?', jawaban: '6', alt: ['enam'] },
     ],
     medium: [

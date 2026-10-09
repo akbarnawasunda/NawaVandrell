@@ -1,6 +1,6 @@
 export const metadata = {
   title: 'Akses terbatas',
-  description: 'Area privat pengelola Nawa Vandrell.',
+  description: 'Area privat pengelola Nawa Editor.',
   robots: { index: false, follow: false, noarchive: true, nosnippet: true },
 };
 

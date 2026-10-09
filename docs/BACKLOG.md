@@ -1,4 +1,4 @@
-# Backlog Nawa Vandrell (urutan prioritas)
+# Backlog Nawa Editor (urutan prioritas)
 
 Urutan disusun dari manfaat nyata, risiko, dan kecocokan dengan produk. Setiap item punya kriteria penerimaan (AC) yang harus terpenuhi sebelum dianggap selesai.
 

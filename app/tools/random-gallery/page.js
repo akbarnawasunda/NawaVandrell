@@ -5,7 +5,7 @@ import ToolShell from '@/components/ToolShell';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import { useToast } from '@/context/ToastContext';
 import { CECAN_IMAGES } from '@/data/cecanImages';
-import { galleryModes } from '@/data/nexrayData';
+import { galleryModes } from '@/data/gameCatalog';
 
 const WAIFU_TYPES = ['waifu', 'neko', 'shinobu', 'megumin'];
 
@@ -121,7 +121,7 @@ export default function RandomGalleryPage() {
         </div>
 
         <p className="hint">
-          Gambar diambil dari sumber publik. Nawa Vandrell tidak menyimpan atau memiliki gambar-gambar
+          Gambar diambil dari sumber publik. Nawa Editor tidak menyimpan atau memiliki gambar-gambar
           ini.
         </p>
       </div>

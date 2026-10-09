@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Icon from '@/components/icons';
-import { allGames } from '@/data/nexrayData';
+import { allGames } from '@/data/gameCatalog';
 
 const CATEGORIES = [
   { id: 'all', label: 'Semua' },
@@ -104,7 +104,7 @@ export default function GamesCatalogPage() {
 
       <header className="game-catalog-hero">
         <div className="game-catalog-copy">
-          <p className="tool-eyebrow">NAWA VANDRELL <i /> ARCADE</p>
+          <p className="tool-eyebrow">NAWA EDITOR <i /> ARCADE</p>
           <h1>Ambil jeda.<span>Mainkan pikiran.</span></h1>
           <p>{safeGames.length} game singkat untuk menguji logika, kata, ingatan, dan kecepatanmu. Main santai, kumpulkan skor.</p>
           <div className="game-catalog-highlights">
