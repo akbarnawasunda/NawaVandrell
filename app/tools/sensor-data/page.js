@@ -56,7 +56,7 @@ export default function SensorDataPage() {
 
         <Section labelledBy="sensor-input">
           <SectionHead id="sensor-input" eyebrow="LANGKAH 1" title="Tempel teks">
-            Salin isi dokumen, catatan, atau pesan ke sini. Foto dan PDF belum didukung di versi ini.
+            Salin isi dokumen, catatan, atau pesan ke sini. Foto dan PDF belum didukung di alat ini.
           </SectionHead>
           <TextAreaField id="sensor-teks" label="Teks asli" value={input} onChange={setInput} rows={8} maxLength={60000} placeholder="Contoh: Nama, NIK, nomor telepon, atau email yang ingin dihapus sebelum dikirim." />
         </Section>
