@@ -1,164 +1,166 @@
 import Link from 'next/link';
 import SearchHome from '@/components/SearchHome';
-import ScrambleText from '@/components/ScrambleText';
-import Icon, { iconNames } from '@/components/icons';
+import Icon, { getToolIconName, iconNames } from '@/components/icons';
 import { featuredTools, getToolHref } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
 import { getRanked } from '@/lib/db';
+import { pageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+export const metadata = pageMetadata({
+  title: 'Tools praktis, rekap SIM kolektif, dan arcade',
+  description: 'Cari tools harian gratis, siapkan rekap SIM kolektif dari banyak KTP langsung di browser, atau main game singkat.',
+  path: '/',
+});
 
-const gameIconMap = {
-  'angka-enigma': 'angka', 'emoji-story': 'emoji', 'kata-sambung': 'word',
-  'logic-gate': 'logic', 'math-rush': 'math', 'memory-matrix': 'memory', 'typing-blitz': 'typing',
-};
-
-function GameIcon({ slug }) {
-  let iconName = gameIconMap[slug];
-  if (!iconName) {
-    const s = String(slug || '').toLowerCase();
-    if (s.includes('kuis') || s.includes('tebak')) iconName = 'quiz';
-    else iconName = 'gamepad';
-  }
-  if (!iconNames.includes(iconName)) iconName = 'gamepad';
-  return <Icon name={iconName} size={26} />;
+function QuickToolLink({ tool }) {
+  if (!tool) return null;
+  const iconName = getToolIconName(tool);
+  return (
+    <Link href={getToolHref(tool)} className="quick-tool-link">
+      <span className="quick-tool-icon" aria-hidden="true">
+        <Icon name={iconNames.includes(iconName) ? iconName : 'sparkles'} size={19} />
+      </span>
+      <span className="quick-tool-copy">
+        <strong>{tool.title}</strong>
+        <small>{tool.desc}</small>
+      </span>
+      <Icon name="arrowRight" size={16} className="quick-tool-arrow" />
+    </Link>
+  );
 }
 
 export default async function HomePage() {
   const safeTools = Array.isArray(featuredTools) ? featuredTools : [];
   const safeGames = Array.isArray(allGames) ? allGames : [];
-  
-  const downloader = safeTools.find((t) => t.slug === 'downloader');
-  const sticker = safeTools.find((t) => t.slug === 'sticker-maker');
-  const textSticker = safeTools.find((t) => t.slug === 'text-sticker');
-  const gamesTool = safeTools.find((t) => t.slug === 'games');
-  
-  const allToolItems = safeTools.filter((t) => t.slug !== 'games');
+  const allToolItems = safeTools.filter((tool) => tool.slug !== 'games');
+  const downloader = safeTools.find((tool) => tool.slug === 'downloader');
+  const simTool = safeTools.find((tool) => tool.slug === 'sim-application');
+  const quickTools = ['qr-code', 'image-compressor', 'sticker-maker']
+    .map((slug) => safeTools.find((tool) => tool.slug === slug))
+    .filter(Boolean);
 
-  let top3 = [];
-  try { top3 = await getRanked(3); } catch { top3 = []; }
+  let topPlayers = [];
+  try {
+    topPlayers = await getRanked(3);
+  } catch {
+    topPlayers = [];
+  }
 
   return (
-    <div className="shell">
-      <section className="hero">
-        <span className="hero-badge simple-only">{allToolItems.length} tools · {safeGames.length} game</span>
-        <span className="hero-badge pro-only">Neuro Core Digital Arsenal</span>
-        
-        <h1 className="pro-only" style={{ minHeight: '1.2em' }}>
-          <ScrambleText text="Tools yang beneran gampang dipakai." />
-        </h1>
-        <h1 className="simple-only">
-          <span className="grad">Tools yang beneran gampang dipakai</span>
-        </h1>
-        
-        <p className="sub">Bikin QR, stiker WA, kompres foto, download media, sampai 16 game kuis & arcade. 100% gratis, tanpa daftar.</p>
-        <SearchHome tools={allToolItems} />
+    <div className="shell home-shell">
+      <section className="home-hero" aria-labelledby="home-title">
+        <div className="home-hero-copy">
+          <p className="home-kicker"><span aria-hidden="true" /> TOOLS HARIAN <i /> KREATIVITAS <i /> ARCADE</p>
+          <h1 id="home-title">Hal praktis,<br /><span>jadi lebih mudah.</span></h1>
+          <p className="home-lede">
+            Bereskan pekerjaan kecil, buat sesuatu yang baru, rapikan rekap SIM kolektif, atau ambil jeda dengan game singkat.
+          </p>
+          <div className="home-hero-actions">
+            <a href="#tools" className="btn btn-primary home-primary-cta">
+              Cari tools <Icon name="arrowDown" size={16} />
+            </a>
+            <Link href="/games" className="btn btn-ghost home-secondary-cta">
+              <Icon name="gamepad" size={17} /> Lihat arcade
+            </Link>
+          </div>
+          <p className="home-hero-summary">
+            <strong>{allToolItems.length} tools</strong><span aria-hidden="true">·</span><strong>{safeGames.length} game</strong><span aria-hidden="true">·</span>gratis tanpa langganan
+          </p>
+        </div>
+
+        <aside className="home-quick-panel" aria-labelledby="quick-tools-title">
+          <div className="home-quick-heading">
+            <div>
+              <p className="section-eyebrow">MULAI CEPAT</p>
+              <h2 id="quick-tools-title">Pintasan populer</h2>
+            </div>
+            <a href="#tools" className="quiet-link">Semua tools <Icon name="arrowRight" size={15} /></a>
+          </div>
+          <div className="quick-tool-list">
+            {quickTools.map((tool) => <QuickToolLink key={tool.slug} tool={tool} />)}
+          </div>
+          {simTool ? (
+            <Link href={getToolHref(simTool)} className="quick-sim-link">
+              <span className="quick-sim-icon" aria-hidden="true"><Icon name="fingerprint" size={19} /></span>
+              <span className="quick-sim-copy">
+                <small>REKAP SIM KOLEKTIF</small>
+                <strong>Banyak KTP. Satu rekap.</strong>
+              </span>
+              <Icon name="arrowRight" size={16} className="quick-tool-arrow" />
+            </Link>
+          ) : null}
+        </aside>
       </section>
 
-      <section style={{ marginTop: 10 }}>
-        <div className="section-head">
-          <h2>Showcase Utama</h2>
-          <Link href="/games" style={{ fontSize: 13.5, color: 'var(--accent-soft)', fontWeight: 600 }}>
-            Lihat semua game ({safeGames.length}) →
-          </Link>
+      <section className="home-featured" aria-labelledby="featured-title">
+        <div className="section-intro">
+          <div>
+            <p className="section-eyebrow">PILIHAN UNTUK MEMULAI</p>
+            <h2 id="featured-title">Pilih sesuai kebutuhan.</h2>
+          </div>
+          <Link href="#tools" className="section-link">Jelajahi semua tools <Icon name="arrowRight" size={15} /></Link>
         </div>
 
-        <div className="bento">
+        <div className="featured-grid">
           {downloader ? (
-            <Link href={getToolHref(downloader)} className="bento-card bento-large" style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.05))' }}>
-              <div className="bento-glow" style={{ background: 'var(--accent)', top: -50, right: -50 }} />
-              <span className="bento-tag">Flagship</span>
-              <div>
-                <h3 className="bento-title">
-                  <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
-                    <Icon name="download" size={26} />
-                  </span>
-                  {downloader.title}
-                </h3>
-                <p className="bento-desc">{downloader.desc}</p>
-              </div>
-              <div style={{ marginTop: 20, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {['TikTok', 'IG', 'YouTube', 'Twitter/X', 'FB', 'Spotify'].map((p) => (
-                  <span key={p} style={{ fontSize: 11, padding: '4px 10px', background: 'rgba(255,255,255,0.06)', borderRadius: 999, color: 'var(--text-dim)' }}>
-                    {p}
-                  </span>
+            <Link href={getToolHref(downloader)} className="featured-card featured-card-downloader">
+              <span className="featured-card-icon"><Icon name="download" size={21} /></span>
+              <span className="featured-card-label">VIDEO & AUDIO</span>
+              <h3>{downloader.title}</h3>
+              <p>{downloader.desc}</p>
+              <span className="featured-card-action">Buka downloader <Icon name="arrowRight" size={15} /></span>
+            </Link>
+          ) : null}
+
+          {simTool ? (
+            <Link href={getToolHref(simTool)} className="featured-card featured-card-sim">
+              <span className="featured-card-icon"><Icon name="fingerprint" size={21} /></span>
+              <span className="featured-card-label">BANYAK KTP. SATU REKAP.</span>
+              <h3>Rekap SIM kolektif</h3>
+              <p>Rapikan data, pilihan SIM, catatan, dan foto peserta dalam satu daftar.</p>
+              <span className="featured-card-action">Buka rekap <Icon name="arrowRight" size={15} /></span>
+            </Link>
+          ) : null}
+
+          <Link href="/games" className="featured-card featured-card-games">
+            <span className="featured-card-icon"><Icon name="gamepad" size={21} /></span>
+            <span className="featured-card-label">JEDA SEBENTAR</span>
+            <h3>Game arcade</h3>
+            <p>{safeGames.length} game untuk menguji logika, ingatan, kata, dan kecepatan.</p>
+            <span className="featured-card-action">Pilih game <Icon name="arrowRight" size={15} /></span>
+          </Link>
+
+          <Link href="/leaderboard" className="featured-card featured-card-leaderboard">
+            <span className="featured-card-icon"><Icon name="trophy" size={21} /></span>
+            <span className="featured-card-label">SKOR PEMAIN</span>
+            <h3>Papan peringkat</h3>
+            {topPlayers.length ? (
+              <ol className="rank-preview-list" aria-label="Tiga pemain teratas">
+                {topPlayers.map((player, index) => (
+                  <li key={`${player.name}-${index}`}>
+                    <span className="rank-preview-place">{index + 1}</span>
+                    <span className="rank-preview-name">{player.name}</span>
+                    <strong>{player.score} poin</strong>
+                  </li>
                 ))}
-              </div>
-            </Link>
-          ) : null}
-
-          {sticker ? (
-            <Link href={getToolHref(sticker)} className="bento-card">
-              <h3 className="bento-title" style={{ fontSize: 18 }}>
-                <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
-                  <Icon name="sticker" size={20} />
-                </span>
-                Stiker WA
-              </h3>
-              <p className="bento-desc" style={{ fontSize: 12.5 }}>Foto jadi stiker 512x512 WebP.</p>
-            </Link>
-          ) : null}
-
-          {textSticker ? (
-            <Link href={getToolHref(textSticker)} className="bento-card">
-              <h3 className="bento-title" style={{ fontSize: 18 }}>
-                <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
-                  <Icon name="case" size={20} />
-                </span>
-                Stiker Teks
-              </h3>
-              <p className="bento-desc" style={{ fontSize: 12.5 }}>Ala ".brat" & breaking news.</p>
-            </Link>
-          ) : null}
-
-          {gamesTool ? (
-            <Link href="/games" className="bento-card bento-wide" style={{ flexDirection: 'row', alignItems: 'center', gap: 20 }}>
-              <div>
-                <h3 className="bento-title" style={{ fontSize: 20 }}>
-                  <span style={{ color: 'var(--accent-soft)', display: 'inline-flex' }}>
-                    <Icon name="gamepad" size={24} />
-                  </span>
-                  Game Arcade
-                </h3>
-                <p className="bento-desc">{safeGames.length} game gratis. Main, kumpulin poin.</p>
-              </div>
-              <div style={{ display: 'flex', marginLeft: 'auto', flexShrink: 0 }}>
-                {safeGames.slice(0, 3).map((g, i) => (
-                  <div key={g.slug} style={{ 
-                    width: 44, height: 44, borderRadius: 12, 
-                    background: 'var(--surface-2)', border: '1px solid var(--border)',
-                    display: 'grid', placeItems: 'center', color: 'var(--accent-soft)',
-                    marginLeft: i > 0 ? -12 : 0, zIndex: 3 - i
-                  }}>
-                    <GameIcon slug={g.slug} />
-                  </div>
-                ))}
-              </div>
-            </Link>
-          ) : null}
-
-          <Link href="/leaderboard" className="bento-card bento-wide" style={{ background: 'rgba(251,191,36,0.04)', borderColor: 'rgba(251,191,36,0.15)' }}>
-            <h3 className="bento-title" style={{ fontSize: 18 }}>
-              <span style={{ color: '#fbbf24', display: 'inline-flex' }}>
-                <Icon name="trophy" size={20} />
-              </span>
-              Papan Peringkat
-            </h3>
-            {top3.length > 0 ? (
-              <div style={{ display: 'flex', gap: 14, marginTop: 8 }}>
-                {top3.map((row, i) => (
-                  <div key={row.name} style={{ flex: 1 }}>
-                    <p style={{ margin: 0, fontSize: 11, color: 'var(--text-faint)' }}>#{i + 1}</p>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.name}</p>
-                    <p style={{ margin: 0, fontSize: 13, color: 'var(--accent-soft)', fontWeight: 800 }}>{row.score}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="bento-desc" style={{ marginTop: 6 }}>Belum ada skor. Jadi yang pertama!</p>
-            )}
+              </ol>
+            ) : <p>Belum ada skor. Jadi yang pertama masuk papan.</p>}
+            <span className="featured-card-action">Lihat peringkat <Icon name="arrowRight" size={15} /></span>
           </Link>
         </div>
+      </section>
+
+      <section id="tools" className="tool-catalog" aria-labelledby="tools-title">
+        <div className="section-intro catalog-intro">
+          <div>
+            <p className="section-eyebrow">KATALOG</p>
+            <h2 id="tools-title">Apa yang mau kamu bereskan?</h2>
+            <p>Cari alat berdasarkan kebutuhan, lalu langsung buka.</p>
+          </div>
+          <span className="catalog-total"><Icon name="sparkles" size={15} /> {allToolItems.length} tools</span>
+        </div>
+        <SearchHome tools={allToolItems} />
       </section>
     </div>
   );

@@ -5,157 +5,195 @@ import { useRouter } from 'next/navigation';
 import Icon, { iconNames } from '@/components/icons';
 import { featuredTools, getToolHref } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
-import { useMode } from '@/context/ModeContext';
 
 export default function CommandPalette() {
   const router = useRouter();
-  const { toggle, isPro } = useMode();
   const [open, setOpen] = useState(false);
-  const [q, setQ] = useState('');
+  const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
   const inputRef = useRef(null);
+  const dialogRef = useRef(null);
+  const previousFocusRef = useRef(null);
+  const previousOverflowRef = useRef('');
 
   const items = useMemo(() => {
-    const tools = featuredTools.map((t) => ({
-      id: `tool-${t.slug}`,
-      label: t.title,
+    const tools = featuredTools.map((tool) => ({
+      id: `tool-${tool.slug}`,
+      label: tool.title,
       hint: 'Tool',
-      icon: t.icon,
-      href: getToolHref(t),
-      kw: `${t.keywords || ''} ${t.desc || ''}`,
+      icon: tool.icon,
+      href: getToolHref(tool),
+      keywords: `${tool.keywords || ''} ${tool.desc || ''}`,
     }));
 
-    const games = (Array.isArray(allGames) ? allGames : []).map((g) => ({
-      id: `game-${g.slug}`,
-      label: g.name,
-      hint: 'Game',
+    const games = (Array.isArray(allGames) ? allGames : []).map((game) => ({
+      id: `game-${game.slug}`,
+      label: game.name,
+      hint: 'Arcade',
       icon: 'gamepad',
-      href: `/games/${g.slug}`,
-      kw: g.desc || '',
+      href: `/games/${game.slug}`,
+      keywords: game.desc || '',
     }));
 
     const actions = [
-      {
-        id: 'act-mode',
-        label: isPro ? 'Ganti ke Mode Simple' : 'Ganti ke Mode Pro',
-        hint: 'Aksi',
-        icon: 'sparkles',
-        action: () => toggle(),
-      },
-      { id: 'act-home', label: 'Ke Beranda', hint: 'Aksi', icon: 'arrowLeft', href: '/' },
-      { id: 'act-board', label: 'Papan Peringkat', hint: 'Aksi', icon: 'trophy', href: '/leaderboard' },
-      { id: 'act-admin', label: 'Area Admin', hint: 'Aksi', icon: 'lock', href: '/admin' },
+      { id: 'act-home', label: 'Kembali ke beranda', hint: 'Halaman', icon: 'home', href: '/' },
+      { id: 'act-board', label: 'Papan peringkat', hint: 'Halaman', icon: 'trophy', href: '/leaderboard' },
     ];
 
     return [...tools, ...games, ...actions];
-  }, [isPro, toggle]);
+  }, []);
 
   const results = useMemo(() => {
-    const s = q.trim().toLowerCase();
-    if (!s) return items.slice(0, 8);
+    const term = query.trim().toLowerCase();
+    if (!term) return items.slice(0, 8);
     return items
-      .filter((i) => `${i.label} ${i.kw} ${i.hint}`.toLowerCase().includes(s))
+      .filter((item) => `${item.label} ${item.keywords} ${item.hint}`.toLowerCase().includes(term))
       .slice(0, 8);
-  }, [q, items]);
+  }, [query, items]);
 
   useEffect(() => {
-    const onKey = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setOpen((o) => !o);
+    const onKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setOpen((current) => !current);
       }
-      if (e.key === 'Escape') setOpen(false);
+      if (event.key === 'Escape') setOpen(false);
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onOpenRequest = () => setOpen(true);
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('nawa:open-command-palette', onOpenRequest);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('nawa:open-command-palette', onOpenRequest);
+    };
   }, []);
 
   useEffect(() => {
-    if (open) {
-      setQ('');
-      setActive(0);
-      setTimeout(() => inputRef.current?.focus(), 40);
-    }
+    if (!open) return undefined;
+
+    previousFocusRef.current = document.activeElement;
+    previousOverflowRef.current = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    setQuery('');
+    setActive(0);
+    const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 20);
+
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflowRef.current;
+      const previousFocus = previousFocusRef.current;
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
+    };
   }, [open]);
 
-  useEffect(() => setActive(0), [q]);
+  useEffect(() => setActive(0), [query]);
 
   const run = (item) => {
     setOpen(false);
-    if (item.action) item.action();
-    else if (item.href) router.push(item.href);
+    if (item.href) router.push(item.href);
   };
 
-  const onInputKey = (e) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActive((a) => Math.min(a + 1, results.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActive((a) => Math.max(a - 1, 0));
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
+  const onInputKeyDown = (event) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (results.length) setActive((current) => Math.min(current + 1, results.length - 1));
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (results.length) setActive((current) => Math.max(current - 1, 0));
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
       if (results[active]) run(results[active]);
     }
   };
 
-  return (
-    <>
-      <button
-        type="button"
-        className="cmdk-fab"
-        onClick={() => setOpen(true)}
-        aria-label="Buka command palette"
+  const trapDialogFocus = (event) => {
+    if (event.key !== 'Tab') return;
+    const focusable = dialogRef.current?.querySelectorAll('button:not(:disabled), input:not(:disabled), [href], [tabindex]:not([tabindex="-1"])');
+    if (!focusable?.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  return open ? (
+    <div className="cmdk-layer">
+      <button type="button" className="cmdk-backdrop" onClick={() => setOpen(false)} aria-label="Tutup pencarian" />
+      <section
+        ref={dialogRef}
+        className="cmdk-panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cmdk-title"
+        onKeyDown={trapDialogFocus}
       >
-        <Icon name="search" size={20} />
-      </button>
+        <div className="cmdk-header">
+          <span className="cmdk-search-icon" aria-hidden="true"><Icon name="search" size={19} /></span>
+          <label className="visually-hidden" htmlFor="command-search">Cari tools, game, atau halaman</label>
+          <input
+            ref={inputRef}
+            id="command-search"
+            className="cmdk-input"
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded="true"
+            aria-controls="command-results"
+            aria-activedescendant={results[active] ? `cmdk-option-${active}` : undefined}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={onInputKeyDown}
+            placeholder="Cari tools, game, atau tindakan..."
+            autoComplete="off"
+            spellCheck="false"
+          />
+          <button type="button" className="cmdk-close" onClick={() => setOpen(false)} aria-label="Tutup pencarian">
+            <Icon name="close" size={17} />
+          </button>
+        </div>
 
-      {open ? (
-        <>
-          <div className="cmdk-backdrop" onClick={() => setOpen(false)} />
-
-          <div className="cmdk-panel" role="dialog" aria-modal="true" aria-label="Command palette">
-            <input
-              ref={inputRef}
-              className="cmdk-input"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={onInputKey}
-              placeholder="Ketik perintah atau cari tool..."
-            />
-
-            <div className="cmdk-list">
-              {results.length === 0 ? (
-                <p style={{ padding: 18, textAlign: 'center', color: 'var(--text-faint)', fontSize: 13 }}>
-                  Gak ketemu. Coba kata lain.
-                </p>
-              ) : (
-                results.map((item, i) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className="cmdk-item"
-                    data-active={i === active}
-                    onMouseEnter={() => setActive(i)}
-                    onClick={() => run(item)}
-                  >
-                    <Icon name={iconNames.includes(item.icon) ? item.icon : 'sparkles'} size={16} />
-                    <span>{item.label}</span>
-                    <span className="hint" style={{ margin: '0 0 0 auto' }}>{item.hint}</span>
-                  </button>
-                ))
-              )}
+        <div className="cmdk-results-heading">
+          <h2 id="cmdk-title">Pencarian cepat</h2>
+          <span>{query.trim() ? `${results.length} hasil` : 'Sering dipakai'}</span>
+        </div>
+        <div className="cmdk-list" id="command-results" role="listbox" aria-label="Hasil pencarian">
+          {results.length === 0 ? (
+            <div className="cmdk-empty">
+              <Icon name="search" size={20} />
+              <p>Tidak ada yang cocok. Coba kata lain.</p>
             </div>
+          ) : results.map((item, index) => (
+            <button
+              key={item.id}
+              id={`cmdk-option-${index}`}
+              type="button"
+              className="cmdk-item"
+              role="option"
+              aria-selected={index === active}
+              onMouseEnter={() => setActive(index)}
+              onClick={() => run(item)}
+            >
+              <span className="cmdk-item-icon">
+                <Icon name={iconNames.includes(item.icon) ? item.icon : 'sparkles'} size={17} />
+              </span>
+              <span className="cmdk-item-label">{item.label}</span>
+              <span className="cmdk-item-hint">{item.hint}</span>
+              <Icon name="arrowRight" size={15} className="cmdk-item-arrow" />
+            </button>
+          ))}
+        </div>
 
-            <div className="cmdk-foot">
-              <span><span className="kbd">↑↓</span> navigasi</span>
-              <span><span className="kbd">↵</span> buka</span>
-              <span><span className="kbd">esc</span> tutup</span>
-              <span style={{ marginLeft: 'auto' }}><span className="kbd">Ctrl</span> <span className="kbd">K</span></span>
-            </div>
-          </div>
-        </>
-      ) : null}
-    </>
-  );
+        <footer className="cmdk-foot">
+          <span><kbd>↑</kbd><kbd>↓</kbd> navigasi</span>
+          <span><kbd>↵</kbd> buka</span>
+          <span><kbd>esc</kbd> tutup</span>
+          <span className="cmdk-foot-shortcut"><kbd>⌘</kbd><kbd>K</kbd> cari kapan saja</span>
+        </footer>
+      </section>
+    </div>
+  ) : null;
 }

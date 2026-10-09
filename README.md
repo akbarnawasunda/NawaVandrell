@@ -1,20 +1,8 @@
-# NawaVandrell 2.0 — Neuro Core Digital Arsenal
+# Nawa Vandrell
 
-Super-app **19 tools + 15 game** yang jalan cuma dengan **GitHub + Vercel**. Tanpa database
-wajib, tanpa kvdb.io, tanpa API key.
+Nawa Vandrell menyatukan tools harian, ruang kreatif, workflow rekap SIM kolektif, dan game ringan dalam satu website. Aplikasi dibangun dengan Next.js dan bisa dijalankan tanpa layanan database wajib. Beberapa fitur integrasi online memerlukan konfigurasi API opsional.
 
-Dua wajah dalam satu app:
-
-| | Simple Mode (default) | Pro Mode |
-|---|---|---|
-| Latar | `#0A0A0B` solid, 1 orb emerald | 3 orb animasi + grid 80px |
-| Aksen | 1 warna (`#10B981`) | emerald + indigo + violet |
-| Font | Plus Jakarta Sans | Space Grotesk |
-| Kaca | — | glassmorphism blur 24px |
-| Game | soal + input + Jawab/Lewati | level, XP, streak 🔥, combo ×2/×3 |
-
-Ganti mode dari tombol kanan atas. Pilihan tersimpan di `localStorage`, dan dibaca
-sebelum halaman dilukis jadi tidak ada kedip tema.
+Website memakai satu tampilan konsisten yang dirancang agar ringkas, jelas, dan nyaman digunakan di desktop maupun ponsel.
 
 ---
 
@@ -22,11 +10,11 @@ sebelum halaman dilukis jadi tidak ada kedip tema.
 
 ```bash
 npm install
-cp .env.example .env.local   # isi ADMIN_PIN & ADMIN_API_TOKEN
+cp .env.example .env.local   # set ADMIN_PIN + ADMIN_SESSION_SECRET yang kuat
 npm run dev                  # http://localhost:3000
 ```
 
-Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok Downloader.
+Semua tool dan game publik jalan tanpa `.env`. Area admin hanya aktif bila secret kuat dikonfigurasi; TikTok Downloader dan beberapa integrasi online dapat memerlukan `UPSTREAM_API_BASE`.
 
 ---
 
@@ -34,7 +22,7 @@ Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok 
 
 1. **Push ke GitHub**
    ```bash
-   git init && git add . && git commit -m "NawaVandrell 2.0"
+   git init && git add . && git commit -m "Nawa Vandrell"
    git branch -M main
    git remote add origin https://github.com/<user>/<repo>.git
    git push -u origin main
@@ -45,16 +33,17 @@ Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok 
 
    | Nama | Wajib | Isi |
    |---|---|---|
-   | `ADMIN_PIN` | ya | PIN login `/admin` |
-   | `ADMIN_API_TOKEN` | ya | token Bearer, bikin pakai `openssl rand -hex 32` |
-   | `KV_REST_API_URL` | tidak | kalau mau leaderboard permanen |
-   | `KV_REST_API_TOKEN` | tidak | pasangan URL di atas |
+   | `ADMIN_PIN` | ya | Kunci login acak minimal 16 karakter; contoh `openssl rand -hex 16` |
+   | `ADMIN_SESSION_SECRET` | ya | Kunci HMAC acak minimal 32 karakter, berbeda dari PIN; `openssl rand -hex 32` |
+   | `ADMIN_API_TOKEN` | tidak | Bearer rahasia untuk otomasi server; jangan pernah taruh di browser |
+   | `KV_REST_API_URL` | tidak | URL Upstash/Vercel KV untuk leaderboard dan rate limit lintas instance |
+   | `KV_REST_API_TOKEN` | tidak | Token KV pasangannya |
    | `UPSTREAM_API_BASE` | tidak | hanya untuk TikTok Downloader & waifu |
 
 4. **Deploy.** Selesai.
 
-> Tanpa `ADMIN_PIN`/`ADMIN_API_TOKEN`, situs tetap jalan penuh — hanya `/admin`
-> yang balas `503` dengan pesan jelas, bukan error mentah.
+> Tanpa `ADMIN_PIN` dan `ADMIN_SESSION_SECRET` yang cukup kuat, fitur publik tetap jalan,
+> sedangkan `/admin` dan `/admin/login` sengaja membalas 404 dan tidak menyediakan akses admin.
 
 ### Leaderboard permanen (opsional)
 
@@ -72,10 +61,10 @@ buat skor yang beneran awet pakai KV.
 
 ```
 app/
-  layout.js            root: font, orb, provider, service worker
-  page.js              beranda: hero + search + preview game
-  globals.css          satu token layer, dua identitas (data-mode)
-  tools/<slug>/page.js 19 tool
+  layout.js            root: font, shared shell, toast, service worker
+  page.js              beranda: pintasan, SIM kolektif, peringkat, katalog
+  globals.css          sistem desain responsif, satu tema konsisten
+  tools/<slug>/page.js 23 tool
   games/page.js        indeks + filter
   games/<slug>/page.js 8 kuis + 7 arcade
   leaderboard/page.js  top 20
@@ -86,7 +75,7 @@ app/
     admin/             verify, stats, player  (Bearer)
     tool-proxy/        alay, roasting, funfact, lorem, waifu, tiktok
 components/            ToolShell, GameShell, QuizEngine, ConfirmModal, ...
-context/               ModeContext, ToastContext
+context/               ToastContext
 hooks/                 useSound, useStreak, usePlayer
 lib/                   db.js, auth.js, quiz.js, funTools.js
 data/                  featuredTools, quizDatabase, arcadeData, nexrayData
@@ -97,20 +86,34 @@ public/                manifest.json, sw.js, icon.svg
 
 ## Isi
 
-**Tools (19).** QR Code · Password Generator · Base64 · JSON Formatter · Hash Lab
-(SHA-1/256/384/512) · Text Case · UUID · Regex Tester · Lorem Ipsum · Image Compressor ·
-Sticker WhatsApp · Color Picker · Gradient Generator · Text to Image · Teks Alay ·
-Roasting Machine · Funfact Tanggal Lahir · Galeri Acak · TikTok Downloader
+**Tools (23).** All-In-One Downloader · Stiker WhatsApp · Stiker Teks · QR Code ·
+Kompres Foto · Password Generator · WA Direct Chat · Rekap SIM Kolektif · Mesin Roasting ·
+Steganografi · JSON Formatter · Text Case · Color Picker · Gradient Generator · Hash Lab ·
+Base64 · UUID · Regex Tester · Lorem Ipsum · Text to Image · Teks Alay · Funfact Tanggal Lahir ·
+Galeri Acak
 
 **Game (15).** Tebak-tebakan · Teka-teki · Siapakah Aku · Susun Kata · Tebak Kimia ·
 Asah Otak · Tebak Lirik · Islamic Quiz · Logic Gate Puzzle · Angka Enigma ·
 Kata Sambung · Emoji Story · Memory Matrix · Typing Blitz · Math Rush
 
-Semua betulan jalan — bukan mockup. QR pakai canvas asli lalu diunduh PNG, hash pakai
+Semua betulan jalan — bukan mockup. OCR KTP untuk berkas persiapan SIM berjalan di browser, QR pakai canvas asli lalu diunduh PNG, hash pakai
 `crypto.subtle`, password pakai `crypto.getRandomValues`, sticker keluar `.webp` 512×512
 siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
 
 ---
+
+## OCR KTP dan rekap SIM kolektif
+
+Tool **Rekap SIM Kolektif** menerima banyak foto KTP sekaligus, membaca saran nama/NIK/data KTP
+dengan Tesseract.js di browser, lalu membuat tabel yang dapat dikoreksi dengan kolom utama
+**No, NAMA, SIM, KETERANGAN, FOTO KTP**. File mesin OCR disalin dari dependensi npm ke
+`public/ocr/` oleh `predev` / `prebuild`; folder hasil generasi ini sengaja tidak masuk Git.
+Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Simpan otomatis draf bersifat opsional: setelah diaktifkan, data tersimpan di IndexedDB browser ini dan kedaluwarsa setelah tujuh hari; pengguna dapat menghapusnya kapan saja. Mode cermat menggabungkan pembacaan foto asli, peningkatan kontras, dan pembersihan tambahan bila data inti belum terbaca; mode cepat tersedia untuk batch besar. Setiap foto bisa digeser, di-zoom, dan diatur utuh atau isi bingkai—hasil posisi tersimpan pada pratinjau serta ekspor yang memuat gambar. Daftar bisa dicari dan disaring tanpa mengurangi baris pada ekspor; tersedia juga opsi teks besar dan navigasi keyboard pada editor foto. Periksa dan koreksi semua hasil OCR.
+
+Hasil ekspor adalah **draf rekap pribadi**, bukan SIM, bukti pendaftaran, atau formulir resmi.
+Tersedia PDF (dialog cetak browser), DOCX, Excel dengan foto KTP tertanam dan sheet data,
+CSV berisi seluruh data KTP, serta JSON yang turut memuat foto terkompres; semua file dibuat
+lokal di browser. Syarat dan golongan SIM harus dikonfirmasi lewat kanal resmi/Satpas.
 
 ## Ganti ke database soal penuh
 
@@ -155,13 +158,18 @@ Sekarang lewat `TextEncoder` + chunking, jadi emoji dan huruf Jawa pun aman bola
 
 ## Keamanan
 
-- PIN dibanding pakai `crypto.timingSafeEqual` atas digest SHA-256 — panjang input tidak
-  bocor lewat timing.
-- Rate limit login admin: 5 percobaan / 10 menit per IP.
-- Semua `/api/admin/*` cek `Bearer` token; tidak ada rahasia yang di-hardcode.
-- Token admin disimpan di `sessionStorage`, hilang saat tab ditutup.
-- Nama pemain dipotong 24 karakter, skor diklem `0..9.999.999` sebelum disimpan.
-- `/admin` di-`Disallow` dari `robots.txt`, plus header `nosniff` & `SAMEORIGIN`.
+- `/admin` merespons 404 tanpa sesi sah; dashboard hanya dirender server setelah validasi cookie.
+  Form login berada di `/admin/login` dan tidak ditautkan dari navigasi publik.
+- Login memerlukan secret minimal 16 karakter dan memakai perbandingan constant-time.
+  Sesi ditandatangani HMAC, berlaku 30 menit, serta disimpan di cookie `HttpOnly`, `Secure`
+  (produksi), `SameSite=Strict`; API tidak mengirim token admin ke browser.
+- Percobaan login dibatasi 5 kali per 10 menit; KV dipakai untuk hitungan bersama bila tersedia,
+  dengan fallback limiter per proses.
+- Endpoint admin memerlukan sesi atau Bearer rahasia server; perubahan berbasis cookie
+  memeriksa origin untuk mengurangi risiko CSRF.
+- `ADMIN_API_TOKEN` hanya opsional untuk otomasi server-ke-server. Rotasi `ADMIN_SESSION_SECRET`
+  akan membatalkan seluruh sesi yang masih berlaku.
+- Area admin tanpa indeks, tidak dicantumkan di sitemap, dan tidak ditautkan dari footer/pencarian.
 
 ---
 
@@ -176,7 +184,7 @@ supaya leaderboard tidak basi.
 
 - TikTok Downloader butuh `UPSTREAM_API_BASE` karena TikTok tidak bisa diakses langsung
   dari browser (CORS). Tanpa env itu, tombolnya balas pesan jelas, bukan gagal diam-diam.
-- Gambar di Galeri Acak diambil dari sumber publik pihak ketiga; NawaVandrell tidak
+- Gambar di Galeri Acak diambil dari sumber publik pihak ketiga; Nawa Vandrell tidak
   menyimpannya.
 
 Butuh Node **≥ 18.17**.

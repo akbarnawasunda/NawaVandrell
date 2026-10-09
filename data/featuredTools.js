@@ -58,6 +58,14 @@ export const featuredTools = [
     keywords: 'wa whatsapp chat direct nomor kurir olshop tanpa simpan kontak',
   },
   {
+    slug: 'sim-application',
+    title: 'Rekap SIM Kolektif',
+    desc: 'Unggah banyak KTP, koreksi hasil OCR, lalu susun satu baris per orang dengan foto KTP dan ekspor ke PDF, DOCX, Excel, CSV, atau JSON.',
+    icon: 'fingerprint',
+    group: ['populer', 'kerja'],
+    keywords: 'ktp nik sim kolektif kelompok rekap roster data peserta foto identitas OCR pindai scan pembuatan baru SIM A B C D cetak pdf excel docx',
+  },
+  {
     slug: 'roasting',
     title: 'Mesin Roasting',
     desc: 'Minta di-roasting savage, siap-siap sakit hati buat seru-seruan.',

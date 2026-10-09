@@ -2,25 +2,14 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import GameShell from '@/components/GameShell';
-import { useMode } from '@/context/ModeContext';
 import { useSound } from '@/hooks/useSound';
 import { useStreak } from '@/hooks/useStreak';
 import { usePlayer } from '@/hooks/usePlayer';
 import { makeLogicQuestion } from '@/data/arcadeData';
 
-const GATE_HINT = {
-  AND: 'Output 1 kalau KEDUA input 1.',
-  OR: 'Output 1 kalau SALAH SATU input 1.',
-  NAND: 'Kebalikan AND.',
-  NOR: 'Kebalikan OR.',
-  XOR: 'Output 1 kalau input BEDA.',
-  XNOR: 'Output 1 kalau input SAMA.',
-};
-
 export default function LogicGatePage() {
-  const { isPro } = useMode();
   const sound = useSound();
-  const { streak, best, comboMultiplier, incrementStreak, resetStreak } = useStreak();
+  const { streak, best, incrementStreak, resetStreak } = useStreak();
   const player = usePlayer();
 
   const [q, setQ] = useState(null);
@@ -45,9 +34,9 @@ export default function LogicGatePage() {
     setAttempts((n) => n + 1);
 
     if (value === q.answer) {
-      const points = isPro ? 2 * comboMultiplier : 2;
+      const points = 2;
       setCorrectCount((n) => n + 1);
-      player.addPoints(points);
+      player.addScore(points);
       incrementStreak();
       if (streak >= 2) sound.playCombo();
       else sound.playCorrect();
@@ -90,8 +79,6 @@ export default function LogicGatePage() {
           <div className="gate-out">? </div>
         </div>
 
-        {isPro ? <p className="hint" style={{ textAlign: 'center' }}>{GATE_HINT[q?.gate]}</p> : null}
-
         <div className="btn-row" style={{ marginTop: 14 }}>
           <button type="button" className="btn btn-primary" style={{ flex: 1 }} onClick={() => pick(0)} disabled={answered}>
             0
@@ -110,12 +97,9 @@ export default function LogicGatePage() {
         ) : null}
       </div>
 
-      {!isPro ? (
-        <p className="hint" style={{ textAlign: 'center' }}>
-          Tabel kebenaran: AND butuh dua-duanya 1, OR cukup satu, XOR harus beda. NAND/NOR/XNOR itu
-          kebalikannya.
-        </p>
-      ) : null}
+      <p className="hint" style={{ textAlign: 'center' }}>
+        Tabel kebenaran: AND butuh dua-duanya 1, OR cukup satu, XOR harus beda. NAND, NOR, dan XNOR adalah kebalikannya.
+      </p>
     </GameShell>
   );
 }

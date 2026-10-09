@@ -1,98 +1,147 @@
 'use client';
+
 import Link from 'next/link';
-import { useDeferredValue, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { getToolHref, toolCategories } from '@/data/featuredTools';
 import Icon, { getToolIconName, iconNames } from './icons';
 
-function ToolCardIcon({ tool, size = 28 }) {
+function ToolCardIcon({ tool }) {
   const iconName = getToolIconName(tool);
   if (iconNames.includes(iconName)) {
     return (
-      <span className="card-icon" aria-hidden="true" style={{ display: 'inline-flex', color: 'var(--accent-soft)', marginBottom: 12 }}>
-        <Icon name={iconName} size={size} />
+      <span className="tool-card-icon" aria-hidden="true">
+        <Icon name={iconName} size={23} />
       </span>
     );
   }
-  return <span className="card-icon" aria-hidden="true">{typeof tool?.icon === 'string' ? tool.icon : '✨'}</span>;
+  return (
+    <span className="tool-card-icon tool-card-emoji" aria-hidden="true">
+      {typeof tool?.icon === 'string' ? tool.icon : '✦'}
+    </span>
+  );
 }
 
 export default function SearchHome({ tools }) {
   const safeTools = Array.isArray(tools) ? tools : [];
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
+  const searchInputRef = useRef(null);
   const deferred = useDeferredValue(query);
+
+  useEffect(() => {
+    const focusSearchOnSlash = (event) => {
+      const target = event.target;
+      const isTyping = target instanceof HTMLElement
+        && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
+      if (event.key !== '/' || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey || isTyping) return;
+      event.preventDefault();
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener('keydown', focusSearchOnSlash);
+    return () => window.removeEventListener('keydown', focusSearchOnSlash);
+  }, []);
 
   const counts = useMemo(() => {
     const map = { all: safeTools.length };
     for (const cat of toolCategories) {
       if (cat.id === 'all') continue;
-      map[cat.id] = safeTools.filter((t) => t.group?.includes(cat.id)).length;
+      map[cat.id] = safeTools.filter((tool) => tool.group?.includes(cat.id)).length;
     }
     return map;
   }, [safeTools]);
 
   const results = useMemo(() => {
-    const q = deferred.trim().toLowerCase();
+    const searchTerm = deferred.trim().toLowerCase();
     return safeTools.filter((tool) => {
       const inCategory = category === 'all' || tool.group?.includes(category);
       if (!inCategory) return false;
-      if (!q) return true;
+      if (!searchTerm) return true;
       const haystack = `${tool.title} ${tool.desc} ${tool.keywords || ''}`.toLowerCase();
-      return q.split(/\s+/).every((word) => haystack.includes(word));
+      return searchTerm.split(/\s+/).every((word) => haystack.includes(word));
     });
   }, [safeTools, deferred, category]);
 
-  const activeLabel = toolCategories.find((c) => c.id === category)?.label || 'Semua';
+  const activeLabel = toolCategories.find((item) => item.id === category)?.label || 'Semua';
   const filtering = category !== 'all' || query.trim().length > 0;
 
   return (
     <>
-      <div className="search-wrap">
-        <span className="search-icon" aria-hidden="true" style={{ display: 'inline-flex' }}>
-          <Icon name="search" size={18} />
+      <div className="search-wrap catalog-search">
+        <span className="search-icon" aria-hidden="true">
+          <Icon name="search" size={19} />
         </span>
-        <input className="search-input" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Mau ngapain hari ini? Contoh: bikin QR, kompres foto..." aria-label="Cari tool" enterKeyHint="search" />
+        <label className="visually-hidden" htmlFor="tool-search">Cari tools</label>
+        <input
+          id="tool-search"
+          ref={searchInputRef}
+          className="search-input"
+          type="search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Contoh: bikin QR, kompres foto, rapikan JSON..."
+          enterKeyHint="search"
+          autoComplete="off"
+        />
+        <kbd className="search-shortcut" aria-hidden="true">/</kbd>
       </div>
 
-      <div className="chips" role="group" aria-label="Filter kategori">
+      <div className="chips catalog-chips" role="group" aria-label="Filter kategori tools">
         {toolCategories.map((cat) => (
-          <button key={cat.id} type="button" className="chip" aria-pressed={category === cat.id} onClick={() => setCategory(cat.id)}>
+          <button
+            key={cat.id}
+            type="button"
+            className="chip"
+            aria-pressed={category === cat.id}
+            onClick={() => setCategory(cat.id)}
+          >
             {cat.label}
             <span className="chip-count">{counts[cat.id] ?? 0}</span>
           </button>
         ))}
       </div>
 
-      <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-        <div className="section-head">
-          <h2 style={{ fontSize: 17 }}>{filtering ? `Hasil: ${activeLabel}` : 'Semua Tools'}</h2>
-          <span aria-live="polite">
-            {results.length} tool{results.length === 1 ? '' : 's'}
-            {query.trim() ? ` untuk "${query.trim()}"` : ''}
+      <div className="catalog-results">
+        <div className="section-head catalog-results-head">
+          <div>
+            <p className="catalog-section-label">{filtering ? 'PENELUSURAN' : 'PILIHAN UNTUKMU'}</p>
+            <h2>{filtering ? `Hasil: ${activeLabel}` : 'Semua tools'}</h2>
+          </div>
+          <div className="catalog-results-meta">
+            <span aria-live="polite" aria-atomic="true">
+              {results.length} {results.length === 1 ? 'tool' : 'tools'}
+              {query.trim() ? ` untuk “${query.trim()}”` : ''}
+            </span>
             {filtering ? (
-              <>
-                {' · '}
-                <button type="button" onClick={() => { setQuery(''); setCategory('all'); }} style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'var(--accent-soft)', cursor: 'pointer', fontWeight: 600 }}>
-                  reset
-                </button>
-              </>
+              <button
+                type="button"
+                className="catalog-reset"
+                onClick={() => { setQuery(''); setCategory('all'); }}
+              >
+                Hapus filter
+              </button>
             ) : null}
-          </span>
+          </div>
         </div>
 
         {results.length === 0 ? (
-          <div className="empty">
-            <p style={{ margin: '0 auto 10px', width: 'fit-content', color: 'var(--text-faint)' }}><Icon name="search" size={26} /></p>
-            <p style={{ margin: '0 0 6px', fontSize: 15, color: 'var(--text-dim)' }}>Gak ada tool yang cocok</p>
-            <p style={{ margin: 0 }}>Coba kata lain, atau klik chip “Semua”.</p>
+          <div className="empty catalog-empty">
+            <span className="empty-icon" aria-hidden="true"><Icon name="search" size={23} /></span>
+            <h3>Belum ada yang cocok</h3>
+            <p>Coba kata lain, atau tampilkan semua tools.</p>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => { setQuery(''); setCategory('all'); }}>
+              Tampilkan semua
+            </button>
           </div>
         ) : (
-          <div className="grid-cards">
+          <div className="grid-cards tool-grid">
             {results.map((tool) => (
-              <Link key={tool.slug} href={getToolHref(tool)} className="card">
-                <ToolCardIcon tool={tool} size={28} />
-                <h3>{tool.title}</h3>
-                <p>{tool.desc}</p>
+              <Link key={tool.slug} href={getToolHref(tool)} className="card tool-card">
+                <ToolCardIcon tool={tool} />
+                <div className="tool-card-copy">
+                  <h3>{tool.title}</h3>
+                  <p>{tool.desc}</p>
+                </div>
+                <span className="tool-card-arrow" aria-hidden="true"><Icon name="arrowRight" size={16} /></span>
                 {tool.group?.includes('populer') ? <span className="card-tag">Populer</span> : null}
               </Link>
             ))}

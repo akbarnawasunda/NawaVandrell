@@ -1,13 +1,13 @@
 {
-  "name": "NawaVandrell — Neuro Core Digital Arsenal",
-  "short_name": "NawaVandrell",
-  "description": "Kumpulan tools dan game yang beneran gampang dipakai. Offline-first, tanpa iklan.",
+  "name": "Nawa Vandrell",
+  "short_name": "Nawa Vandrell",
+  "description": "Tools praktis, ruang kreatif, rekap SIM kolektif, dan game. Gratis tanpa langganan.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#0a0a0b",
-  "theme_color": "#10b981",
+  "background_color": "#0b0e13",
+  "theme_color": "#0b0e13",
   "lang": "id",
   "dir": "ltr",
   "categories": ["utilities", "productivity", "games"],
@@ -27,7 +27,8 @@
   ],
   "shortcuts": [
     { "name": "Bikin QR", "url": "/tools/qr-code" },
-    { "name": "Semua Game", "url": "/games" },
-    { "name": "Papan Peringkat", "url": "/leaderboard" }
+    { "name": "Rekap SIM kolektif", "url": "/tools/sim-application" },
+    { "name": "Semua game", "url": "/games" },
+    { "name": "Papan peringkat", "url": "/leaderboard" }
   ]
 }

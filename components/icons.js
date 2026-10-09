@@ -136,6 +136,36 @@ const icons = {
     </Svg>
   ),
 
+  arrowRight: (
+    <Svg>
+      <path d="M5 12h14" />
+      <path d="m12 5 7 7-7 7" />
+    </Svg>
+  ),
+
+  arrowDown: (
+    <Svg>
+      <path d="M12 5v14" />
+      <path d="m19 12-7 7-7-7" />
+    </Svg>
+  ),
+
+  home: (
+    <Svg>
+      <path d="m3 10 9-7 9 7" />
+      <path d="M5 9v11h14V9" />
+      <path d="M9 20v-6h6v6" />
+    </Svg>
+  ),
+
+  menu: (
+    <Svg>
+      <path d="M4 7h16" />
+      <path d="M4 12h16" />
+      <path d="M4 17h16" />
+    </Svg>
+  ),
+
   copy: (
     <Svg>
       <rect x="9" y="9" width="11" height="11" rx="2" />
@@ -547,6 +577,16 @@ icons.eye = (
     <circle cx="12" cy="12" r="3" />
   </Svg>
 );
+
+icons.eyeOff = (
+  <Svg>
+    <path d="m3 3 18 18" />
+    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+    <path d="M9.9 5.2A11 11 0 0 1 12 5c7 0 11 7 11 7a17 17 0 0 1-3.1 3.7" />
+    <path d="M6.2 6.2C3.4 8.1 1 12 1 12s4 7 11 7c1.2 0 2.3-.2 3.3-.6" />
+  </Svg>
+);
+iconNames.push('eyeOff');
 
 icons.hash = (
   <Svg>

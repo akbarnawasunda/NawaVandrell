@@ -8,7 +8,7 @@ import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
 
 const SAMPLE = JSON.stringify({
-  app: 'NawaVandrell',
+  app: 'Nawa Vandrell',
   version: 3,
   pro: true,
   tools: ['downloader', 'qr-code', 'sticker-maker'],

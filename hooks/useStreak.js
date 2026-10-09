@@ -5,10 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 const STREAK_KEY = 'nawa_streak';
 const BEST_KEY = 'nawa_streak_best';
 
-/**
- * Streak + combo multiplier.
- * streak 0-1 -> x1, 2-4 -> x2, 5+ -> x3
- */
+/** Track the current and best run of consecutive correct answers. */
 export function useStreak() {
   const [streak, setStreak] = useState(0);
   const [best, setBest] = useState(0);
@@ -50,7 +47,5 @@ export function useStreak() {
     persist(0);
   }, [persist]);
 
-  const comboMultiplier = streak >= 5 ? 3 : streak >= 2 ? 2 : 1;
-
-  return { streak, best, comboMultiplier, incrementStreak, resetStreak, ready };
+  return { streak, best, incrementStreak, resetStreak, ready };
 }

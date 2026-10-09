@@ -43,7 +43,7 @@ function wrapText(ctx, text, maxWidth) {
 export default function TextToImagePage() {
   const { addToast } = useToast();
   const [text, setText] = useState('Kerja keras itu penting,\ntapi kerja pintar lebih hemat waktu.');
-  const [author, setAuthor] = useState('NawaVandrell');
+  const [author, setAuthor] = useState('Nawa Vandrell');
   const [theme, setTheme] = useState('emerald');
   const [ratio, setRatio] = useState('square');
   const [fontSize, setFontSize] = useState(58);
@@ -138,7 +138,7 @@ export default function TextToImagePage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `nawavandrell-quote-${ratio}.png`;
+      a.download = `nawa-vandrell-quote-${ratio}.png`;
       document.body.appendChild(a);
       a.click();
       a.remove();

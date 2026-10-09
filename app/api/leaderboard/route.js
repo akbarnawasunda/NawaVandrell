@@ -10,7 +10,7 @@
  */
 
 import { getRanked, getLeaderboard, saveLeaderboard, submitScore } from '@/lib/db';
-import { verifyBearer, unauthorized } from '@/lib/auth';
+import { verifyAdmin, verifyAdminMutation, unauthorized } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,7 +18,7 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
 
   if (searchParams.get('raw') === '1') {
-    if (!verifyBearer(request)) return unauthorized('Butuh token admin untuk data mentah');
+    if (!verifyAdmin(request)) return unauthorized('Butuh autentikasi admin untuk data mentah');
     const board = await getLeaderboard();
     return Response.json(board, { headers: { 'Cache-Control': 'no-store' } });
   }
@@ -55,8 +55,8 @@ export async function POST(request) {
   }
 
   // --- Mode 2: timpa seluruh board (admin only) ---
-  if (!verifyBearer(request)) {
-    return unauthorized('Penulisan massal butuh Bearer ADMIN_API_TOKEN');
+  if (!verifyAdminMutation(request)) {
+    return unauthorized('Penulisan massal memerlukan autentikasi admin.');
   }
 
   const ok = await saveLeaderboard(body);

@@ -1,18 +1,19 @@
 /**
- * Service worker NawaVandrell.
+ * Service worker Nawa Vandrell.
  *
  * Strategi:
  * - Navigasi (HTML)  -> network-first, fallback cache, terakhir halaman offline.
  * - Aset statis      -> stale-while-revalidate.
  * - /api/*           -> TIDAK pernah di-cache (leaderboard & kuis harus segar).
+ * - /admin/*         -> dilewatkan tanpa cache, termasuk untuk membuang cache lama.
  *
  * Kenapa tidak precache halaman? Next.js App Router pakai hash build,
  * jadi lebih aman meng-cache saat halaman benar-benar dikunjungi.
  */
 
-const VERSION = 'nawa-v2';
-const SHELL_CACHE = `${VERSION}-shell`;
-const ASSET_CACHE = `${VERSION}-assets`;
+const CACHE_NAMESPACE = 'nawa-vandrell-v2';
+const SHELL_CACHE = `${CACHE_NAMESPACE}-shell`;
+const ASSET_CACHE = `${CACHE_NAMESPACE}-assets`;
 
 const PRECACHE = ['/', '/games', '/manifest.json', '/icon.svg'];
 
@@ -30,7 +31,7 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k)))
+        Promise.all(keys.filter((key) => !key.startsWith(CACHE_NAMESPACE)).map((key) => caches.delete(key)))
       )
       .then(() => self.clients.claim())
   );
@@ -39,6 +40,7 @@ self.addEventListener('activate', (event) => {
 function isAsset(url) {
   return (
     url.pathname.startsWith('/_next/static/') ||
+    url.pathname.startsWith('/ocr/') ||
     /\.(?:css|js|woff2?|ttf|svg|png|jpe?g|webp|ico)$/i.test(url.pathname)
   );
 }
@@ -52,6 +54,9 @@ self.addEventListener('fetch', (event) => {
 
   // beda origin (gambar pihak ketiga) -> biarkan browser yang urus
   if (url.origin !== self.location.origin) return;
+
+  // Jangan pernah menyimpan halaman privat—versi sebelumnya mungkin pernah menaruhnya di cache.
+  if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return;
 
   // API selalu langsung ke jaringan
   if (url.pathname.startsWith('/api/')) return;
@@ -72,8 +77,8 @@ self.addEventListener('fetch', (event) => {
           if (home) return home;
           return new Response(
             '<!doctype html><meta charset="utf-8"><title>Offline</title>' +
-              '<body style="background:#0a0a0b;color:#e5e7eb;font-family:system-ui;text-align:center;padding:60px 20px">' +
-              '<h1 style="color:#10b981">Kamu sedang offline</h1>' +
+              '<body style="background:#0b0e13;color:#e5eaf4;font-family:system-ui;text-align:center;padding:60px 20px">' +
+              '<h1 style="color:#8bf4de">Kamu sedang offline</h1>' +
               '<p>Halaman ini belum pernah dibuka, jadi belum tersimpan. Coba lagi setelah online.</p></body>',
             { headers: { 'Content-Type': 'text/html; charset=utf-8' }, status: 503 }
           );

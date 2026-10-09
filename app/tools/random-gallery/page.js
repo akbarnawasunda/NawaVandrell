@@ -121,7 +121,7 @@ export default function RandomGalleryPage() {
         </div>
 
         <p className="hint">
-          Gambar diambil dari sumber publik. NawaVandrell tidak menyimpan atau memiliki gambar-gambar
+          Gambar diambil dari sumber publik. Nawa Vandrell tidak menyimpan atau memiliki gambar-gambar
           ini.
         </p>
       </div>

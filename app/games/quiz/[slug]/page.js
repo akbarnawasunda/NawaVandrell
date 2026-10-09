@@ -1,7 +1,8 @@
 import QuizEngine from '@/components/QuizEngine';
+import { gameMetadata } from '@/lib/seo';
 
 export async function generateMetadata({ params }) {
-  return { title: `Quiz ${params.slug}` };
+  return gameMetadata(params.slug);
 }
 
 export default function QuizPage({ params }) {

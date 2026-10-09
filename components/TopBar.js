@@ -1,74 +1,85 @@
 'use client';
 
 import Link from 'next/link';
-import { useMode } from '@/context/ModeContext';
-import { useSystemStats } from '@/hooks/useSystemStats';
+import { useEffect, useState } from 'react';
 import { useMicroSound } from '@/hooks/useMicroSound';
 import Icon from './icons';
 
+const navigation = [
+  { href: '/', label: 'Beranda' },
+  { href: '/#tools', label: 'Tools' },
+  { href: '/tools/sim-application', label: 'SIM kolektif' },
+  { href: '/games', label: 'Arcade' },
+  { href: '/leaderboard', label: 'Peringkat' },
+];
+
 export default function TopBar() {
-  const { mode, toggle } = useMode();
-  const stats = useSystemStats();
   const audio = useMicroSound();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
+
+  const openCommandPalette = () => {
+    window.dispatchEvent(new Event('nawa:open-command-palette'));
+    setMenuOpen(false);
+  };
 
   return (
     <header className="topbar">
-      <Link href="/" className="brand">
-        <span className="brand-dot">N</span>
-        <span>
-          Nawa<span className="nv-accent">Vandrell</span>
-        </span>
+      <Link href="/" className="brand" aria-label="Nawa Vandrell — Beranda" onClick={() => setMenuOpen(false)}>
+        <span className="brand-symbol" aria-hidden="true">N</span>
+        <span className="brand-name">Nawa <strong>Vandrell</strong></span>
       </Link>
 
-      <nav className="topbar-links" aria-label="Navigasi Utama">
-        <Link href="/" className="topbar-link">Tools</Link>
-        <Link href="/downloader" className="topbar-link">Downloader</Link>
-        <Link href="/games" className="topbar-link">Games</Link>
-        <Link href="/leaderboard" className="topbar-link">Peringkat</Link>
+      <nav className={`topbar-links${menuOpen ? ' is-open' : ''}`} id="primary-navigation" aria-label="Navigasi utama">
+        {navigation.map((item) => (
+          <Link key={item.href} href={item.href} className="topbar-link" onClick={() => setMenuOpen(false)}>
+            {item.label}
+          </Link>
+        ))}
       </nav>
 
-      <div className="hud-indicators">
-        <div className="hud-item">
-          <span className="hud-dot" />
-          <span className="hud-value">SYS:OK</span>
-        </div>
-        <div className="hud-sep">|</div>
-        <div className="hud-item">
-          <span className="hud-value">{stats.storage}</span>
-        </div>
-        <div className="hud-sep">|</div>
-        <div className="hud-item">
-          <span className="hud-value">{stats.ping}</span>
-        </div>
-      </div>
-
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div className="topbar-actions">
         <button
           type="button"
-          className="btn btn-ghost btn-sm"
-          onClick={audio.toggle}
-          aria-label={audio.enabled ? 'Matikan suara' : 'Nyalakan suara'}
-          style={{ padding: '0 10px', height: 32 }}
+          className="command-trigger"
+          onClick={openCommandPalette}
+          aria-label="Cari tools, game, atau halaman"
+          title="Cari apa saja (Ctrl atau Command + K)"
         >
-          <Icon name={audio.enabled ? 'volumeOn' : 'volumeOff'} size={16} />
+          <Icon name="search" size={17} />
+          <span className="command-trigger-label">Cari</span>
+          <kbd>⌘ K</kbd>
         </button>
 
-        <div className="mode-switch">
-          <button
-            type="button"
-            aria-pressed={mode === 'simple'}
-            onClick={() => mode !== 'simple' && toggle()}
-          >
-            SIMPLE
-          </button>
-          <button
-            type="button"
-            aria-pressed={mode === 'pro'}
-            onClick={() => mode !== 'pro' && toggle()}
-          >
-            PRO
-          </button>
-        </div>
+        <button
+          type="button"
+          className="audio-toggle"
+          onClick={audio.toggle}
+          aria-label={audio.enabled ? 'Matikan suara antarmuka' : 'Nyalakan suara antarmuka'}
+          aria-pressed={audio.enabled}
+          title={audio.enabled ? 'Matikan suara antarmuka' : 'Nyalakan suara antarmuka'}
+        >
+          <Icon name={audio.enabled ? 'volumeOn' : 'volumeOff'} size={17} />
+        </button>
+
+        <button
+          type="button"
+          className="mobile-nav-toggle"
+          aria-label={menuOpen ? 'Tutup navigasi' : 'Buka navigasi'}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMenuOpen((current) => !current)}
+        >
+          <Icon name={menuOpen ? 'close' : 'menu'} size={19} />
+        </button>
       </div>
     </header>
   );
