@@ -62,7 +62,7 @@ Batasan yang disengaja: PPh 21 memakai **metode tahunan (Pasal 17) dibagi 12**, 
 | A10 | Ukuran huruf 8–10px pada katalog, navigasi, dan footer | Sulit dibaca di HP | Minimum dinaikkan ke 10,5–11px (blok akhir `globals.css`) |
 | A11 | Kontras teks sekunder (`--text-faint`) | — | Diukur: 5,9–6,4:1 pada latar utama, sudah lulus AA (4,5:1). Tidak diubah |
 | A12 | Error generik proxy mengembalikan pesan internal | Kebocoran detail | Diganti pesan umum |
-| A13 | Service worker tidak pernah terdaftar: pendaftaran memakai `window.addEventListener('load')` di dalam skrip `afterInteractive`, sehingga bisa melewatkan event `load` | Dukungan offline tidak andal untuk semua pengunjung (diverifikasi: `registrations: []` sebelum perbaikan) | Pendaftaran langsung bila dokumen sudah `complete`; setelah perbaikan SW aktif dan alat yang pernah dibuka tetap tampil saat offline |
+| A13 | Service worker tidak pernah terdaftar: pendaftaran memakai `window.addEventListener('load')` di dalam skrip `afterInteractive`, sehingga bisa melewatkan event `load` | Dukungan offline tidak andal untuk semua pengunjung (diverifikasi: `registrations: []` sebelum perbaikan) | Pendaftaran langsung bila dokumen sudah `complete`; setelah perbaikan SW aktif; halaman HPP terverifikasi tampil saat offline (alat lain belum diuji offline) |
 | A14 | Cetak PDF: margin tercetak gelap (#121212) karena `color-scheme: dark` pada `:root` | Dokumen cetak tampak berbingkai gelap bila browser mencetak latar | Kanvas cetak dipaksa putih (`html:has(body.nv-printing)`); diverifikasi piksel margin 255,255,255 |
 | A15 | Cetak memakai `visibility: hidden` untuk menyembunyikan halaman | Halaman kosong ikut tercetak (invoice satu barang menjadi 3 halaman) | Diganti `display: none` untuk semua yang di luar lembar; invoice dan CV kini 1 halaman |
 
@@ -89,9 +89,9 @@ Temuan yang **belum** diubah (dicatat di backlog):
   - SIM kolektif tidak berubah: tabel default lima kolom, dokumen tetap tampil saat dicetak.
   - Cetak: invoice dan CV menghasilkan **1 halaman A4** dengan margin putih (diperiksa dari berkas PDF yang dirender).
   - Offline: setelah dibuka sekali, halaman HPP tetap tampil saat jaringan dimatikan (service worker aktif).
-- Pemeriksaan React dev mode pada 14 halaman baru: tidak ada peringatan struktur DOM atau hydration (setelah memperbaiki satu `<ul>` di dalam `<p>`).
+- Pemeriksaan React dev mode (peringatan `validateDOMNesting` dan hydration) pada commit final untuk 14 alat baru, beranda, games, leaderboard, dan SIM kolektif (18 halaman, semuanya HTTP 200): tidak ada peringatan. Sebelumnya ditemukan dan diperbaiki satu `<ul>` di dalam `<p>`.
 
 Keterbatasan verifikasi:
-- Chromium dijalankan dari paket npm di luar repositori (lihat `/tmp`); tidak ada pengujian pada Safari, Firefox, atau perangkat Android/iOS nyata.
+- Skrip Chromium headless (puppeteer-core + axe-core) belum ada di repositori; lihat backlog #12. Tidak ada pengujian pada Safari, Firefox, atau perangkat Android/iOS nyata.
 - Penilaian ATS, latihan wawancara, dan sensor teks adalah heuristik dan tidak diuji terhadap sistem ATS atau perekrut sungguhan.
 - Perhitungan PPh 21 memakai metode tahunan; belum dibandingkan dengan slip gaji dari perusahaan.
