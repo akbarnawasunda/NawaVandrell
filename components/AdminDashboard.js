@@ -91,6 +91,7 @@ export default function AdminDashboard() {
   const [error, setError] = useState('');
   const [toDelete, setToDelete] = useState(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [query, setQuery] = useState('');
 
   const redirectToLogin = useCallback(() => {
     router.replace('/admin/login');
@@ -199,6 +200,11 @@ export default function AdminDashboard() {
     }
   };
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const filteredRows = normalizedQuery
+    ? rows.map((row, index) => ({ row, index })).filter(({ row }) => String(row.name).toLowerCase().includes(normalizedQuery))
+    : rows.map((row, index) => ({ row, index }));
+
   return (
     <div className="shell admin-dashboard-shell">
       <header className="tool-head admin-dashboard-heading">
@@ -227,14 +233,25 @@ export default function AdminDashboard() {
 
           <section className="panel" aria-label="Kelola papan peringkat">
             <div className="result-head">
-              <span>Papan peringkat</span>
+              <span>Papan peringkat · {rows.length} pemain</span>
               <button type="button" className="btn btn-ghost btn-sm" onClick={() => void load()} disabled={loading}>
                 <Icon name="refresh" size={14} /> Muat ulang
               </button>
             </div>
-            {rows.length === 0 ? <p className="empty">Belum ada pemain di papan peringkat.</p> : (
+            {rows.length > 8 ? (
+              <input
+                className="input"
+                style={{ marginBottom: 10 }}
+                type="search"
+                placeholder={`Cari nama di ${rows.length} pemain…`}
+                aria-label="Cari pemain di papan peringkat"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            ) : null}
+            {rows.length === 0 ? <p className="empty">Belum ada pemain di papan peringkat.</p> : filteredRows.length === 0 ? <p className="empty">Tidak ada nama yang cocok dengan “{query}”.</p> : (
               <div className="admin-rows">
-                {rows.map((row, index) => (
+                {filteredRows.map(({ row, index }) => (
                   <div className="admin-row" key={`${row.name}-${index}`}>
                     <span className="admin-row-rank">#{index + 1}</span>
                     <span className="admin-row-name">{row.name}</span>

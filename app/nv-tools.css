@@ -300,3 +300,14 @@
 .nv-star-list li.is-ok { border-color: rgba(4, 120, 87, 0.45); color: var(--ok); }
 @media (max-width: 600px) { .nv-star-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .nv-practice-answer { white-space: pre-wrap; margin: 0; font-size: 14px; line-height: 1.6; }
+
+/* === Penyederhanaan v4.1: opsi sekunder & pratinjau bisa dilipat === */
+.nv-closed { display: none; }
+.nv-preview-toggle { margin: 2px 0 10px; }
+.nv-extras { padding: 12px 14px; }
+.nv-extras summary { gap: 8px; color: var(--text); font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.nv-extras summary:hover { color: var(--text); }
+.nv-extras-grid { margin-top: 12px; }
+@media print {
+  body.nv-printing .nv-print-area.nv-closed { display: block !important; }
+}

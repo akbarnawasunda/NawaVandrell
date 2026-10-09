@@ -133,13 +133,7 @@
 .sim-batch-progress-text { display: flex; justify-content: space-between; gap: 12px; color: #4d5563; font-size: 12px; line-height: 1.5; }
 .sim-batch-progress-text strong { flex: 0 0 auto; color: #181b21; font-variant-numeric: tabular-nums; }
 .sim-batch-progress progress { display: block; width: 100%; height: 8px; margin-top: 11px; overflow: hidden; border: 0; border-radius: 99px; accent-color: #4338ca; }
-.sim-roster-controls { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin: 24px 2px 12px; }
-.sim-roster-count { display: flex; align-items: center; gap: 12px; }
-.sim-roster-count-number { display: grid; place-items: center; min-width: 48px; height: 48px; padding: 0 10px; border: 1px solid rgba(79,70,229,.27); border-radius: 15px; background: rgba(79,70,229,.11); color: #b4f7e7; font-size: 20px; font-weight: 850; font-variant-numeric: tabular-nums; }
-.sim-roster-count > span:last-child { display: grid; line-height: 1.35; }
-.sim-roster-count strong { color: #181b21; font-size: 13px; }
-.sim-roster-count small { margin-top: 4px; color: #a7b4c5; font-size: 11px; }
-.sim-roster-tools { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
+/* panel kontrol daftar kini tergabung di judul seksi (.sim-heading-tools) */
 .sim-nik-toggle { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; color: #4d5563; font-size: 12px; font-weight: 650; cursor: pointer; }
 .sim-nik-toggle input { width: 19px; height: 19px; accent-color: var(--sim-mint); }
 .sim-clear-button { min-height: 42px; height: auto; padding: 0 14px; border-radius: 11px; font-size: 12px; }
@@ -518,3 +512,41 @@
 /* tombol hapus draf lokal (teks kecil bergaris bawah) */
 .sim-draft-delete { justify-self: start; min-height: 34px; padding: 0; border: 0; background: transparent; color: #d92d20; font: inherit; font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .sim-draft-delete:disabled { opacity: 0.6; cursor: wait; }
+
+/* === Penyederhanaan v4.1: slim-bar, draft ramping, OCR lipat, kontrol di judul seksi === */
+.sim-collective-intro[hidden] { display: none !important; }
+
+.sim-slim-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 14px; margin: 16px 0 4px; padding: 10px 14px; border: 1px solid rgba(23,32,51,.12); border-radius: 12px; background: #fff; }
+.sim-slim-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin: 0; padding: 0; list-style: none; font-size: 11.5px; color: #6b7280; }
+.sim-slim-steps li { font-variant-numeric: tabular-nums; }
+.sim-slim-steps b { color: inherit; font-weight: 750; }
+.sim-slim-steps li.is-current { color: #175bbb; }
+.sim-slim-steps li.is-complete { color: #0f766e; }
+.sim-slim-steps li.is-complete b::after { content: " ✓"; }
+.sim-slim-right { display: flex; align-items: center; gap: 12px; }
+.sim-slim-lock { display: inline-flex; align-items: center; gap: 5px; color: #0f766e; font-size: 11px; font-weight: 650; }
+
+.sim-draft-slim { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 14px; padding: 10px 14px; border: 1px solid rgba(23,32,51,.12); border-radius: 12px; background: #fbfbfd; }
+.sim-draft-slim .sim-draft-status { margin: 0; flex: 1 1 240px; color: #4d5563; font-size: 12px; }
+.sim-draft-slim .sim-draft-toggle { flex: 0 0 auto; }
+
+.sim-ocr-more { margin: 10px 0 2px; font-size: 12.5px; }
+.sim-ocr-more summary { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px 8px; border-radius: 8px; color: #175bbb; font-weight: 700; cursor: pointer; list-style-position: inside; }
+.sim-ocr-more summary:hover { background: #eff6ff; color: #123e80; }
+.sim-ocr-more summary:focus-visible { outline: 2px solid #1457b8; outline-offset: 2px; }
+.sim-ocr-more summary span { color: #4d5563; font-weight: 550; }
+.sim-ocr-more[open] summary { margin-bottom: 6px; }
+.sim-ocr-more .sim-ocr-mode-field { max-width: 300px; }
+.sim-ocr-more .sim-ocr-mode-note { max-width: 640px; }
+
+.sim-heading-count { margin-left: 8px; padding: 3px 9px; border-radius: 999px; background: rgba(79,70,229,.1); color: #3730a3; font-size: 11px; font-weight: 750; letter-spacing: .01em; vertical-align: 2px; white-space: nowrap; }
+.sim-heading-tools { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.sim-heading-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+@media (max-width: 860px) {
+  .sim-roster-section-heading { flex-direction: column; align-items: stretch; }
+  .sim-heading-tools { align-items: flex-start; }
+}
+@media (max-width: 560px) {
+  .sim-slim-bar { gap: 8px; }
+  .sim-slim-right { width: 100%; justify-content: space-between; }
+}
