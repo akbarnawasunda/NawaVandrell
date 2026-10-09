@@ -1,20 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="mark" x1="92" y1="76" x2="421" y2="440" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#8bf4de"/>
-      <stop offset="0.52" stop-color="#8bd8f5"/>
-      <stop offset="1" stop-color="#ad92ff"/>
+    <linearGradient id="mark" x1="150" y1="140" x2="362" y2="376" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4f46e5"/>
+      <stop offset="1" stop-color="#3730a3"/>
     </linearGradient>
-    <radialGradient id="halo" cx="0" cy="0" r="1" gradientTransform="matrix(0 260 -260 0 256 172)" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#725bda" stop-opacity=".28"/>
-      <stop offset="1" stop-color="#0b0e13" stop-opacity="0"/>
-    </radialGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="#0b0e13"/>
-  <rect width="512" height="512" rx="112" fill="url(#halo)"/>
-  <circle cx="256" cy="256" r="168" fill="none" stroke="url(#mark)" stroke-opacity=".16" stroke-width="2"/>
-  <circle cx="256" cy="256" r="194" fill="none" stroke="#fff" stroke-opacity=".045" stroke-width="1"/>
-  <path d="M168 349V163l176 186V163" fill="none" stroke="url(#mark)" stroke-linecap="round" stroke-linejoin="round" stroke-width="34"/>
-  <circle cx="168" cy="163" r="13" fill="#8bf4de"/>
-  <circle cx="344" cy="349" r="13" fill="#ad92ff"/>
+  <rect width="512" height="512" rx="112" fill="#f2f3f7"/>
+  <rect x="10" y="10" width="492" height="492" rx="102" fill="none" stroke="#e3e7ec" stroke-width="2"/>
+  <path d="M168 356V156l176 200V156" fill="none" stroke="url(#mark)" stroke-linecap="round" stroke-linejoin="round" stroke-width="36"/>
+  <rect x="352" y="332" width="34" height="26" rx="6" fill="#4f46e5"/>
 </svg>

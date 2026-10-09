@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Primitif form dan tampilan hasil bersama untuk alat-alat Nawa Vandrell yang baru.
+ * Primitif form dan tampilan hasil bersama untuk alat-alat Nawa Editor yang baru.
  * Memakai kelas yang sudah ada di globals.css (.label, .input, .textarea, .select, .hint, .feedback)
  * dan kelas tambahan .nv-* dari app/nv-tools.css.
  */

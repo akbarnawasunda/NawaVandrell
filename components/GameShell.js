@@ -98,7 +98,7 @@ export default function GameShell({ title, desc, icon, slug, stats, children, so
           <RenderGameIcon icon={icon} slug={slug} size={25} />
         </span>
         <div className="tool-head-copy">
-          <p className="tool-eyebrow">NAWA VANDRELL <i /> ARCADE</p>
+          <p className="tool-eyebrow">GAME</p>
           <h1>{title}</h1>
           {desc ? <p className="tool-head-description">{desc}</p> : null}
         </div>

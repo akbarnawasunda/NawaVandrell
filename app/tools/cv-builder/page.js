@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import LocalDataPanel from '@/components/LocalDataPanel';
-import { Metric, Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/NvUi';
+import { Metric, Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
 import { printNvDocument } from '@/lib/printDoc.mjs';
@@ -39,9 +39,9 @@ function moveItem(list, index, delta) {
   return next;
 }
 
-function MonthField({ id, label, value, onChange }) {
+function MonthField({ id, label, value, onChange, showHint = false }) {
   return (
-    <TextField id={id} type="month" label={label} value={value} onChange={onChange} hint={MONTH_HINT} />
+    <TextField id={id} type="month" label={label} value={value} onChange={onChange} hint={showHint ? MONTH_HINT : undefined} />
   );
 }
 
@@ -209,9 +209,14 @@ export default function CvBuilderPage() {
           <button type="button" className="btn btn-primary btn-sm" onClick={saveDraft} disabled={!meta.available}><Icon name="check" size={14} /> Simpan di perangkat{dirty ? ' *' : ''}</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={printPdf}><Icon name="printer" size={14} /> Cetak / PDF</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={downloadDocx}><Icon name="download" size={14} /> Unduh DOCX</button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={copyText}><Icon name="copy" size={14} /> Salin teks</button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={downloadTxt}><Icon name="file" size={14} /> Unduh .txt</button>
         </div>
+        <details className="nv-details nv-extras">
+          <summary>Ekspor teks untuk formulir lamaran</summary>
+          <div className="nv-actions" style={{ marginTop: 10 }}>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={copyText}><Icon name="copy" size={14} /> Salin teks</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={downloadTxt}><Icon name="file" size={14} /> Unduh .txt</button>
+          </div>
+        </details>
 
         <div className="nv-metrics">
           <Metric label="Skor kelengkapan (heuristik)" value={`${report.score}/100`} tone={report.score >= 80 ? 'strong' : report.score >= 60 ? 'warn' : 'danger'} hint="bukan skor ATS resmi" />
@@ -253,7 +258,7 @@ export default function CvBuilderPage() {
                       <input id={`cv-p-now-${row.id}`} type="checkbox" checked={row.sekarang} onChange={(event) => updateRow('pengalaman', row.id, 'sekarang', event.target.checked)} />
                       <span>Masih bekerja di sini</span>
                     </label>
-                    <MonthField id={`cv-p-mulai-${row.id}`} label="Mulai" value={row.mulai} onChange={(v) => updateRow('pengalaman', row.id, 'mulai', v)} />
+                    <MonthField id={`cv-p-mulai-${row.id}`} label="Mulai" value={row.mulai} onChange={(v) => updateRow('pengalaman', row.id, 'mulai', v)} showHint={index === 0} />
                     {!row.sekarang ? <MonthField id={`cv-p-selesai-${row.id}`} label="Selesai" value={row.selesai} onChange={(v) => updateRow('pengalaman', row.id, 'selesai', v)} /> : null}
                   </div>
                   <TextAreaField id={`cv-p-poin-${row.id}`} label="Poin tugas dan pencapaian" value={row.poin} onChange={(v) => updateRow('pengalaman', row.id, 'poin', v)} rows={4} maxLength={3000} placeholder={'Menyusun laporan bulanan untuk 3 cabang\nMengurangi selisih kas 40% dalam setahun'} />

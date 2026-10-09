@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
-import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField } from '@/components/NvUi';
+import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadText } from '@/lib/fileDownload.mjs';
 import { csvLine, formatPercent, formatRupiah } from '@/lib/format.mjs';

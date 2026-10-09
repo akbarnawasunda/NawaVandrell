@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import LocalDataPanel from '@/components/LocalDataPanel';
-import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField, TextAreaField, TextField } from '@/components/NvUi';
+import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectField, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { downloadBlob, safeFileName } from '@/lib/fileDownload.mjs';
@@ -122,6 +122,7 @@ export default function InvoicePage() {
   const [saved, setSaved] = useState([]);
   const [meta, setMeta] = useState({ available: true, corrupt: false, updatedAt: '' });
   const [ready, setReady] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   useEffect(() => {
     const loaded = store.load();
@@ -139,6 +140,7 @@ export default function InvoicePage() {
   const totals = useMemo(() => calcInvoice(doc), [doc]);
   const errors = useMemo(() => validateInvoice(doc), [doc]);
   const filledItems = doc.items.filter((row) => row.nama || toAmount(row.harga) > 0).length;
+  const hasExtras = toAmount(doc.diskon.nilai) > 0 || doc.pajak.aktif || Boolean(String(doc.syarat || '').trim()) || Boolean(String(doc.catatan || '').trim());
 
   const update = (field, value) => setDoc((current) => ({ ...current, [field]: value }));
   const updateNested = (group, field, value) => setDoc((current) => ({ ...current, [group]: { ...current[group], [field]: value } }));
@@ -245,15 +247,15 @@ export default function InvoicePage() {
       className="nv-tool-wide"
     >
       <div className="nv-stack">
-        <Notice kind="info" title="Ekspor PDF lewat dialog cetak">
-          Pilih “Simpan sebagai PDF” di dialog cetak browser. Dokumen dibuat di perangkat; tidak ada yang dikirim ke server.
+        <Notice kind="info">
+          Ekspor PDF lewat tombol “Cetak / PDF”, lalu pilih “Simpan sebagai PDF” di dialog cetak browser. Semua proses di perangkat ini.
         </Notice>
 
         <div className="nv-actions" role="toolbar" aria-label="Aksi dokumen">
-          <button type="button" className="btn btn-ghost btn-sm" onClick={newDocument}><Icon name="plus" size={14} /> Dokumen baru</button>
-          <button type="button" className="btn btn-primary btn-sm" onClick={saveCurrent} disabled={!meta.available}><Icon name="check" size={14} /> Simpan di perangkat</button>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={printDocument}><Icon name="printer" size={14} /> Cetak / PDF</button>
+          <button type="button" className="btn btn-primary btn-sm" onClick={printDocument}><Icon name="printer" size={14} /> Cetak / PDF</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={saveCurrent} disabled={!meta.available}><Icon name="check" size={14} /> Simpan di perangkat</button>
           <button type="button" className="btn btn-ghost btn-sm" onClick={downloadXlsx}><Icon name="download" size={14} /> Unduh Excel</button>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={newDocument}><Icon name="plus" size={14} /> Dokumen baru</button>
         </div>
 
         <ErrorList errors={errors} />
@@ -312,27 +314,30 @@ export default function InvoicePage() {
           </div>
         </Section>
 
-        <div className="nv-grid-2">
-          <Section labelledBy="inv-diskon">
-            <SectionHead id="inv-diskon" eyebrow="LANGKAH 5" title="Diskon dan pajak" />
-            <div className="nv-grid-2">
-              <SelectField id="inv-diskon-tipe" label="Jenis diskon" value={doc.diskon.tipe} onChange={(v) => updateNested('diskon', 'tipe', v)} options={[{ value: 'persen', label: 'Persen (%)' }, { value: 'nominal', label: 'Nominal (Rp)' }]} />
-              <NumberField id="inv-diskon-nilai" label="Nilai diskon" value={doc.diskon.nilai} onChange={(v) => updateNested('diskon', 'nilai', v)} suffix={doc.diskon.tipe === 'persen' ? '%' : 'Rp'} />
+        <details className="nv-details nv-extras" key={`${doc.id}:${hasExtras}`} open={hasExtras}>
+          <summary>Diskon, pajak, dan catatan (opsional)</summary>
+          <div className="nv-grid-2 nv-extras-grid">
+            <div>
+              <p className="nv-eyebrow">Diskon dan pajak</p>
+              <div className="nv-grid-2">
+                <SelectField id="inv-diskon-tipe" label="Jenis diskon" value={doc.diskon.tipe} onChange={(v) => updateNested('diskon', 'tipe', v)} options={[{ value: 'persen', label: 'Persen (%)' }, { value: 'nominal', label: 'Nominal (Rp)' }]} />
+                <NumberField id="inv-diskon-nilai" label="Nilai diskon" value={doc.diskon.nilai} onChange={(v) => updateNested('diskon', 'nilai', v)} suffix={doc.diskon.tipe === 'persen' ? '%' : 'Rp'} />
+              </div>
+              <label className="nv-check">
+                <input type="checkbox" checked={doc.pajak.aktif} onChange={(event) => updateNested('pajak', 'aktif', event.target.checked)} />
+                <span>Tambahkan PPN</span>
+              </label>
+              {doc.pajak.aktif ? (
+                <NumberField id="inv-ppn" label="Tarif PPN" value={doc.pajak.persen} onChange={(v) => updateNested('pajak', 'persen', v)} suffix="%" hint="Isi sesuai ketentuan usaha Anda. Tarif 11% hanya contoh; pastikan dengan konsultan pajak bila perlu." />
+              ) : null}
             </div>
-            <label className="nv-check">
-              <input type="checkbox" checked={doc.pajak.aktif} onChange={(event) => updateNested('pajak', 'aktif', event.target.checked)} />
-              <span>Tambahkan PPN</span>
-            </label>
-            {doc.pajak.aktif ? (
-              <NumberField id="inv-ppn" label="Tarif PPN" value={doc.pajak.persen} onChange={(v) => updateNested('pajak', 'persen', v)} suffix="%" hint="Isi sesuai ketentuan usaha Anda. Tarif 11% hanya contoh; pastikan dengan konsultan pajak bila perlu." />
-            ) : null}
-          </Section>
-          <Section labelledBy="inv-catatan">
-            <SectionHead id="inv-catatan" eyebrow="LANGKAH 6" title="Catatan dan syarat" />
-            <TextAreaField id="inv-syarat" label="Syarat pembayaran" value={doc.syarat} onChange={(v) => update('syarat', v)} rows={2} maxLength={600} />
-            <TextAreaField id="inv-note" label="Catatan (opsional)" value={doc.catatan} onChange={(v) => update('catatan', v)} rows={2} maxLength={600} />
-          </Section>
-        </div>
+            <div>
+              <p className="nv-eyebrow">Catatan dan syarat</p>
+              <TextAreaField id="inv-syarat" label="Syarat pembayaran" value={doc.syarat} onChange={(v) => update('syarat', v)} rows={2} maxLength={600} />
+              <TextAreaField id="inv-note" label="Catatan (opsional)" value={doc.catatan} onChange={(v) => update('catatan', v)} rows={2} maxLength={600} />
+            </div>
+          </div>
+        </details>
 
         <div className="nv-metrics">
           <Metric label="Subtotal" value={formatRupiah(totals.subtotal)} />
@@ -343,9 +348,12 @@ export default function InvoicePage() {
 
         <Section labelledBy="inv-pratinjau" className="nv-preview-section">
           <SectionHead id="inv-pratinjau" eyebrow="PRATINJAU" title="Tampilan dokumen">
-            Ini yang akan tercetak. Gunakan tombol Cetak / PDF di atas.
+            Ini yang akan tercetak atau diunduh sebagai PDF.
           </SectionHead>
-          <div className="nv-print-area">
+          <button type="button" className="btn btn-ghost btn-sm nv-preview-toggle" onClick={() => setShowPreview((current) => !current)} aria-expanded={showPreview}>
+            {showPreview ? 'Sembunyikan pratinjau' : 'Lihat pratinjau dokumen'}
+          </button>
+          <div className={`nv-print-area${showPreview ? '' : ' nv-closed'}`}>
             <PrintSheet doc={doc} totals={totals} />
           </div>
         </Section>

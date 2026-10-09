@@ -49,7 +49,7 @@ export async function GET(req) {
     // PAKSA BROWSER DOWNLOAD
     const responseHeaders = new Headers();
     responseHeaders.set('Content-Type', contentType);
-    responseHeaders.set('Content-Disposition', 'attachment; filename="nawa-vandrell_media.mp4"');
+    responseHeaders.set('Content-Disposition', 'attachment; filename="nawa-editor_media.mp4"');
     if (contentLength) responseHeaders.set('Content-Length', contentLength);
     responseHeaders.set('Cache-Control', 'no-store');
     responseHeaders.set('Accept-Ranges', 'bytes');

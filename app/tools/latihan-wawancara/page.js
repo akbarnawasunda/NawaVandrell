@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import Icon from '@/components/icons';
 import LocalDataPanel from '@/components/LocalDataPanel';
-import { Metric, Notice, Section, SectionHead, TextAreaField } from '@/components/NvUi';
+import { Metric, Notice, Section, SectionHead, TextAreaField } from '@/components/Ui';
 import { INTERVIEW_CATEGORIES, STAR_STEPS } from '@/data/interviewBank.js';
 import { useToast } from '@/context/ToastContext';
 import { formatDateId, isValidIsoDate, todayIso } from '@/lib/format.mjs';

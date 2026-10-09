@@ -147,7 +147,7 @@ export default function StickerMakerPage() {
         await navigator.share({
           files: [file],
           title: 'Stiker WhatsApp',
-          text: author.trim() ? `Stiker buatan ${author.trim()}` : 'Stiker dari Nawa Vandrell',
+          text: author.trim() ? `Stiker buatan ${author.trim()}` : 'Stiker dari Nawa Editor',
         });
       } catch (err) {
         if (err?.name !== 'AbortError') addToast('Share dibatalkan', 'info');

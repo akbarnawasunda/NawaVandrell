@@ -1,8 +1,8 @@
 {
-  "name": "nawavandrell",
-  "version": "3.0.0",
+  "name": "nawaeditor",
+  "version": "4.0.0",
   "private": true,
-  "description": "Nawa Vandrell — practical tools, creative workflows, and lightweight games.",
+  "description": "Nawa Editor — alat harian praktis, dokumen, dan game ringan, semua di satu tempat.",
   "scripts": {
     "predev": "node scripts/copy-ocr-assets.mjs",
     "dev": "next dev",
@@ -16,8 +16,6 @@
   },
   "dependencies": {
     "@e965/xlsx": "0.20.3",
-    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
-    "@fontsource-variable/space-grotesk": "^5.3.0",
     "@tesseract.js-data/ind": "1.0.0",
     "docx": "9.9.0",
     "exceljs": "4.4.0",
@@ -33,7 +31,7 @@
     "tailwindcss": "^3.4.14"
   },
   "engines": {
-    "node": ">=24.x"
+    "node": ">=18.17"
   },
   "optionalDependencies": {
     "@next/swc-android-arm64": "npm:null@*"

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Icon, { iconNames } from '@/components/icons';
 import { featuredTools, getToolHref } from '@/data/featuredTools';
-import { allGames } from '@/data/nexrayData';
+import { allGames } from '@/data/gameCatalog';
 
 export default function CommandPalette() {
   const router = useRouter();

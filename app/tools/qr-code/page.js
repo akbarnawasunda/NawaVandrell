@@ -15,7 +15,7 @@ const COLOR_PRESETS = [
 ];
 
 const CONTENT_PRESETS = [
-  { label: 'Website', sample: 'https://nawavandrell.vercel.app' },
+  { label: 'Website', sample: 'https://nawaeditor.vercel.app' },
   { label: 'WhatsApp', sample: 'https://wa.me/6281234567890?text=Halo%20kak' },
   { label: 'WiFi', sample: 'WIFI:S:MyHomeWifi;T:WPA;P:Rahasia123;;' },
   { label: 'Email', sample: 'mailto:kontak@example.com?subject=Halo' },
@@ -23,7 +23,7 @@ const CONTENT_PRESETS = [
 
 export default function QRCodePage() {
   const { addToast } = useToast();
-  const [text, setText] = useState('https://nawavandrell.vercel.app');
+  const [text, setText] = useState('https://nawaeditor.vercel.app');
   const [fgColor, setFgColor] = useState('#10b981');
   const [bgColor, setBgColor] = useState('#040408');
   const [size, setSize] = useState(256);

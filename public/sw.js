@@ -1,5 +1,5 @@
 /**
- * Service worker Nawa Vandrell.
+ * Service worker Nawa Editor.
  *
  * Strategi:
  * - Navigasi (HTML)  -> network-first, fallback cache, terakhir halaman offline.
@@ -11,7 +11,7 @@
  * jadi lebih aman meng-cache saat halaman benar-benar dikunjungi.
  */
 
-const CACHE_NAMESPACE = 'nawa-vandrell-v2';
+const CACHE_NAMESPACE = 'nawa-editor-v3';
 const SHELL_CACHE = `${CACHE_NAMESPACE}-shell`;
 const ASSET_CACHE = `${CACHE_NAMESPACE}-assets`;
 

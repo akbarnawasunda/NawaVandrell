@@ -72,7 +72,7 @@ test('backup export and import validate app, type, and version', () => {
   const store = collection();
   const backup = store.exportBackup([{ id: 'a', nama: 'Budi' }], new Date('2026-10-09T00:00:00Z'));
   const parsed = JSON.parse(backup);
-  assert.equal(parsed.aplikasi, 'Nawa Vandrell');
+  assert.equal(parsed.aplikasi, 'Nawa Editor');
   assert.equal(parsed.jenis, 'contoh');
   assert.equal(parsed.jumlah, 1);
 
@@ -83,14 +83,31 @@ test('backup export and import validate app, type, and version', () => {
 
   assert.throws(() => store.importBackup('bukan json'), /bukan JSON/);
   assert.throws(() => store.importBackup(JSON.stringify({ aplikasi: 'Lain' })), /bukan cadangan/);
-  assert.throws(() => store.importBackup(JSON.stringify({ aplikasi: 'Nawa Vandrell', jenis: 'lain', versi: 1, items: [] })), /fitur lain/);
-  assert.throws(() => store.importBackup(JSON.stringify({ aplikasi: 'Nawa Vandrell', jenis: 'contoh', versi: 9, items: [] })), /lebih baru/);
+  assert.throws(() => store.importBackup(JSON.stringify({ aplikasi: 'Nawa Editor', jenis: 'lain', versi: 1, items: [] })), /fitur lain/);
+  assert.throws(() => store.importBackup(JSON.stringify({ aplikasi: 'Nawa Editor', jenis: 'contoh', versi: 9, items: [] })), /lebih baru/);
+});
+
+test('legacy "Nawa Vandrell" backups remain importable after the rebrand', () => {
+  const store = collection();
+  const legacy = JSON.stringify({
+    aplikasi: 'Nawa Vandrell',
+    jenis: 'contoh',
+    versi: 1,
+    items: [{ id: 'lama', nama: 'Lama' }],
+  });
+  const result = store.importBackup(legacy, [], 'ganti');
+  assert.deepEqual(result.items, [{ id: 'lama', nama: 'Lama' }]);
+  assert.equal(result.added, 1);
+  assert.throws(
+    () => store.importBackup(JSON.stringify({ aplikasi: 'Aplikasi Lain', jenis: 'contoh', versi: 1, items: [] })),
+    /bukan cadangan/,
+  );
 });
 
 test('import in replace mode drops invalid items and counts them', () => {
   const store = collection();
   const payload = JSON.stringify({
-    aplikasi: 'Nawa Vandrell',
+    aplikasi: 'Nawa Editor',
     jenis: 'contoh',
     versi: 1,
     items: [{ id: 'x', nama: 'Baru' }, { id: '', nama: 'rusak' }],

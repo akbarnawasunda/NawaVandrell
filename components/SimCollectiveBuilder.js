@@ -906,6 +906,28 @@ export default function SimCollectiveBuilder() {
   };
   const visibleRosterCount = roster.filter(personMatchesRosterView).length;
 
+  const draftStatusMessage = !draftReady ? 'Memeriksa penyimpanan lokal…'
+    : !draftStorageSupported ? 'Penyimpanan draf tidak didukung browser ini.'
+    : draftSaving ? 'Menyimpan draf di perangkat…'
+    : savedDraft ? `Draf ditemukan · ${savedDraft.roster.length} orang · tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(savedDraft.savedAt))}.`
+    : draftEnabled && draftSavedAt ? `Draf tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(draftSavedAt))}.`
+    : draftEnabled ? 'Simpan otomatis aktif di perangkat ini.'
+    : 'Simpan otomatis mati. Tanpa ekspor atau draf lokal, data halaman hilang saat ditutup.';
+  const draftToggleControl = (
+    <label className="sim-draft-toggle">
+      <input
+        type="checkbox"
+        checked={draftEnabled}
+        disabled={!draftReady || !draftStorageSupported || Boolean(savedDraft)}
+        onChange={(event) => { void toggleDraftAutoSave(event.target.checked); }}
+      />
+      <span>Simpan otomatis</span>
+    </label>
+  );
+  const draftDeleteButton = draftEnabled && (draftSavedAt || roster.length) ? (
+    <button type="button" className="sim-draft-delete" onClick={() => void deleteLocalDraft()} disabled={draftSaving}>Hapus draf tersimpan & matikan simpan otomatis</button>
+  ) : null;
+
   return (
     <ToolShell
       title="Rekap SIM Kolektif"
@@ -913,7 +935,7 @@ export default function SimCollectiveBuilder() {
       icon="fingerprint"
       className={`sim-tool-shell sim-collective-shell${largeText ? ' is-large-text' : ''}`}
     >
-      <section className="sim-collective-intro" aria-label="Alur penggunaan">
+      <section className="sim-collective-intro" aria-label="Alur penggunaan" hidden={roster.length > 0}>
         <div className="sim-collective-hero-grid">
           <div className="sim-collective-hero-copy">
             <div className="sim-collective-intro-top">
@@ -932,65 +954,57 @@ export default function SimCollectiveBuilder() {
               <div className={roster.length && !processing ? 'is-current' : ''}><b>03</b><span><strong>Ekspor</strong><small>PDF / Excel</small></span></div>
             </div>
           </div>
-          <div className="sim-hero-art" aria-hidden="true">
-            <div className="sim-hero-art-glow" />
-            <div className="sim-hero-orbit sim-hero-orbit-one" />
-            <div className="sim-hero-orbit sim-hero-orbit-two" />
-            <div className="sim-hero-orbit-dot" />
-            <div className="sim-hero-doc-stack">
-              <div className="sim-hero-doc-back sim-hero-doc-back-one" />
-              <div className="sim-hero-doc-back sim-hero-doc-back-two" />
-              <div className="sim-hero-document">
-                <div className="sim-hero-document-top"><span className="sim-hero-mini-icon"><Icon name="image" size={14} /></span><span>REKAP DIGITAL</span><i /></div>
-                <div className="sim-hero-doc-heading"><b>DATA KOLEKTIF</b><span>PRIVAT · LOKAL</span></div>
-                <div className="sim-hero-doc-row"><b>01</b><i /><span /><em /></div>
-                <div className="sim-hero-doc-row"><b>02</b><i /><span /><em /></div>
-                <div className="sim-hero-doc-row"><b>03</b><i /><span /><em /></div>
-                <div className="sim-hero-doc-footer"><span><Icon name="lock" size={13} /></span><b>DATA TETAP DI PERANGKAT</b><i>✓</i></div>
-              </div>
-              <div className="sim-hero-float-badge"><span>✓</span><b>OCR lokal<small>siap membantu</small></b></div>
-            </div>
-            <div className="sim-hero-art-caption"><span>01</span> FOTO <i /> <span>02</span> DATA <i /> <span>03</span> REKAP</div>
-          </div>
         </div>
       </section>
+
+      {roster.length ? (
+        <div className="sim-slim-bar sim-screen-only" aria-label="Tahap rekap">
+          <ol className="sim-slim-steps">
+            <li className="is-complete">01 · <b>Unggah</b></li>
+            <li className={processing ? 'is-current' : 'is-complete'}>02 · <b>Periksa</b></li>
+            <li className={processing ? '' : 'is-current'}>03 · <b>Ekspor</b></li>
+          </ol>
+          <div className="sim-slim-right">
+            <span className="sim-slim-lock"><Icon name="lock" size={12} /> Semua di perangkat ini</span>
+            <button type="button" className="sim-readable-toggle" onClick={() => setLargeText((current) => !current)} aria-pressed={largeText}>
+              <span aria-hidden="true">A+</span><span>{largeText ? 'Teks normal' : 'Teks besar'}</span>
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="sim-privacy-note" role="note">
         <span className="sim-privacy-icon"><Icon name="lock" size={17} /></span>
         <p><strong>Data tetap di perangkat.</strong> Foto, OCR, koreksi, dan ekspor berlangsung di browser ini—tidak diunggah ke API. Pastikan Anda berhak menggunakan setiap KTP.</p>
       </div>
 
-      <section className="sim-draft-panel sim-screen-only" aria-labelledby="sim-draft-title">
-        <div className="sim-draft-heading">
-          <div>
-            <h2 id="sim-draft-title">Pulihkan pekerjaan kalau tab tertutup</h2>
-            <p>Draf tersimpan hanya di browser ini, otomatis kedaluwarsa setelah 7 hari, dan tidak dikirim ke server.</p>
+      {savedDraft || draftError ? (
+        <section className="sim-draft-panel sim-screen-only" aria-labelledby="sim-draft-title">
+          <div className="sim-draft-heading">
+            <div>
+              <h2 id="sim-draft-title">Pulihkan pekerjaan kalau tab tertutup</h2>
+              <p>Draf tersimpan hanya di browser ini, otomatis kedaluwarsa setelah 7 hari, dan tidak dikirim ke server.</p>
+            </div>
+            {draftToggleControl}
           </div>
-          <label className="sim-draft-toggle">
-            <input
-              type="checkbox"
-              checked={draftEnabled}
-              disabled={!draftReady || !draftStorageSupported || Boolean(savedDraft)}
-              onChange={(event) => { void toggleDraftAutoSave(event.target.checked); }}
-            />
-            <span>Simpan otomatis</span>
-          </label>
+          <p className="sim-draft-status" role="status" aria-live="polite">{draftStatusMessage}</p>
+          {draftError ? <p className="sim-draft-error" role="alert">{draftError}</p> : null}
+          {savedDraft ? (
+            <div className="sim-draft-actions">
+              <button type="button" className="btn btn-primary btn-sm" onClick={restoreSavedDraft}>Pulihkan draf</button>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={() => void deleteLocalDraft()}>Hapus draf lokal</button>
+            </div>
+          ) : null}
+          {draftDeleteButton}
+          <p className="sim-draft-warning">Jangan aktifkan di perangkat bersama. Gunakan “Hapus draf” setelah selesai memakai KTP orang lain.</p>
+        </section>
+      ) : (
+        <div className="sim-draft-slim sim-screen-only" role="group" aria-label="Penyimpanan draf lokal">
+          {draftToggleControl}
+          <p className="sim-draft-status" role="status" aria-live="polite">{draftStatusMessage}</p>
+          {draftDeleteButton}
         </div>
-        <p className="sim-draft-status" role="status" aria-live="polite">
-          {!draftReady ? 'Memeriksa penyimpanan lokal…' : !draftStorageSupported ? 'Penyimpanan draf tidak didukung browser ini.' : draftSaving ? 'Menyimpan draf di perangkat…' : savedDraft ? `Draf ditemukan · ${savedDraft.roster.length} orang · tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(savedDraft.savedAt))}.` : draftEnabled && draftSavedAt ? `Draf tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(draftSavedAt))}.` : draftEnabled ? 'Simpan otomatis aktif di perangkat ini.' : 'Simpan otomatis mati. Tanpa ekspor atau draf lokal, data halaman hilang saat ditutup.'}
-        </p>
-        {draftError ? <p className="sim-draft-error" role="alert">{draftError}</p> : null}
-        {savedDraft ? (
-          <div className="sim-draft-actions">
-            <button type="button" className="btn btn-primary btn-sm" onClick={restoreSavedDraft}>Pulihkan draf</button>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => void deleteLocalDraft()}>Hapus draf lokal</button>
-          </div>
-        ) : null}
-        {draftEnabled && (draftSavedAt || roster.length) ? (
-          <button type="button" className="sim-draft-delete" onClick={() => void deleteLocalDraft()} disabled={draftSaving}>Hapus draf tersimpan & matikan simpan otomatis</button>
-        ) : null}
-        <p className="sim-draft-warning">Jangan aktifkan di perangkat bersama. Gunakan “Hapus draf” setelah selesai memakai KTP orang lain.</p>
-      </section>
+      )}
 
       <section className="sim-upload-card sim-screen-only" aria-label="Unggah KTP">
         <div className="sim-upload-card-heading">
@@ -1010,6 +1024,9 @@ export default function SimCollectiveBuilder() {
             <span>Keterangan default</span>
             <input className="input" value={defaultNote} onChange={(event) => setDefaultNote(event.target.value)} placeholder="BIKIN BARU" disabled={processing || Boolean(retryingPersonId)} />
           </label>
+        </div>
+        <details className="sim-ocr-more">
+          <summary>Pengaturan OCR · <span>{ocrMode === 'cermat' ? 'mode cermat' : 'mode cepat'}</span></summary>
           <label className="sim-setting-field sim-ocr-mode-field">
             <span>Mode OCR</span>
             <select className="select" value={ocrMode} onChange={(event) => setOcrMode(event.target.value)} disabled={processing || Boolean(retryingPersonId)}>
@@ -1017,8 +1034,8 @@ export default function SimCollectiveBuilder() {
               <option value="cepat">Cepat · satu pemindaian</option>
             </select>
           </label>
-        </div>
-        <p className="sim-ocr-mode-note"><strong>{ocrMode === 'cermat' ? 'Cermat:' : 'Cepat:'}</strong> {ocrMode === 'cermat' ? 'membaca foto asli dan versi kontras tinggi; mencoba pembersihan tambahan bila nama/NIK belum terbaca.' : 'satu kali baca untuk mempercepat unggahan banyak KTP.'} Hasilnya tetap perlu diverifikasi.</p>
+          <p className="sim-ocr-mode-note"><strong>{ocrMode === 'cermat' ? 'Cermat:' : 'Cepat:'}</strong> {ocrMode === 'cermat' ? 'membaca foto asli dan versi kontras tinggi; mencoba pembersihan tambahan bila nama/NIK belum terbaca.' : 'satu kali baca untuk mempercepat unggahan banyak KTP.'} Hasilnya tetap perlu diverifikasi.</p>
+        </details>
 
         <input
           ref={fileInputRef}
@@ -1069,20 +1086,18 @@ export default function SimCollectiveBuilder() {
         ) : null}
       </section>
 
-      <div className="sim-roster-controls sim-screen-only">
-        <div className="sim-roster-count"><span className="sim-roster-count-number">{roster.length}</span><span><strong>orang di rekap</strong><small>{MAX_ROSTER - roster.length} slot tersisa</small></span></div>
-        <div className="sim-roster-tools">
-          <label className="sim-nik-toggle"><input type="checkbox" checked={includeNIK} onChange={(event) => setIncludeNIK(event.target.checked)} /><span>Tampilkan NIK di tabel</span></label>
-          <button type="button" className="btn btn-ghost sim-clear-button" onClick={clearRoster} disabled={!roster.length || processing || Boolean(retryingPersonId)}>Kosongkan daftar</button>
-        </div>
-      </div>
-
       {roster.length ? (
         <section className="sim-roster-section" aria-label="Daftar SIM kolektif yang dapat diedit">
           <div className="sim-roster-section-heading sim-screen-only">
-            <div><span className="sim-step sim-step-large">02</span><div><h2>Periksa & rapikan</h2><p>Ubah isian langsung. Buka detail untuk NIK dan alamat, atau atur foto pada setiap baris.</p></div></div>
-            <div className="sim-sim-counts" aria-label="Jumlah per jenis SIM">
-              {Object.entries(simCounts).sort(([a], [b]) => a.localeCompare(b, 'id')).map(([type, count]) => <span key={type}>{type}<b>{count}</b></span>)}
+            <div><span className="sim-step sim-step-large">02</span><div><h2>Periksa & rapikan <span className="sim-heading-count">{roster.length} orang · {needsReviewCount ? `${needsReviewCount} perlu dicek` : 'semua lengkap'}</span></h2><p>Ubah isian langsung. Buka detail untuk NIK dan alamat, atau atur foto pada setiap baris.</p></div></div>
+            <div className="sim-heading-tools">
+              <div className="sim-sim-counts" aria-label="Jumlah per jenis SIM">
+                {Object.entries(simCounts).sort(([a], [b]) => a.localeCompare(b, 'id')).map(([type, count]) => <span key={type}>{type}<b>{count}</b></span>)}
+              </div>
+              <div className="sim-heading-actions">
+                <label className="sim-nik-toggle"><input type="checkbox" checked={includeNIK} onChange={(event) => setIncludeNIK(event.target.checked)} /><span>Tampilkan NIK di tabel</span></label>
+                <button type="button" className="btn btn-ghost sim-clear-button" onClick={clearRoster} disabled={!roster.length || processing || Boolean(retryingPersonId)}>Kosongkan daftar</button>
+              </div>
             </div>
           </div>
 
@@ -1234,7 +1249,7 @@ export default function SimCollectiveBuilder() {
                 </button>
               ))}
             </div>
-            <p className="sim-export-hint">Pencarian hanya menyaring tampilan; ekspor selalu memuat seluruh daftar. PDF dibuat lewat dialog cetak browser. Excel/DOCX/PDF menyertakan foto; CSV/JSON memuat data KTP lengkap termasuk NIK, dan JSON menyertakan foto. Bagikan file dengan hati-hati.</p>
+            <p className="sim-export-hint">Ekspor selalu memuat seluruh daftar, bukan hasil saringan. PDF dibuat lewat dialog cetak browser. File yang memuat NIK dan foto KTP bersifat sensitif — bagikan dan simpan dengan hati-hati.</p>
           </section>
         </section>
       ) : (

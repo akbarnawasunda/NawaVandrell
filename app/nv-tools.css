@@ -1,6 +1,7 @@
 /*
- * Gaya untuk alat-alat Nawa Vandrell yang baru (kerja, UMKM, uang, belajar, komunitas, harian).
- * Dimuat setelah globals.css. Semua kelas memakai awalan nv- agar tidak bentrok dengan gaya lama.
+ * Gaya tambahan untuk alat-alat Nawa Editor (kerja, UMKM, uang, belajar, komunitas, harian).
+ * Dimuat setelah globals.css dan memakai token warna yang sama.
+ * Lembar cetak sengaja tetap putih-terserah-kertas karena dicetak sebagai dokumen resmi.
  */
 
 .nv-tool-wide { max-width: 980px; }
@@ -18,16 +19,16 @@
   display: grid;
   gap: 14px;
   min-width: 0;
+  box-shadow: var(--shadow);
 }
-.nv-section-head h2 { font-size: 18px; font-weight: 800; margin: 0; }
+.nv-section-head h2 { font-size: 18px; font-weight: 780; margin: 0; }
 .nv-section-head { display: grid; gap: 4px; }
 .nv-section-desc { margin: 0; color: var(--text-dim); font-size: 14px; line-height: 1.6; }
-.nv-eyebrow { margin: 0; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-soft); }
 
 .nv-field { display: grid; gap: 6px; min-width: 0; }
 .nv-field .label { margin: 0; }
 .nv-field .hint { margin: 0; }
-.nv-error { margin: 0; color: #ffb4be; font-size: 13px; font-weight: 600; }
+.nv-error { margin: 0; color: var(--danger); font-size: 13px; font-weight: 600; }
 .nv-input-affix { position: relative; display: flex; align-items: center; }
 .nv-input-affix .input { padding-right: 58px; }
 .nv-affix { position: absolute; right: 14px; color: var(--text-faint); font-size: 13px; font-weight: 700; pointer-events: none; }
@@ -35,9 +36,9 @@
 
 .nv-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; }
 .nv-row-wide { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; }
-.nv-icon-button { min-height: 44px; min-width: 44px; display: inline-grid; place-items: center; border-radius: 10px; border: 1px solid var(--border); background: rgba(255, 255, 255, .05); color: var(--text); cursor: pointer; }
-.nv-icon-button:hover { border-color: var(--border-strong); }
-.nv-icon-button.is-danger { color: #ffc0c6; }
+.nv-icon-button { min-height: 44px; min-width: 44px; display: inline-grid; place-items: center; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+.nv-icon-button:hover { border-color: var(--border-strong); background: var(--ink); }
+.nv-icon-button.is-danger { color: var(--danger); }
 
 .nv-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .nv-actions .btn { height: 44px; }
@@ -50,19 +51,19 @@
   border: 1px solid var(--border-strong);
   font-size: 14px;
   line-height: 1.55;
-  background: rgba(255, 255, 255, .03);
+  background: var(--field);
   color: var(--text);
   margin: 0;
 }
 .nv-notice-body { color: var(--text-dim); }
-.nv-notice.is-info { border-color: rgba(130, 198, 243, .45); background: rgba(130, 198, 243, .09); }
-.nv-notice.is-info strong { color: #bfe3fb; }
-.nv-notice.is-ok { border-color: rgba(101, 214, 181, .5); background: rgba(101, 214, 181, .1); }
-.nv-notice.is-ok strong { color: #b6f3df; }
-.nv-notice.is-warn { border-color: rgba(241, 195, 109, .5); background: rgba(241, 195, 109, .1); }
-.nv-notice.is-warn strong { color: #ffe3a6; }
-.nv-notice.is-bad { border-color: rgba(255, 131, 145, .55); background: rgba(255, 131, 145, .1); }
-.nv-notice.is-bad strong { color: #ffc0c6; }
+.nv-notice.is-info { border-color: rgba(2, 112, 168, 0.32); background: var(--info-ghost); }
+.nv-notice.is-info strong { color: var(--info); }
+.nv-notice.is-ok { border-color: rgba(4, 120, 87, 0.32); background: var(--ok-ghost); }
+.nv-notice.is-ok strong { color: var(--ok); }
+.nv-notice.is-warn { border-color: rgba(180, 83, 9, 0.35); background: var(--warn-ghost); }
+.nv-notice.is-warn strong { color: var(--warn); }
+.nv-notice.is-bad { border-color: rgba(217, 45, 32, 0.35); background: var(--danger-ghost); }
+.nv-notice.is-bad strong { color: var(--danger); }
 
 .nv-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
 .nv-metric {
@@ -70,37 +71,36 @@
   gap: 2px;
   padding: 13px 14px;
   border-radius: 12px;
-  background: var(--surface-2);
+  background: var(--field);
   border: 1px solid var(--border);
   min-width: 0;
 }
 .nv-metric > span { font-size: 13px; color: var(--text-dim); font-weight: 600; }
-.nv-metric > b { font-size: 20px; font-weight: 800; font-family: var(--font-display); overflow-wrap: anywhere; color: var(--text); }
+.nv-metric > b { font-size: 20px; font-weight: 800; overflow-wrap: anywhere; color: var(--text); font-variant-numeric: tabular-nums; }
 .nv-metric > small { font-size: 12px; color: var(--text-faint); }
-.nv-metric.is-strong { border-color: rgba(101, 214, 181, .5); background: rgba(101, 214, 181, .09); }
-.nv-metric.is-strong > b { color: var(--accent-soft); }
-.nv-metric.is-danger { border-color: rgba(255, 131, 145, .5); background: rgba(255, 131, 145, .08); }
-.nv-metric.is-danger > b { color: #ffc0c6; }
-.nv-metric.is-warn > b { color: #ffe3a6; }
+.nv-metric.is-strong { border-color: rgba(4, 120, 87, 0.35); background: var(--ok-ghost); }
+.nv-metric.is-strong > b { color: var(--ok); }
+.nv-metric.is-danger { border-color: rgba(217, 45, 32, 0.35); background: var(--danger-ghost); }
+.nv-metric.is-danger > b { color: var(--danger); }
+.nv-metric.is-warn > b { color: var(--warn); }
 
-.nv-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; }
+.nv-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
 .nv-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .nv-table th, .nv-table td { padding: 10px 12px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
-.nv-table th { font-size: 12px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; letter-spacing: .06em; background: rgba(255, 255, 255, .03); }
+.nv-table th { font-size: 12px; font-weight: 750; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.06em; background: var(--field); }
 .nv-table tr:last-child td { border-bottom: 0; }
 .nv-table .is-num, .nv-table td.is-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .nv-chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
 .nv-chip-group .chip { min-height: 40px; font-size: 14px; }
-.nv-chip-group .chip[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: #04120c; }
 
-.nv-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-strong); color: var(--text-dim); background: rgba(255, 255, 255, .04); }
-.nv-tag.is-ok { color: #b6f3df; border-color: rgba(101, 214, 181, .5); }
-.nv-tag.is-warn { color: #ffe3a6; border-color: rgba(241, 195, 109, .5); }
-.nv-tag.is-bad { color: #ffc0c6; border-color: rgba(255, 131, 145, .55); }
+.nv-tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; border: 1px solid var(--border-strong); color: var(--text-dim); background: var(--surface); }
+.nv-tag.is-ok { color: var(--ok); border-color: rgba(4, 120, 87, 0.35); }
+.nv-tag.is-warn { color: var(--warn); border-color: rgba(180, 83, 9, 0.4); }
+.nv-tag.is-bad { color: var(--danger); border-color: rgba(217, 45, 32, 0.4); }
 
-.nv-bar { height: 10px; border-radius: 999px; background: rgba(255, 255, 255, .07); overflow: hidden; }
-.nv-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-soft), var(--accent-deep)); border-radius: 999px; transition: width .3s ease; }
+.nv-bar { height: 10px; border-radius: 999px; background: var(--ink-2); overflow: hidden; }
+.nv-bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width 0.3s ease; }
 
 .nv-muted { color: var(--text-dim); }
 .nv-sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
@@ -110,10 +110,10 @@
 .nv-data-panel-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .nv-file-button { position: relative; cursor: pointer; }
 .nv-file-button input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-.nv-file-button[aria-disabled='true'] { opacity: .55; cursor: not-allowed; }
+.nv-file-button[aria-disabled='true'] { opacity: 0.55; cursor: not-allowed; }
 .nv-import-mode { display: flex; gap: 12px; border: 0; padding: 0; margin: 0; font-size: 13px; color: var(--text-dim); flex-wrap: wrap; }
 .nv-import-mode label { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; cursor: pointer; }
-.nv-danger-button { color: #ffc0c6; }
+.nv-danger-button { color: var(--danger); }
 
 /* Lembar cetak (PDF lewat dialog cetak browser) */
 .nv-print-sheet { background: #fff; color: #111; border-radius: 14px; padding: 28px; font-size: 14px; line-height: 1.5; }
@@ -124,7 +124,7 @@
 .nv-print-sheet .is-num { text-align: right; white-space: nowrap; }
 
 .nv-cert-page { position: relative; background: #fff; color: #111; border: 10px double #1f3b57; border-radius: 6px; padding: 40px 48px; text-align: center; min-height: 520px; display: grid; align-content: center; gap: 12px; font-family: Georgia, 'Times New Roman', serif; }
-.nv-cert-page h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 34px; letter-spacing: .04em; margin: 0; color: #1f3b57; text-transform: uppercase; }
+.nv-cert-page h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 34px; letter-spacing: 0.04em; margin: 0; color: #1f3b57; text-transform: uppercase; }
 .nv-cert-page .nv-cert-name { font-size: 36px; font-weight: 700; margin: 10px 0; border-bottom: 1px solid #888; padding-bottom: 6px; }
 .nv-cert-page p { margin: 4px 0; font-size: 16px; }
 .nv-cert-sign { display: flex; justify-content: space-around; gap: 24px; margin-top: 28px; }
@@ -145,11 +145,8 @@
 
 /* Lembar cetak: hanya aktif saat body.nv-printing (lihat lib/printDoc.mjs), agar halaman lain tidak terpengaruh */
 @media print {
-  /* Latar dokumen selalu putih, tidak bergantung pada pengaturan "cetak latar" browser. */
   body.nv-printing { background: #fff !important; color-scheme: light; }
-  /* Kanvas dokumen ikut putih: :root memakai color-scheme gelap (#121212) yang tercetak sebagai margin. */
   html:has(body.nv-printing) { background: #fff !important; color-scheme: light !important; }
-  /* Sembunyikan semua yang bukan jalur menuju lembar dokumen. display:none (bukan visibility) agar tidak ada halaman kosong. */
   body.nv-printing *:not(:has(.nv-print-area)):not(.nv-print-area):not(.nv-print-area *) { display: none !important; }
   body.nv-printing .nv-print-area, body.nv-printing .nv-print-area * { visibility: visible !important; }
   body.nv-printing .nv-print-area {
@@ -171,11 +168,15 @@
 }
 
 /* Baris barang/jasa dan dokumen cetak */
+.nv-item-row { align-items: start; }
 .nv-item-sub { grid-column: 1 / -1; margin: 0; font-size: 13px; }
+.nv-preview-section { align-self: start; }
+.nv-data-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.nv-practice-timer-wrap { margin: 0 auto; max-width: 460px; }
 .nv-check { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; cursor: pointer; }
 .nv-check input { width: 18px; height: 18px; accent-color: var(--accent); }
 .nv-doc-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; border-bottom: 2px solid #111; padding-bottom: 12px; }
-.nv-doc-kicker { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: .12em; color: #444 !important; }
+.nv-doc-kicker { margin: 0; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; color: #444 !important; }
 .nv-doc-title { margin: 2px 0 4px; font-size: 20px; color: #111 !important; }
 .nv-doc-head p { margin: 0; color: #333 !important; font-size: 13px; }
 .nv-doc-meta { margin: 0; display: grid; gap: 4px; text-align: right; min-width: 200px; }
@@ -183,7 +184,7 @@
 .nv-doc-meta dt { color: #555 !important; font-size: 12px; }
 .nv-doc-meta dd { margin: 0; font-weight: 700; color: #111 !important; }
 .nv-doc-parties { margin: 14px 0; }
-.nv-doc-label { margin: 0 0 4px; font-size: 12px; font-weight: 800; color: #555 !important; text-transform: uppercase; letter-spacing: .06em; }
+.nv-doc-label { margin: 0 0 4px; font-size: 12px; font-weight: 800; color: #555 !important; text-transform: uppercase; letter-spacing: 0.06em; }
 .nv-doc-parties p { margin: 0; color: #111 !important; }
 .nv-doc-table table tfoot th { text-align: right; font-weight: 600; background: #fafafa; }
 .nv-doc-terbilang { margin: 12px 0 6px; font-size: 13px; }
@@ -200,21 +201,21 @@
 
 /* Kalkulator gaji dan elemen form tambahan */
 .nv-block { display: block; margin-top: 2px; font-size: 12.5px; }
-.nv-fieldset { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin: 0; display: grid; gap: 6px; }
+.nv-fieldset { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin: 0; display: grid; gap: 6px; background: var(--surface); }
 .nv-fieldset legend { padding: 0 6px; }
 .nv-metric-inline { margin: 0; min-height: 48px; display: flex; align-items: center; flex-wrap: wrap; gap: 4px; font-size: 14px; color: var(--text-dim); }
 .nv-metric-inline strong { color: var(--text); }
 .nv-row-strong th, .nv-row-strong td { font-weight: 800; color: var(--text); }
-.nv-details { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
+.nv-details { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; background: var(--field); }
 .nv-details > summary { cursor: pointer; font-weight: 700; min-height: 40px; display: flex; align-items: center; }
 .nv-details[open] > summary { margin-bottom: 10px; }
 .nv-details .nv-table-wrap + .nv-assumptions { margin-top: 10px; }
 .nv-assumptions, .nv-sources { color: var(--text-dim); font-size: 14px; line-height: 1.6; }
-.nv-sources a { color: var(--accent-soft); text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+.nv-sources a { color: var(--accent-soft); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Pembuat CV */
 .nv-cv-layout { align-items: start; }
-.nv-cv-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: rgba(0, 0, 0, .16); }
+.nv-cv-card { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--field); }
 .nv-check-group { display: grid; gap: 6px; margin-top: 4px; }
 .nv-check-list li { font-size: 13.5px; line-height: 1.55; }
 .nv-check-list li + li { margin-top: 6px; }
@@ -223,7 +224,7 @@
 .nv-cv-sheet .nv-cv-target { margin: 2px 0 0; font-weight: 700; color: #222 !important; }
 .nv-cv-sheet .nv-cv-contact { margin: 4px 0 10px; font-size: 13px; color: #333 !important; }
 .nv-cv-sheet section { margin-top: 12px; }
-.nv-cv-sheet h3 { margin: 0 0 6px; font-size: 13px; letter-spacing: .06em; border-bottom: 1px solid #333; padding-bottom: 3px; color: #111 !important; }
+.nv-cv-sheet h3 { margin: 0 0 6px; font-size: 13px; letter-spacing: 0.06em; border-bottom: 1px solid #333; padding-bottom: 3px; color: #111 !important; }
 .nv-cv-sheet p, .nv-cv-sheet li { font-size: 13px; color: #111 !important; margin: 0 0 4px; }
 .nv-cv-sheet ul { margin: 4px 0 0; padding-left: 18px; }
 .nv-cv-entry { margin-bottom: 8px; }
@@ -235,7 +236,7 @@
 
 /* Surat */
 .nv-letter-sheet { font-family: 'Times New Roman', Georgia, serif; font-size: 14px; line-height: 1.7; }
-.nv-letter-sheet .nv-letter-title { text-align: center; font-size: 17px; letter-spacing: .08em; margin: 0 0 16px; color: #111 !important; font-family: 'Times New Roman', Georgia, serif; }
+.nv-letter-sheet .nv-letter-title { text-align: center; font-size: 17px; letter-spacing: 0.08em; margin: 0 0 16px; color: #111 !important; font-family: 'Times New Roman', Georgia, serif; }
 .nv-letter-sheet .nv-letter-block { margin: 0 0 12px; }
 .nv-letter-sheet p { margin: 0; color: #111 !important; }
 .nv-letter-sheet ul { margin: 4px 0 0; padding-left: 20px; }
@@ -246,33 +247,33 @@
 /* Pembagi tagihan */
 .nv-person-chip { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
 .nv-person-chip input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
-.nv-person-chip.is-on { background: var(--accent-ghost); border-color: rgba(101, 214, 181, .55); color: var(--text); }
+.nv-person-chip.is-on { background: var(--accent-ghost); border-color: rgba(79, 70, 229, 0.4); color: var(--text); }
 .nv-link-button { background: none; border: 0; padding: 0; color: var(--accent-soft); font: inherit; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; min-height: 44px; }
-.nv-transfer-list li { padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, .03); border: 1px solid var(--border); }
+.nv-transfer-list li { padding: 10px 12px; border-radius: 10px; background: var(--field); border: 1px solid var(--border); }
 .nv-transfer-list li + li { margin-top: 8px; }
 
 /* Flashcard */
 .nv-kbd { display: inline-block; margin-left: 8px; padding: 1px 7px; border-radius: 6px; border: 1px solid var(--border-strong); font-size: 11px; font-weight: 700; color: var(--text-dim); vertical-align: middle; }
-.nv-flashcard { display: grid; gap: 8px; padding: 26px 22px; border-radius: 16px; border: 1px solid var(--border-strong); background: linear-gradient(180deg, rgba(101, 214, 181, .07), rgba(255, 255, 255, .02)); text-align: center; min-height: 180px; align-content: center; }
-.nv-flashcard-text { margin: 0; font-family: var(--font-display); font-size: clamp(20px, 4vw, 28px); font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+.nv-flashcard { display: grid; gap: 8px; padding: 26px 22px; border-radius: 16px; border: 1px solid var(--border-strong); background: var(--surface); text-align: center; min-height: 180px; align-content: center; box-shadow: var(--shadow); }
+.nv-flashcard-text { margin: 0; font-size: clamp(20px, 4vw, 28px); font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
 .nv-flashcard-rule { width: 60%; margin: 6px auto; border: 0; border-top: 1px dashed var(--border-strong); }
 .nv-grade-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.nv-grade { display: grid; gap: 2px; justify-items: center; padding: 12px 6px; min-height: 84px; border-radius: 12px; border: 1px solid var(--border-strong); background: rgba(255, 255, 255, .04); color: var(--text); cursor: pointer; font: inherit; }
-.nv-grade:hover { border-color: var(--accent-soft); }
+.nv-grade { display: grid; gap: 2px; justify-items: center; padding: 12px 6px; min-height: 84px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font: inherit; }
+.nv-grade:hover { border-color: var(--accent); }
 .nv-grade strong { font-size: 15px; }
 .nv-grade small { font-size: 12px; color: var(--text-dim); text-align: center; line-height: 1.35; }
 .nv-grade-key { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; border: 1px solid var(--border-strong); font-size: 12px; font-weight: 800; color: var(--text-dim); }
-.nv-grade.is-lupa { border-color: rgba(255, 131, 145, .5); }
-.nv-grade.is-sulit { border-color: rgba(241, 195, 109, .5); }
-.nv-grade.is-baik { border-color: rgba(130, 198, 243, .5); }
-.nv-grade.is-mudah { border-color: rgba(101, 214, 181, .6); }
+.nv-grade.is-lupa { border-color: rgba(217, 45, 32, 0.45); }
+.nv-grade.is-sulit { border-color: rgba(180, 83, 9, 0.45); }
+.nv-grade.is-baik { border-color: rgba(2, 112, 168, 0.45); }
+.nv-grade.is-mudah { border-color: rgba(4, 120, 87, 0.5); }
 @media (max-width: 520px) {
   .nv-grade-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* Timer fokus */
-.nv-timer { display: grid; gap: 14px; justify-items: center; padding: 22px 16px; border-radius: 18px; border: 1px solid var(--border-strong); background: rgba(0, 0, 0, .18); text-align: center; }
-.nv-timer-display { margin: 0; font-family: var(--font-display); font-size: clamp(56px, 13vw, 96px); font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--text); line-height: 1; }
+.nv-timer { display: grid; gap: 14px; justify-items: center; padding: 22px 16px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface); text-align: center; box-shadow: var(--shadow); }
+.nv-timer-display { margin: 0; font-size: clamp(56px, 13vw, 96px); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--text); line-height: 1; }
 .nv-timer-bar { width: min(100%, 420px); }
 .nv-timer-actions { justify-content: center; }
 .nv-timer-status { margin: 0; font-size: 14px; }
@@ -280,7 +281,7 @@
 /* Daftar hadir */
 .nv-compact-input { height: 44px; min-width: 160px; }
 .nv-cert-preview { display: grid; gap: 8px; }
-.nv-cert-preview .nv-cert-page { transform: scale(.92); transform-origin: top center; margin-bottom: -20px; }
+.nv-cert-preview .nv-cert-page { transform: scale(0.92); transform-origin: top center; margin-bottom: -20px; }
 .nv-cert-page .nv-cert-nomor { font-size: 12px !important; color: #444 !important; }
 .nv-cert-page .nv-cert-sign span { display: block; font-size: 13px; color: #333; }
 
@@ -292,10 +293,21 @@
 
 /* Sensor dan latihan wawancara */
 .nv-findings li { font-size: 13.5px; }
-.nv-practice-timer { font-family: var(--font-display); font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
-.nv-question { font-family: var(--font-display); font-size: clamp(18px, 3.4vw, 23px); font-weight: 700; line-height: 1.35; margin: 0; }
+.nv-practice-timer { font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.nv-question { font-size: clamp(18px, 3.4vw, 23px); font-weight: 700; line-height: 1.35; margin: 0; }
 .nv-star-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 .nv-star-list li { list-style: none; padding: 10px; border-radius: 12px; border: 1px solid var(--border); font-size: 13px; color: var(--text-dim); }
-.nv-star-list li.is-ok { border-color: rgba(101, 214, 181, .55); color: #b6f3df; }
+.nv-star-list li.is-ok { border-color: rgba(4, 120, 87, 0.45); color: var(--ok); }
 @media (max-width: 600px) { .nv-star-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .nv-practice-answer { white-space: pre-wrap; margin: 0; font-size: 14px; line-height: 1.6; }
+
+/* === Penyederhanaan v4.1: opsi sekunder & pratinjau bisa dilipat === */
+.nv-closed { display: none; }
+.nv-preview-toggle { margin: 2px 0 10px; }
+.nv-extras { padding: 12px 14px; }
+.nv-extras summary { gap: 8px; color: var(--text); font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.nv-extras summary:hover { color: var(--text); }
+.nv-extras-grid { margin-top: 12px; }
+@media print {
+  body.nv-printing .nv-print-area.nv-closed { display: block !important; }
+}

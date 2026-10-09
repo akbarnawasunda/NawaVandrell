@@ -686,7 +686,7 @@ iconNames.push(
   'camera'
 );
 
-// ===== ikon fitur baru (Nawa Vandrell v-berikutnya: kerja, UMKM, uang, belajar, komunitas) =====
+// ===== ikon fitur baru (Nawa Editor v-berikutnya: kerja, UMKM, uang, belajar, komunitas) =====
 icons.briefcase = (
   <Svg>
     <rect x="3" y="7" width="18" height="13" rx="2" />
