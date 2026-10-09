@@ -1443,3 +1443,96 @@ h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -.035em; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* Privacy, terms, and account access surfaces */
+.content-page { max-width: 900px; padding-top: 26px; }
+.content-page > .tool-eyebrow { margin-bottom: 12px; font-size: 10px; }
+.content-page > h1 { max-width: 760px; margin: 0; font-size: clamp(34px, 5.2vw, 58px); line-height: 1.06; letter-spacing: -.06em; }
+.content-page-lede { max-width: 740px; margin: 18px 0 32px; color: #bdc7d3; font-size: 16px; line-height: 1.75; }
+.content-page section { padding: 21px 0; border-top: 1px solid var(--border); }
+.content-page section h2 { margin: 0 0 9px; color: #edf1f6; font-size: 20px; }
+.content-page section p { max-width: 780px; margin: 8px 0; color: #b2bdcb; font-size: 14px; line-height: 1.8; }
+.content-page section a { color: #9be5ce; text-decoration: underline; text-underline-offset: 3px; }
+.content-page-updated { margin: 20px 0; color: #9ba7b5; font-size: 12px; }
+.content-page-back { margin-top: 4px; }
+
+.admin-access-shell { max-width: 520px; padding-top: clamp(32px, 8vh, 90px); }
+.admin-access-title { display: flex; align-items: center; gap: 11px; font-size: 28px; }
+.admin-access-title > span { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(139,226,200,.23); border-radius: 11px; background: rgba(101,214,181,.08); color: var(--accent-soft); }
+.admin-access-form { display: grid; gap: 13px; }
+.admin-access-form .field { display: grid; gap: 7px; }
+.admin-access-note { margin: 0; color: #aab5c2; font-size: 12px; line-height: 1.6; }
+.admin-dashboard-shell { max-width: 1080px; padding-top: 12px; }
+.admin-dashboard-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin: 0 0 19px; }
+.admin-dashboard-heading h1 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: clamp(25px, 3vw, 34px); }
+.admin-dashboard-heading h1 > span { display: inline-flex; color: var(--accent-soft); }
+.admin-dashboard-heading p { margin: 6px 0 0; color: #aeb9c6; font-size: 13px; }
+.admin-row-rank { min-width: 32px; color: #aab5c2; font-size: 12px; font-weight: 750; }
+
+.sim-draft-panel { display: grid; gap: 11px; margin: 0 0 18px; padding: 17px 18px; border: 1px solid rgba(174,193,216,.2); border-radius: 16px; background: rgba(16,24,37,.88); }
+.sim-draft-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.sim-draft-heading h2 { margin: 0; color: #f1f5f8; font-size: 16px; letter-spacing: -.025em; }
+.sim-draft-heading p { max-width: 700px; margin: 5px 0 0; color: #bdc7d3; font-size: 12px; line-height: 1.65; }
+.sim-draft-toggle { display: inline-flex; align-items: center; flex: 0 0 auto; gap: 8px; min-height: 38px; padding: 0 10px; border: 1px solid rgba(139,226,200,.28); border-radius: 10px; background: rgba(101,214,181,.07); color: #d7f8ed; font-size: 12px; font-weight: 750; cursor: pointer; }
+.sim-draft-toggle input { width: 17px; height: 17px; accent-color: #65d6b5; }
+.sim-draft-toggle:has(input:disabled) { cursor: not-allowed; opacity: .65; }
+.sim-draft-status { margin: 0; color: #d0dae5; font-size: 12px; line-height: 1.6; }
+.sim-draft-error { margin: 0; color: #ffb4be; font-size: 12px; line-height: 1.6; }
+.sim-draft-warning { margin: 0; color: #aab6c4; font-size: 11px; line-height: 1.6; }
+.sim-draft-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.sim-draft-delete { justify-self: start; min-height: 34px; padding: 0; border: 0; background: transparent; color: #ffc0c6; font: inherit; font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.sim-draft-delete:disabled { opacity: .6; cursor: wait; }
+
+/* Keep the smallest catalog and navigation copy comfortable to read. */
+.home-kicker { font-size: 9px; }
+.home-quick-heading .section-eyebrow, .section-intro .section-eyebrow { font-size: 10px; }
+.quick-sim-copy small { font-size: 9px; }
+.featured-card-label { font-size: 9px; }
+.featured-card > p { font-size: 11px; }
+.featured-card-action { font-size: 10px; }
+.rank-preview-list li, .rank-preview-list li strong { font-size: 9px; }
+.catalog-total, .catalog-results-meta, .catalog-reset { font-size: 10px; }
+.chip-count { font-size: 9px; }
+.catalog-section-label { font-size: 9px; }
+.tool-card-copy h3 { font-size: 12px; }
+.tool-card-copy p { font-size: 10px; }
+.tool-card .card-tag { font-size: 9px; }
+.game-catalog-copy .tool-eyebrow { font-size: 9px; }
+.game-catalog-highlights span { font-size: 10px; }
+.game-card-category { font-size: 9px; }
+.game-card p { font-size: 10px; }
+.game-card-action { font-size: 10px; }
+.cmdk-results-heading h2, .cmdk-item-hint, .cmdk-foot { font-size: 9px; }
+.cmdk-foot kbd { font-size: 9px; }
+.site-footer-main p, .footer-links a, .site-footer-meta { font-size: 10px; }
+
+@media (max-width: 600px) {
+  .content-page { padding-top: 18px; }
+  .content-page > h1 { font-size: clamp(31px, 9vw, 42px); }
+  .content-page-lede { margin: 13px 0 24px; font-size: 14px; }
+  .content-page section { padding: 17px 0; }
+  .content-page section h2 { font-size: 17px; }
+  .content-page section p { font-size: 13px; }
+  .admin-access-shell { padding-top: 28px; }
+  .admin-dashboard-heading { align-items: flex-start; }
+  .admin-dashboard-heading h1 { font-size: 24px; }
+  .sim-draft-panel { padding: 14px; border-radius: 14px; }
+  .sim-draft-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .sim-draft-toggle { min-height: 42px; }
+  .sim-draft-status, .sim-draft-error { font-size: 12px; }
+  .home-kicker { font-size: 9px; }
+  .featured-card-label { font-size: 9px; }
+  .featured-card-action { font-size: 10px; }
+  .catalog-chips .chip, .game-filter-chips .chip { font-size: 10px; }
+  .tool-card-copy h3 { font-size: 12px; }
+  .tool-card-copy p, .game-card p { font-size: 10px; }
+  .game-card-category, .game-card-action { font-size: 9px; }
+  .cmdk-item-hint { font-size: 8px; }
+  .site-footer-meta { font-size: 9px; }
+}
+
+@media (max-width: 430px) {
+  .featured-card-label { font-size: 9px; }
+  .catalog-results-meta, .catalog-reset { font-size: 9px; }
+  .tool-card-copy p, .game-card p { font-size: 10px; }
+}

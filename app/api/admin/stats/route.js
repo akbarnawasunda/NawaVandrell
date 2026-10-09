@@ -1,10 +1,10 @@
-import { verifyBearer, unauthorized } from '@/lib/auth';
+import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { getLeaderboard, storageDriver } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request) {
-  if (!verifyBearer(request)) return unauthorized();
+  if (!verifyAdmin(request)) return unauthorized();
 
   const board = await getLeaderboard();
   const entries = Object.entries(board);

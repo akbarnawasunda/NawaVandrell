@@ -1,10 +1,10 @@
-import { verifyBearer, unauthorized } from '@/lib/auth';
+import { verifyAdminMutation, unauthorized } from '@/lib/auth';
 import { getLeaderboard, saveLeaderboard } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function PATCH(request) {
-  if (!verifyBearer(request)) return unauthorized();
+  if (!verifyAdminMutation(request)) return unauthorized();
   const body = await request.json().catch(() => ({}));
   const name = String(body.name || '').trim().slice(0, 24);
   const score = Number(body.score);
@@ -18,7 +18,7 @@ export async function PATCH(request) {
 }
 
 export async function POST(request) {
-  if (!verifyBearer(request)) return unauthorized();
+  if (!verifyAdminMutation(request)) return unauthorized();
   const body = await request.json().catch(() => ({}));
   const name = String(body.name || '').trim().slice(0, 24);
   const score = Number(body.score || 0);
@@ -34,7 +34,7 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  if (!verifyBearer(request)) return unauthorized();
+  if (!verifyAdminMutation(request)) return unauthorized();
   const { searchParams } = new URL(request.url);
   const name = searchParams.get('name') || '';
   if (!name) return Response.json({ success: false, message: 'Nama tidak ada' }, { status: 400 });

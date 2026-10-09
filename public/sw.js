@@ -5,12 +5,13 @@
  * - Navigasi (HTML)  -> network-first, fallback cache, terakhir halaman offline.
  * - Aset statis      -> stale-while-revalidate.
  * - /api/*           -> TIDAK pernah di-cache (leaderboard & kuis harus segar).
+ * - /admin/*         -> dilewatkan tanpa cache, termasuk untuk membuang cache lama.
  *
  * Kenapa tidak precache halaman? Next.js App Router pakai hash build,
  * jadi lebih aman meng-cache saat halaman benar-benar dikunjungi.
  */
 
-const CACHE_NAMESPACE = 'nawa-vandrell';
+const CACHE_NAMESPACE = 'nawa-vandrell-v2';
 const SHELL_CACHE = `${CACHE_NAMESPACE}-shell`;
 const ASSET_CACHE = `${CACHE_NAMESPACE}-assets`;
 
@@ -53,6 +54,9 @@ self.addEventListener('fetch', (event) => {
 
   // beda origin (gambar pihak ketiga) -> biarkan browser yang urus
   if (url.origin !== self.location.origin) return;
+
+  // Jangan pernah menyimpan halaman privat—versi sebelumnya mungkin pernah menaruhnya di cache.
+  if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return;
 
   // API selalu langsung ke jaringan
   if (url.pathname.startsWith('/api/')) return;

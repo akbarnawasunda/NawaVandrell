@@ -24,9 +24,11 @@ import {
   exportCollectiveJson,
   exportCollectiveXlsx,
 } from '@/lib/collectiveSimExports.mjs';
+import { deleteSimDraft, loadSimDraft, saveSimDraft } from '@/lib/simDraftStore.mjs';
 
 const MAX_IMAGE_SIZE = 15 * 1024 * 1024;
 const MAX_ROSTER = 100;
+const SIM_DRAFT_PREFERENCE_KEY = 'nawa_sim_collective_autosave';
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const SIM_TYPES = [
   'SIM A', 'SIM A Umum', 'SIM B I', 'SIM B I Umum', 'SIM B II', 'SIM B II Umum',
@@ -392,9 +394,110 @@ export default function SimCollectiveBuilder() {
   const [exportingFormat, setExportingFormat] = useState('');
   const [photoEditorId, setPhotoEditorId] = useState('');
   const [visibleNiks, setVisibleNiks] = useState({});
+  const [draftReady, setDraftReady] = useState(false);
+  const [draftEnabled, setDraftEnabled] = useState(false);
+  const [draftStorageSupported, setDraftStorageSupported] = useState(true);
+  const [draftSaving, setDraftSaving] = useState(false);
+  const [draftSavedAt, setDraftSavedAt] = useState(0);
+  const [draftStatus, setDraftStatus] = useState('checking');
+  const [draftError, setDraftError] = useState('');
+  const [savedDraft, setSavedDraft] = useState(null);
+  const draftSaveTimerRef = useRef(null);
   const fileInputRef = useRef(null);
   const recognitionRef = useRef({ id: 0, worker: null });
   const activeOcrRef = useRef({ fileIndex: 0, totalFiles: 1, passIndex: 0, passCount: 1, label: '' });
+
+  useEffect(() => {
+    let active = true;
+    const initializeDraft = async () => {
+      let autoSaveWasEnabled = false;
+      try {
+        autoSaveWasEnabled = localStorage.getItem(SIM_DRAFT_PREFERENCE_KEY) === 'on';
+      } catch {
+        autoSaveWasEnabled = false;
+      }
+
+      if (typeof globalThis.indexedDB === 'undefined') {
+        if (active) {
+          setDraftStorageSupported(false);
+          setDraftStatus('unavailable');
+          setDraftReady(true);
+        }
+        return;
+      }
+
+      try {
+        const saved = await loadSimDraft();
+        if (!active) return;
+        setDraftEnabled(autoSaveWasEnabled);
+        if (saved && autoSaveWasEnabled) {
+          setRoster(saved.roster);
+          setDefaultSimType(saved.defaultSimType);
+          setDefaultNote(saved.defaultNote);
+          setOcrMode(saved.ocrMode);
+          setIncludeNIK(saved.includeNIK);
+          setLargeText(saved.largeText);
+          setDraftSavedAt(saved.savedAt);
+          setDraftStatus('restored');
+        } else if (saved) {
+          setSavedDraft(saved);
+          setDraftStatus('available');
+        } else {
+          setDraftStatus(autoSaveWasEnabled ? 'enabled' : 'off');
+        }
+      } catch {
+        if (active) {
+          setDraftError('Penyimpanan draf lokal tidak dapat dibuka di browser ini.');
+          setDraftStatus('error');
+        }
+      } finally {
+        if (active) setDraftReady(true);
+      }
+    };
+
+    void initializeDraft();
+    return () => {
+      active = false;
+      if (draftSaveTimerRef.current) window.clearTimeout(draftSaveTimerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!draftReady || !draftEnabled || !draftStorageSupported) return undefined;
+    if (draftSaveTimerRef.current) window.clearTimeout(draftSaveTimerRef.current);
+
+    draftSaveTimerRef.current = window.setTimeout(async () => {
+      setDraftSaving(true);
+      try {
+        if (!roster.length) {
+          await deleteSimDraft();
+          setDraftSavedAt(0);
+          setDraftStatus('enabled');
+        } else {
+          const saved = await saveSimDraft({
+            roster,
+            defaultSimType,
+            defaultNote,
+            ocrMode,
+            includeNIK,
+            largeText,
+          });
+          setDraftSavedAt(saved.savedAt);
+          setDraftStatus('saved');
+        }
+        setDraftError('');
+      } catch {
+        setDraftError('Draf belum tersimpan. Periksa ruang penyimpanan browser atau ekspor file sebagai cadangan.');
+        setDraftStatus('error');
+      } finally {
+        setDraftSaving(false);
+      }
+    }, 700);
+
+    return () => {
+      if (draftSaveTimerRef.current) window.clearTimeout(draftSaveTimerRef.current);
+    };
+  }, [draftReady, draftEnabled, draftStorageSupported, roster, defaultSimType, defaultNote, ocrMode, includeNIK, largeText]);
 
   useEffect(() => () => {
     recognitionRef.current.id += 1;
@@ -402,6 +505,63 @@ export default function SimCollectiveBuilder() {
     recognitionRef.current.worker = null;
     if (worker) Promise.resolve(worker.terminate()).catch(() => {});
   }, []);
+
+  const restoreSavedDraft = () => {
+    if (!savedDraft) return;
+    setRoster(savedDraft.roster.slice(0, MAX_ROSTER));
+    setDefaultSimType(savedDraft.defaultSimType || 'SIM C');
+    setDefaultNote(savedDraft.defaultNote || 'BIKIN BARU');
+    setOcrMode(savedDraft.ocrMode === 'cepat' ? 'cepat' : 'cermat');
+    setIncludeNIK(Boolean(savedDraft.includeNIK));
+    setLargeText(Boolean(savedDraft.largeText));
+    setRosterQuery('');
+    setRosterFilter('all');
+    setDraftSavedAt(savedDraft.savedAt);
+    setSavedDraft(null);
+    setDraftReady(true);
+    setDraftEnabled(true);
+    setDraftStatus('restored');
+    setDraftError('');
+    try { localStorage.setItem(SIM_DRAFT_PREFERENCE_KEY, 'on'); } catch {}
+    addToast('Draf lokal dipulihkan. Simpan otomatis aktif di perangkat ini.', 'success');
+  };
+
+  const toggleDraftAutoSave = async (enabled) => {
+    if (enabled) {
+      if (savedDraft) {
+        addToast('Ada draf tersimpan. Pulihkan atau hapus draf itu sebelum mengaktifkan penyimpanan baru.', 'warning', 5200);
+        return;
+      }
+      try { localStorage.setItem(SIM_DRAFT_PREFERENCE_KEY, 'on'); } catch {}
+      setDraftEnabled(true);
+      setDraftReady(true);
+      setDraftStatus('enabled');
+      setDraftError('');
+      addToast('Simpan otomatis aktif. Draf hanya disimpan di perangkat ini.', 'success');
+      return;
+    }
+
+    if (draftSaveTimerRef.current) window.clearTimeout(draftSaveTimerRef.current);
+    try { localStorage.removeItem(SIM_DRAFT_PREFERENCE_KEY); } catch {}
+    setDraftEnabled(false);
+    setDraftSaving(false);
+    setDraftSavedAt(0);
+    setSavedDraft(null);
+    try {
+      await deleteSimDraft();
+      setDraftStatus('off');
+      setDraftError('');
+      addToast('Draf lokal dihapus. Data yang masih tampak di halaman belum ikut dikosongkan.', 'info');
+    } catch {
+      setDraftStatus('error');
+      setDraftError('Gagal menghapus salinan draf browser. Coba lagi atau hapus data situs dari pengaturan browser.');
+    }
+  };
+
+  const deleteLocalDraft = async () => {
+    if (!window.confirm('Hapus draf KTP yang tersimpan di perangkat ini dan matikan simpan otomatis? Data yang sedang terbuka tetap tampil sampai Anda mengosongkan daftar.')) return;
+    await toggleDraftAutoSave(false);
+  };
 
   const updatePerson = (id, field, value) => {
     setRoster((current) => current.map((person) => (person.id === id ? { ...person, [field]: value } : person)));
@@ -667,7 +827,17 @@ export default function SimCollectiveBuilder() {
     setRosterQuery('');
     setRosterFilter('all');
     setProgress({ current: 0, total: 0, percent: 0, message: '' });
-    addToast('Rekap dihapus dari perangkat ini.', 'success');
+    if (draftSaveTimerRef.current) window.clearTimeout(draftSaveTimerRef.current);
+    if (draftEnabled) {
+      void deleteSimDraft().then(() => {
+        setDraftSavedAt(0);
+        setDraftStatus('enabled');
+      }).catch(() => {
+        setDraftError('Daftar dikosongkan, tetapi browser gagal menghapus salinan draf tersimpan.');
+        setDraftStatus('error');
+      });
+    }
+    addToast('Rekap dan draf lokal dihapus dari perangkat ini.', 'success');
   };
 
   const cancelProcessing = async () => {
@@ -789,6 +959,38 @@ export default function SimCollectiveBuilder() {
         <span className="sim-privacy-icon"><Icon name="lock" size={17} /></span>
         <p><strong>Data tetap di perangkat.</strong> Foto, OCR, koreksi, dan ekspor berlangsung di browser ini—tidak diunggah ke API. Pastikan Anda berhak menggunakan setiap KTP.</p>
       </div>
+
+      <section className="sim-draft-panel sim-screen-only" aria-labelledby="sim-draft-title">
+        <div className="sim-draft-heading">
+          <div>
+            <h2 id="sim-draft-title">Pulihkan pekerjaan kalau tab tertutup</h2>
+            <p>Draf tersimpan hanya di browser ini, otomatis kedaluwarsa setelah 7 hari, dan tidak dikirim ke server.</p>
+          </div>
+          <label className="sim-draft-toggle">
+            <input
+              type="checkbox"
+              checked={draftEnabled}
+              disabled={!draftReady || !draftStorageSupported || Boolean(savedDraft)}
+              onChange={(event) => { void toggleDraftAutoSave(event.target.checked); }}
+            />
+            <span>Simpan otomatis</span>
+          </label>
+        </div>
+        <p className="sim-draft-status" role="status" aria-live="polite">
+          {!draftReady ? 'Memeriksa penyimpanan lokal…' : !draftStorageSupported ? 'Penyimpanan draf tidak didukung browser ini.' : draftSaving ? 'Menyimpan draf di perangkat…' : savedDraft ? `Draf ditemukan · ${savedDraft.roster.length} orang · tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(savedDraft.savedAt))}.` : draftEnabled && draftSavedAt ? `Draf tersimpan ${new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(draftSavedAt))}.` : draftEnabled ? 'Simpan otomatis aktif di perangkat ini.' : 'Simpan otomatis mati. Tanpa ekspor atau draf lokal, data halaman hilang saat ditutup.'}
+        </p>
+        {draftError ? <p className="sim-draft-error" role="alert">{draftError}</p> : null}
+        {savedDraft ? (
+          <div className="sim-draft-actions">
+            <button type="button" className="btn btn-primary btn-sm" onClick={restoreSavedDraft}>Pulihkan draf</button>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => void deleteLocalDraft()}>Hapus draf lokal</button>
+          </div>
+        ) : null}
+        {draftEnabled && (draftSavedAt || roster.length) ? (
+          <button type="button" className="sim-draft-delete" onClick={() => void deleteLocalDraft()} disabled={draftSaving}>Hapus draf tersimpan & matikan simpan otomatis</button>
+        ) : null}
+        <p className="sim-draft-warning">Jangan aktifkan di perangkat bersama. Gunakan “Hapus draf” setelah selesai memakai KTP orang lain.</p>
+      </section>
 
       <section className="sim-upload-card sim-screen-only" aria-label="Unggah KTP">
         <div className="sim-upload-card-heading">

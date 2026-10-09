@@ -4,8 +4,14 @@ import Icon, { getToolIconName, iconNames } from '@/components/icons';
 import { featuredTools, getToolHref } from '@/data/featuredTools';
 import { allGames } from '@/data/nexrayData';
 import { getRanked } from '@/lib/db';
+import { pageMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+export const metadata = pageMetadata({
+  title: 'Tools praktis, rekap SIM kolektif, dan arcade',
+  description: 'Cari tools harian gratis, siapkan rekap SIM kolektif dari banyak KTP langsung di browser, atau main game singkat.',
+  path: '/',
+});
 
 function QuickToolLink({ tool }) {
   if (!tool) return null;

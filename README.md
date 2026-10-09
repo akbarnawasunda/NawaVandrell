@@ -10,11 +10,11 @@ Website memakai satu tampilan konsisten yang dirancang agar ringkas, jelas, dan 
 
 ```bash
 npm install
-cp .env.example .env.local   # isi ADMIN_PIN & ADMIN_API_TOKEN
+cp .env.example .env.local   # set ADMIN_PIN + ADMIN_SESSION_SECRET yang kuat
 npm run dev                  # http://localhost:3000
 ```
 
-Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok Downloader.
+Semua tool dan game publik jalan tanpa `.env`. Area admin hanya aktif bila secret kuat dikonfigurasi; TikTok Downloader dan beberapa integrasi online dapat memerlukan `UPSTREAM_API_BASE`.
 
 ---
 
@@ -33,16 +33,17 @@ Semua tool dan game jalan tanpa `.env`. Yang butuh env cuma `/admin` dan TikTok 
 
    | Nama | Wajib | Isi |
    |---|---|---|
-   | `ADMIN_PIN` | ya | PIN login `/admin` |
-   | `ADMIN_API_TOKEN` | ya | token Bearer, bikin pakai `openssl rand -hex 32` |
-   | `KV_REST_API_URL` | tidak | kalau mau leaderboard permanen |
-   | `KV_REST_API_TOKEN` | tidak | pasangan URL di atas |
+   | `ADMIN_PIN` | ya | Kunci login acak minimal 16 karakter; contoh `openssl rand -hex 16` |
+   | `ADMIN_SESSION_SECRET` | ya | Kunci HMAC acak minimal 32 karakter, berbeda dari PIN; `openssl rand -hex 32` |
+   | `ADMIN_API_TOKEN` | tidak | Bearer rahasia untuk otomasi server; jangan pernah taruh di browser |
+   | `KV_REST_API_URL` | tidak | URL Upstash/Vercel KV untuk leaderboard dan rate limit lintas instance |
+   | `KV_REST_API_TOKEN` | tidak | Token KV pasangannya |
    | `UPSTREAM_API_BASE` | tidak | hanya untuk TikTok Downloader & waifu |
 
 4. **Deploy.** Selesai.
 
-> Tanpa `ADMIN_PIN`/`ADMIN_API_TOKEN`, situs tetap jalan penuh — hanya `/admin`
-> yang balas `503` dengan pesan jelas, bukan error mentah.
+> Tanpa `ADMIN_PIN` dan `ADMIN_SESSION_SECRET` yang cukup kuat, fitur publik tetap jalan,
+> sedangkan `/admin` dan `/admin/login` sengaja membalas 404 dan tidak menyediakan akses admin.
 
 ### Leaderboard permanen (opsional)
 
@@ -107,7 +108,7 @@ Tool **Rekap SIM Kolektif** menerima banyak foto KTP sekaligus, membaca saran na
 dengan Tesseract.js di browser, lalu membuat tabel yang dapat dikoreksi dengan kolom utama
 **No, NAMA, SIM, KETERANGAN, FOTO KTP**. File mesin OCR disalin dari dependensi npm ke
 `public/ocr/` oleh `predev` / `prebuild`; folder hasil generasi ini sengaja tidak masuk Git.
-Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Mode cermat menggabungkan pembacaan foto asli, peningkatan kontras, dan pembersihan tambahan bila data inti belum terbaca; mode cepat tersedia untuk batch besar. Setiap foto bisa digeser, di-zoom, dan diatur utuh atau isi bingkai—hasil posisi tersimpan pada pratinjau serta ekspor yang memuat gambar. Daftar bisa dicari dan disaring tanpa mengurangi baris pada ekspor; tersedia juga opsi teks besar dan navigasi keyboard pada editor foto. Periksa dan koreksi semua hasil OCR.
+Foto dan data KTP diproses di perangkat pengguna dan tidak dikirim ke API. Simpan otomatis draf bersifat opsional: setelah diaktifkan, data tersimpan di IndexedDB browser ini dan kedaluwarsa setelah tujuh hari; pengguna dapat menghapusnya kapan saja. Mode cermat menggabungkan pembacaan foto asli, peningkatan kontras, dan pembersihan tambahan bila data inti belum terbaca; mode cepat tersedia untuk batch besar. Setiap foto bisa digeser, di-zoom, dan diatur utuh atau isi bingkai—hasil posisi tersimpan pada pratinjau serta ekspor yang memuat gambar. Daftar bisa dicari dan disaring tanpa mengurangi baris pada ekspor; tersedia juga opsi teks besar dan navigasi keyboard pada editor foto. Periksa dan koreksi semua hasil OCR.
 
 Hasil ekspor adalah **draf rekap pribadi**, bukan SIM, bukti pendaftaran, atau formulir resmi.
 Tersedia PDF (dialog cetak browser), DOCX, Excel dengan foto KTP tertanam dan sheet data,
@@ -157,13 +158,18 @@ Sekarang lewat `TextEncoder` + chunking, jadi emoji dan huruf Jawa pun aman bola
 
 ## Keamanan
 
-- PIN dibanding pakai `crypto.timingSafeEqual` atas digest SHA-256 — panjang input tidak
-  bocor lewat timing.
-- Rate limit login admin: 5 percobaan / 10 menit per IP.
-- Semua `/api/admin/*` cek `Bearer` token; tidak ada rahasia yang di-hardcode.
-- Token admin disimpan di `sessionStorage`, hilang saat tab ditutup.
-- Nama pemain dipotong 24 karakter, skor diklem `0..9.999.999` sebelum disimpan.
-- `/admin` di-`Disallow` dari `robots.txt`, plus header `nosniff` & `SAMEORIGIN`.
+- `/admin` merespons 404 tanpa sesi sah; dashboard hanya dirender server setelah validasi cookie.
+  Form login berada di `/admin/login` dan tidak ditautkan dari navigasi publik.
+- Login memerlukan secret minimal 16 karakter dan memakai perbandingan constant-time.
+  Sesi ditandatangani HMAC, berlaku 30 menit, serta disimpan di cookie `HttpOnly`, `Secure`
+  (produksi), `SameSite=Strict`; API tidak mengirim token admin ke browser.
+- Percobaan login dibatasi 5 kali per 10 menit; KV dipakai untuk hitungan bersama bila tersedia,
+  dengan fallback limiter per proses.
+- Endpoint admin memerlukan sesi atau Bearer rahasia server; perubahan berbasis cookie
+  memeriksa origin untuk mengurangi risiko CSRF.
+- `ADMIN_API_TOKEN` hanya opsional untuk otomasi server-ke-server. Rotasi `ADMIN_SESSION_SECRET`
+  akan membatalkan seluruh sesi yang masih berlaku.
+- Area admin tanpa indeks, tidak dicantumkan di sitemap, dan tidak ditautkan dari footer/pencarian.
 
 ---
 

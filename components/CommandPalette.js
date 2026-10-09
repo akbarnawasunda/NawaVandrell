@@ -38,7 +38,6 @@ export default function CommandPalette() {
     const actions = [
       { id: 'act-home', label: 'Kembali ke beranda', hint: 'Halaman', icon: 'home', href: '/' },
       { id: 'act-board', label: 'Papan peringkat', hint: 'Halaman', icon: 'trophy', href: '/leaderboard' },
-      { id: 'act-admin', label: 'Area admin', hint: 'Halaman', icon: 'lock', href: '/admin' },
     ];
 
     return [...tools, ...games, ...actions];

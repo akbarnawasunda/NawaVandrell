@@ -83,7 +83,9 @@ export default function RootLayout({ children }) {
               <a href="/tools/sim-application">Rekap SIM kolektif</a>
               <a href="/games">Arcade</a>
               <a href="/leaderboard">Papan peringkat</a>
-              <a href="/admin">Admin</a>
+              <a href="/privacy">Privasi</a>
+              <a href="/terms">Ketentuan</a>
+              <a href="https://github.com/akbarnawasunda/NawaVandrell/issues" target="_blank" rel="noopener noreferrer">Laporkan masalah</a>
             </nav>
             <div className="site-footer-meta">
               <span>© {new Date().getFullYear()} Nawa Vandrell</span>
