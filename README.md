@@ -152,6 +152,32 @@ Alat **All-In-One Downloader** (`/tools/downloader` dan `/downloader`) ditenagai
   npm run ytdlp -- --url "demo:playlist" --mode audio --format mp3 --zip
   ```
 
+### Menyiapkan mesin yt-dlp (lokal & deploy)
+
+Binari `yt-dlp` disiapkan otomatis ke `bin/yt-dlp` setiap `npm install` (`postinstall`)
+dan setiap build/dev (`prebuild`/`predev`) oleh `scripts/setup-ytdlp.mjs`:
+
+1. Memakai `bin/yt-dlp` yang sudah ada bila lolos verifikasi `--version`.
+2. Mengunduh binari statis `yt-dlp_linux` dari GitHub Releases (tidak butuh python
+   saat runtime — cocok untuk serverless seperti Vercel yang read-only & tanpa python3).
+3. Fallback: membangun dari modul pip `yt-dlp` bila unduhan gagal.
+
+Binari ikut ter-bundle ke serverless function lewat `outputFileTracingIncludes` di
+`next.config.js`, lalu disalin ke `/tmp` saat runtime agar bisa dieksekusi. Bila
+binari tetap tidak ada, server otomatis mencoba mengunduhnya ke `/tmp` sekali per
+instance hangat (butuh internet keluar ke `github.com`).
+
+Perintah manual bila perlu memasang ulang:
+
+```bash
+npm run setup:ytdlp        # pasang/verifikasi bin/yt-dlp
+YTDLP_VERSION=2024.10.07 npm run setup:ytdlp   # pin versi rilis tertentu
+```
+
+Env opsional: `YTDLP_VERSION` (default `latest`), `YTDLP_PATH` (paksa lokasi binari),
+`YTDLP_RUNTIME_DOWNLOAD=0` (matikan unduhan dadakan saat runtime). Status mesin bisa
+dicek lewat `GET /api/ytdlp?action=status` (lengkap dengan `diagnostics` bila gagal).
+
 ---
 
 ## OCR KTP dan rekap SIM kolektif

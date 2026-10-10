@@ -12,6 +12,10 @@ build/
 /public/ocr/
 next-env.d.ts
 
+# yt-dlp binary downloaded at install/build time (see scripts/setup-ytdlp.mjs)
+/bin/*
+!/bin/.gitkeep
+
 # environment — JANGAN pernah commit
 .env
 .env.local
