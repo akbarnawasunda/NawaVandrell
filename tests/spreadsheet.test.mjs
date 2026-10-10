@@ -23,6 +23,8 @@ import {
 
 const xlsxModule = await import('@e965/xlsx');
 const XLSX = xlsxModule.default || xlsxModule;
+const excelJsModule = await import('exceljs');
+const ExcelJS = excelJsModule.default || excelJsModule;
 
 test('matrix conversion creates unique headers, pads short rows, and supports files without a header', () => {
   const table = matrixToTable([
@@ -225,6 +227,70 @@ test('processed XLSX keeps source formats and formulas, updates values, retains 
   assert.equal(result.Sheets['Unit B'].C2.v, 'Unit/B');
   assert.equal(result.Sheets.Ringkasan.A1.v, 'Rata-rata');
   assert.equal(originalWorkbook.Sheets.Data.B2.v, originalNameCell, 'sumber tidak dimutasi');
+});
+
+test('XLSX export preserves full styles when values change and source rows move', async () => {
+  const source = new ExcelJS.Workbook();
+  const worksheet = source.addWorksheet('Data');
+  worksheet.addRows([['Nama', 'Nilai', 'Rumus'], ['  rINA ', 12, null], ['Dewa', 17, null]]);
+  worksheet.getCell('C3').value = { formula: 'B3*2', result: 34 };
+  worksheet.getCell('A1').font = { bold: true, color: { argb: 'FF1F4E78' } };
+  worksheet.getCell('A1').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFFF00' } };
+  worksheet.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' };
+  worksheet.getCell('A1').border = { bottom: { style: 'thin', color: { argb: 'FF000000' } } };
+  worksheet.getCell('A2').font = { italic: true };
+  worksheet.getCell('A2').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFDDEEFF' } };
+  worksheet.getCell('A3').font = { bold: true, color: { argb: 'FF008000' } };
+  worksheet.getCell('A3').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE2F0D9' } };
+  worksheet.getCell('B3').numFmt = '"Rp" #,##0.00';
+  const sourceBytes = await source.xlsx.writeBuffer({ useStyles: true, useSharedStrings: true });
+  const originalWorkbook = XLSX.read(sourceBytes, { type: 'array', cellDates: true, cellNF: true, cellStyles: true });
+  const table = matrixToTable([['Nama', 'Nilai', 'Rumus'], ['Rina', 15, 24], ['Dewi', 17, 34]], true, {
+    startRow: 0, startColumn: 0, endRow: 2, endColumn: 2,
+  });
+  table.rows = [['Dewi', 17, 34]];
+  table.sourceRowIndexes = [2];
+  const blob = await createProcessedWorkbookBlob({ originalWorkbook, sourceBytes, sheetName: 'Data', table });
+  const exported = new ExcelJS.Workbook();
+  await exported.xlsx.load(await blob.arrayBuffer());
+  const outputSheet = exported.getWorksheet('Data');
+  assert.equal(outputSheet.getCell('A1').font.bold, true);
+  assert.equal(outputSheet.getCell('A1').fill.fgColor.argb, 'FFFFFF00');
+  assert.equal(outputSheet.getCell('A1').alignment.horizontal, 'center');
+  assert.equal(outputSheet.getCell('A1').border.bottom.style, 'thin');
+  assert.equal(outputSheet.getCell('A2').value, 'Dewi');
+  assert.equal(outputSheet.getCell('A2').font.bold, true, 'gaya baris sumber yang dipertahankan ikut dipindah');
+  assert.equal(outputSheet.getCell('A2').fill.fgColor.argb, 'FFE2F0D9');
+  assert.equal(outputSheet.getCell('B2').numFmt, '"Rp" #,##0.00');
+  assert.equal(outputSheet.getCell('C2').value, 34, 'rumus disimpan sebagai nilai saat baris bergeser');
+});
+
+test('Excel table headers stay synchronized and table metadata follows structural edits', async () => {
+  const source = new ExcelJS.Workbook();
+  const worksheet = source.addWorksheet('Data');
+  worksheet.addTable({
+    name: 'DataTable', ref: 'A1:B3', headerRow: true,
+    columns: [{ name: 'Nama' }, { name: 'Nilai' }],
+    rows: [['Rina', 10], ['Budi', 20]],
+  });
+  const sourceBytes = await source.xlsx.writeBuffer({ useStyles: true, useSharedStrings: true });
+  const originalWorkbook = XLSX.read(sourceBytes, { type: 'array', cellDates: true, cellNF: true, cellStyles: true });
+  const table = matrixToTable([['Nama', 'Nilai'], ['Rina', 10], ['Budi', 20]], true, {
+    startRow: 0, startColumn: 0, endRow: 2, endColumn: 1,
+  });
+  const renamed = renameTableColumn(table, 0, 'Nama Pegawai');
+  const renamedBlob = await createProcessedWorkbookBlob({ originalWorkbook, sourceBytes, sheetName: 'Data', table: renamed });
+  const renamedWorkbook = new ExcelJS.Workbook();
+  await renamedWorkbook.xlsx.load(await renamedBlob.arrayBuffer());
+  assert.equal(renamedWorkbook.getWorksheet('Data').getCell('A1').value, 'Nama Pegawai');
+  assert.equal(renamedWorkbook.getWorksheet('Data').getTables()[0].model.columns[0].name, 'Nama Pegawai');
+
+  const shortened = { ...table, rows: [table.rows[1]], sourceRowIndexes: [2] };
+  const shortenedBlob = await createProcessedWorkbookBlob({ originalWorkbook, sourceBytes, sheetName: 'Data', table: shortened });
+  const shortenedWorkbook = new ExcelJS.Workbook();
+  await shortenedWorkbook.xlsx.load(await shortenedBlob.arrayBuffer());
+  assert.equal(shortenedWorkbook.getWorksheet('Data').getCell('A2').value, 'Budi');
+  assert.equal(shortenedWorkbook.getWorksheet('Data').getTables()[0].model.tableRef, 'A1:B2', 'referensi tabel disesuaikan dengan jumlah baris baru');
 });
 
 test('unchanged Excel error cells retain their type and formula on export', async () => {

@@ -7,6 +7,7 @@ import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
 import {
   MAX_SPREADSHEET_BYTES,
+  MAX_SPREADSHEET_CELLS,
   cellToText,
   cleanTableWhitespace,
   matrixToTable,
@@ -104,6 +105,7 @@ export default function PengolahExcelPage() {
   const fileInputRef = useRef(null);
   const workbookRef = useRef(null);
   const xlsxRef = useRef(null);
+  const sourceFileObjectRef = useRef(null);
   const [sourceFile, setSourceFile] = useState('');
   const [sourceSize, setSourceSize] = useState(0);
   const [sheetNames, setSheetNames] = useState([]);
@@ -227,6 +229,12 @@ export default function PengolahExcelPage() {
     if (!worksheet) throw new Error(`Sheet “${sheetName}” tidak bisa dibaca.`);
     if (!worksheet['!ref']) return matrixToTable([], headerMode);
     const range = XLSX.utils.decode_range(worksheet['!ref']);
+    const rowCount = range.e.r - range.s.r + 1;
+    const columnCount = range.e.c - range.s.c + 1;
+    const cellCount = rowCount * columnCount;
+    if (rowCount < 1 || columnCount < 1 || !Number.isSafeInteger(cellCount) || cellCount > MAX_SPREADSHEET_CELLS) {
+      throw new Error(`Rentang sheet terlalu besar (${Number.isFinite(cellCount) ? numberFormat.format(cellCount) : 'tidak valid'} sel). Batas tool ini ${numberFormat.format(MAX_SPREADSHEET_CELLS)} sel per sheet.`);
+    }
     const matrix = [];
     for (let rowIndex = range.s.r; rowIndex <= range.e.r; rowIndex += 1) {
       const row = [];
@@ -244,12 +252,13 @@ export default function PengolahExcelPage() {
     });
   }
 
-  function installWorkbook(workbook, XLSX, fileName, fileSize = 0, sample = false) {
+  function installWorkbook(workbook, XLSX, fileName, fileSize = 0, sample = false, sourceFile = null) {
     if (!workbook?.SheetNames?.length) throw new Error('Tidak ada sheet atau data yang bisa dibaca di file ini.');
     const firstSheet = workbook.SheetNames[0];
     const firstTable = extractTable(workbook, XLSX, firstSheet, true);
     workbookRef.current = workbook;
     xlsxRef.current = XLSX;
+    sourceFileObjectRef.current = sourceFile;
     setSourceFile(fileName);
     setSourceSize(fileSize);
     setSheetNames([...workbook.SheetNames]);
@@ -283,8 +292,9 @@ export default function PengolahExcelPage() {
     try {
       const imported = await import('@e965/xlsx');
       const XLSX = imported.default || imported;
-      const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', cellDates: true, cellNF: true, cellStyles: true });
-      installWorkbook(workbook, XLSX, file.name, file.size);
+      const sourceBytes = await file.arrayBuffer();
+      const workbook = XLSX.read(sourceBytes, { type: 'array', cellDates: true, cellNF: true, cellStyles: true });
+      installWorkbook(workbook, XLSX, file.name, file.size, false, file);
     } catch (error) {
       console.error('Tidak bisa membuka spreadsheet:', error);
       setLoadError(error?.message ? `File belum bisa dibuka: ${error.message}` : 'File belum bisa dibuka. Pastikan file tidak rusak atau diproteksi kata sandi.');
@@ -499,6 +509,7 @@ export default function PengolahExcelPage() {
     try {
       const blob = await createProcessedWorkbookBlob({
         originalWorkbook: workbookRef.current,
+        sourceBytes: sourceFileObjectRef.current ? await sourceFileObjectRef.current.arrayBuffer() : null,
         sheetName: activeSheet,
         table,
         summaryRows: buildSummaryRows(),
@@ -532,6 +543,7 @@ export default function PengolahExcelPage() {
     try {
       const blob = await createProcessedWorkbookBlob({
         originalWorkbook: workbookRef.current,
+        sourceBytes: sourceFileObjectRef.current ? await sourceFileObjectRef.current.arrayBuffer() : null,
         sheetName: activeSheet,
         table,
         summaryRows: buildSummaryRows(),
@@ -579,7 +591,7 @@ export default function PengolahExcelPage() {
           <div className="npx-upload-mark" aria-hidden="true"><Icon name="upload" size={24} /></div>
           <div className="npx-upload-copy">
             <h2 id="npx-upload-title">Mulai dari file Excel atau CSV</h2>
-            <p>Format .xlsx, .xls, .xlsm, dan .csv · batas 25 MB · baris pertama dianggap sebagai judul kolom.</p>
+            <p>Format .xlsx, .xls, .xlsm, dan .csv · batas 25 MB dan 1.000.000 sel per sheet · baris pertama dianggap sebagai judul kolom.</p>
           </div>
           <div className="npx-upload-actions">
             <label className="btn btn-primary btn-sm npx-file-button" htmlFor="npx-file-input">
@@ -652,7 +664,7 @@ export default function PengolahExcelPage() {
                       <span>Halaman {Math.min(page + 1, totalPages)} dari {totalPages}</span>
                       <div><button type="button" className="btn btn-ghost btn-sm" onClick={() => setPage((current) => Math.max(0, current - 1))} disabled={page === 0}>Sebelumnya</button><button type="button" className="btn btn-ghost btn-sm" onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))} disabled={page >= totalPages - 1}>Berikutnya</button></div>
                     </div>
-                    <p className="npx-export-hint">Ekspor mencakup semua baris, bukan hanya hasil pencarian. Format sel dipertahankan; jika struktur baris/kolom diubah, rumus pada sheet aktif dijadikan nilai agar referensinya tidak keliru.</p>
+                    <p className="npx-export-hint">Ekspor mencakup semua baris, bukan hanya hasil pencarian. Format sel umum dipertahankan. Jika struktur diubah, rumus sheet aktif dijadikan nilai, rumus sheet lain perlu diperiksa, dan tabel terstruktur mungkin disesuaikan. File .xlsm diekspor sebagai .xlsx tanpa makro.</p>
                   </section>
 
                   <aside className="npx-side-column">
