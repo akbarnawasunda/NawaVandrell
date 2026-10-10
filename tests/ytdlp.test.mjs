@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import JSZip from 'jszip';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { createRequire } from 'node:module';
+
+const execFileAsync = promisify(execFile);
+const requireCjs = createRequire(import.meta.url);
 
 import {
   detectPlatform,
@@ -317,4 +326,121 @@ test('integrasi penuh: yt-dlp + FFmpeg memeriksa dan mengunduh lagu MP3, video M
     downloadWithYtdlp({ url: 'http://169.254.169.254/latest/meta-data/', mode: 'audio' }),
     UnsafeUrlError
   );
+});
+
+test('fungsi helper browser aman dipanggil di lingkungan server (SSR) tanpa error', async () => {
+  const {
+    fetchCoverBase64InBrowser,
+    fetchStreamBase64InBrowser,
+    resolvePipedStreamUrl,
+  } = await import('../lib/ytdlpClientResolver.mjs');
+
+  // Di Node (tanpa window), fetchCover harus gagal halus ke null.
+  assert.equal(await fetchCoverBase64InBrowser('https://i.ytimg.com/vi/abc/hqdefault.jpg'), null);
+  assert.equal(await fetchCoverBase64InBrowser(null), null);
+
+  // URL tidak valid → null langsung (tanpa jaringan).
+  assert.equal(await fetchStreamBase64InBrowser('ftp://bukan-http'), null);
+  assert.equal(await fetchStreamBase64InBrowser(null), null);
+
+  // videoId tidak valid (panjang != 11) → null, tanpa menyentuh jaringan.
+  assert.equal(await resolvePipedStreamUrl('terlalu-pendek'), null);
+  assert.equal(await resolvePipedStreamUrl(null), null);
+});
+
+test('stream browser (clientStreamBase64) dikonversi menjadi file NYATA, bukan placeholder demo 4 detik, + cover di-embed', async () => {
+  const rt = await ensureYtdlpRuntime();
+  const ffmpegBin = path.join(rt.ffmpegDir, 'ffmpeg');
+  const ffprobeBin = requireCjs('@ffprobe-installer/ffprobe').path;
+
+  const workDir = await fs.mkdtemp(path.join(os.tmpdir(), 'nawa-stream-test-'));
+
+  // Buat tone asli 10 detik (440Hz) dan 6 detik (660Hz) sebagai "stream nyata".
+  const makeTone = async (seconds, freq) => {
+    const wavPath = path.join(workDir, `tone-${seconds}s.wav`);
+    await execFileAsync(ffmpegBin, [
+      '-y', '-f', 'lavfi',
+      '-i', `sine=frequency=${freq}:duration=${seconds}`,
+      '-ar', '44100', wavPath,
+    ]);
+    return (await fs.readFile(wavPath)).toString('base64');
+  };
+
+  const probeDuration = (buf) =>
+    new Promise((resolve) => {
+      const tmpMp3 = path.join(workDir, `probe-${Math.random().toString(36).slice(2)}.mp3`);
+      fs.writeFile(tmpMp3, buf).then(() =>
+        execFileAsync(ffprobeBin, ['-v', 'error', '-show_entries', 'format=duration', '-of', 'default=nw=1:nk=1', tmpMp3])
+      ).then(({ stdout }) => resolve(parseFloat(stdout.trim()))).catch(() => resolve(NaN));
+    });
+
+  const hasAttachedPicture = (buf) =>
+    new Promise((resolve) => {
+      const tmpMp3 = path.join(workDir, `cover-${Math.random().toString(36).slice(2)}.mp3`);
+      fs.writeFile(tmpMp3, buf).then(() =>
+        execFileAsync(ffprobeBin, ['-v', 'error', '-show_streams', tmpMp3])
+      ).then(({ stdout }) => resolve(stdout.includes('attached_pic=1'))).catch(() => resolve(false));
+    });
+
+  // Cover JPEG kecil 64x64 sebagai simulasi thumbnail.
+  const coverPath = path.join(workDir, 'cover.jpg');
+  await execFileAsync(ffmpegBin, ['-y', '-f', 'lavfi', '-i', 'color=c=#f59e0b:s=64x64:d=1', '-frames:v', '1', coverPath]);
+  const coverBase64 = (await fs.readFile(coverPath)).toString('base64');
+
+  const tone10 = await makeTone(10, 440);
+  const tone6 = await makeTone(6, 660);
+
+  // 1. Single-track: stream browser + tracksMeta tanpa streamBase64 per-track
+  //    → fallback input single-track harus dipakai (bukan demo 4 detik).
+  const singleRes = await downloadWithYtdlp({
+    url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    mode: 'audio',
+    audioFormat: 'mp3',
+    audioQuality: '0',
+    playlistMode: 'single',
+    customTitle: 'Lagu Nyata Sepuluh Detik',
+    customUploader: 'Artis Uji',
+    customAlbum: 'Album Uji',
+    clientStreamBase64: tone10,
+    coverBase64,
+    tracksMeta: [
+      { index: 1, title: 'Lagu Nyata Sepuluh Detik', uploader: 'Artis Uji', album: 'Album Uji', duration: 10 },
+    ],
+  });
+  assert.equal(singleRes.isZip, false);
+  assert.match(singleRes.filename, /Lagu Nyata Sepuluh Detik\.mp3$/);
+  const singleDur = await probeDuration(singleRes.buffer);
+  assert.ok(
+    singleDur >= 8 && singleDur < 20,
+    `Durasi hasil harus ~10 detik dari stream (bukan 4 detik demo), hasil: ${singleDur}`
+  );
+  assert.equal(await hasAttachedPicture(singleRes.buffer), true, 'Cover dari browser harus di-embed sebagai attached picture');
+
+  // 2. Multi-track ZIP: tiap track membawa streamBase64 sendiri (durasi berbeda).
+  const zipRes = await downloadWithYtdlp({
+    url: 'https://www.youtube.com/playlist?list=PL1234567890',
+    mode: 'audio',
+    audioFormat: 'mp3',
+    audioQuality: '0',
+    playlistMode: 'full',
+    bundleAsZip: true,
+    customTitle: 'Uji Antrean Nyata',
+    tracksMeta: [
+      { index: 1, title: 'Track Sepuluh', uploader: 'Artis Uji', duration: 10, streamBase64: tone10 },
+      { index: 2, title: 'Track Enam', uploader: 'Artis Uji', duration: 6, streamBase64: tone6 },
+    ],
+  });
+  assert.equal(zipRes.isZip, true);
+  assert.equal(zipRes.fileCount, 2);
+
+  const loadedZip = await JSZip.loadAsync(zipRes.buffer);
+  const names = Object.keys(loadedZip.files).filter((f) => f.endsWith('.mp3')).sort();
+  assert.equal(names.length, 2);
+  const durA = await probeDuration(Buffer.from(await loadedZip.files[names[0]].async('nodebuffer')));
+  const durB = await probeDuration(Buffer.from(await loadedZip.files[names[1]].async('nodebuffer')));
+  assert.ok(durA >= 9 && durA < 20, `Track pertama harus ~10 detik (bukan 4s demo), hasil: ${durA}`);
+  assert.ok(durB >= 5 && durB < 12, `Track kedua harus ~6 detik (bukan 4s demo), hasil: ${durB}`);
+  assert.ok(durA > durB, 'Kedua track harus berisi konten berbeda (durasi berbeda)');
+
+  await fs.rm(workDir, { recursive: true, force: true });
 });

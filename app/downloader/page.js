@@ -31,6 +31,9 @@ import {
 import {
   resolveMediaInBrowser,
   fetchStreamBase64InBrowser,
+  fetchCoverBase64InBrowser,
+  resolvePipedStreamUrl,
+  extractYoutubeIds,
 } from '@/lib/ytdlpClientResolver.mjs';
 
 const HISTORY_STORAGE_KEY = 'nawa:v1:ytdlp-history';
@@ -82,6 +85,9 @@ export default function DownloaderPage() {
   const [inspecting, setInspecting] = useState(false);
   const [mediaInfo, setMediaInfo] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  // true bila server kontainer tak bisa akses internet keluar — stream harus
+  // diambil lewat browser pengguna (Piped audio-proxy) agar unduhan tetap nyata.
+  const [serverRestricted, setServerRestricted] = useState(false);
 
   // Pratinjau audio langsung di halaman
   const [playingTrack, setPlayingTrack] = useState(null);
@@ -90,6 +96,7 @@ export default function DownloaderPage() {
   const [selectedIndices, setSelectedIndices] = useState(() => new Set());
   const [trackFilter, setTrackFilter] = useState('');
   const [trackStatusMap, setTrackStatusMap] = useState({});
+  const [trackErrors, setTrackErrors] = useState({});
   const [downloadingMain, setDownloadingMain] = useState(false);
   const [queueRunning, setQueueRunning] = useState(false);
   const [queueProgress, setQueueProgress] = useState({ current: 0, total: 0, title: '' });
@@ -246,6 +253,7 @@ export default function DownloaderPage() {
             if (!res.ok || !data.status) {
               throw new Error(data.error || 'Gagal memeriksa media.');
             }
+            setServerRestricted(Boolean(data.serverNetworkRestricted || data.engine === 'yt-dlp-hybrid'));
 
             let info = data.info;
 
@@ -305,24 +313,75 @@ export default function DownloaderPage() {
       bundleAsZip = false,
       playlistModeOverride = null,
       quiet = false,
+      entry = null,
+      forceBrowserStream = false,
     }) => {
       let clientStreamBase64 = null;
+      let coverBase64 = null;
       let enrichedTracksMeta = tracksMeta;
+
+      // Bila server tak bisa akses internet, browser pengguna jadi "jembatan":
+      // mengambil stream penuh via Piped audio-proxy, lalu server FFmpeg-nya
+      // mengonversi ke MP3/FLAC/MP4 + menaruh tag ID3.
+      const fetchViaPiped = async (track) => {
+        const vid = track?.videoId || extractYoutubeIds(track?.url || targetUrl).videoId;
+        if (!vid) return null;
+        updateDownloadTask({ detail: 'Mencari stream via Piped (melalui browser)…' });
+        const resolved = await resolvePipedStreamUrl(vid, track?.pipedBase);
+        if (!resolved) return null;
+        let lastPct = -1;
+        updateDownloadTask({ detail: 'Mengambil stream utuh dari sumber…' });
+        return fetchStreamBase64InBrowser(
+          resolved.streamUrl,
+          32 * 1024 * 1024,
+          180000,
+          (received, total) => {
+            const pct = total ? Math.round((received / total) * 100) : null;
+            if (pct == null || pct !== lastPct) {
+              lastPct = pct;
+              updateDownloadTask({ detail: `Mengambil stream utuh dari sumber…${pct == null ? '' : ` ${pct}%`}` });
+            }
+          }
+        );
+      };
 
       if (streamUrl && !bundleAsZip) {
         updateDownloadTask({ detail: 'Mengambil stream media dari sumber…' });
         clientStreamBase64 = await fetchStreamBase64InBrowser(streamUrl);
+        if (!clientStreamBase64 && (serverRestricted || forceBrowserStream)) {
+          clientStreamBase64 = await fetchViaPiped(entry || (tracksMeta && tracksMeta[0]) || null);
+        }
+      } else if (!bundleAsZip && (serverRestricted || forceBrowserStream) && (entry || (tracksMeta && tracksMeta[0]))) {
+        clientStreamBase64 = await fetchViaPiped(entry || tracksMeta[0]);
       } else if (bundleAsZip && Array.isArray(tracksMeta) && tracksMeta.length > 0) {
         updateDownloadTask({ detail: 'Mengumpulkan stream playlist dari sumber…' });
         enrichedTracksMeta = await Promise.all(
           tracksMeta.map(async (tr, idx) => {
-            if (idx < 6 && tr?.streamUrl && !tr.streamBase64) {
-              const b64 = await fetchStreamBase64InBrowser(tr.streamUrl);
-              return b64 ? { ...tr, streamBase64: b64 } : tr;
+            if (idx < 6 && !tr?.streamBase64) {
+              const b64 = tr?.streamUrl
+                ? await fetchStreamBase64InBrowser(tr.streamUrl)
+                : serverRestricted
+                  ? await fetchViaPiped(tr)
+                  : null;
+              if (b64) {
+                // Ambil cover per-track agar tiap lagu punya artwork sendiri.
+                const cover = await fetchCoverBase64InBrowser(tr?.thumbnail);
+                return { ...tr, streamBase64: b64, ...(cover ? { coverBase64: cover } : {}) };
+              }
+              return tr;
             }
             return tr;
           })
         );
+      }
+
+      // Single-track lewat stream browser: ambil cover-nya juga supaya server
+      // bisa embed artwork ke MP3/M4A/FLAC hasil konversi.
+      if (!bundleAsZip && clientStreamBase64) {
+        const coverSrc = entry?.thumbnail
+          || (Array.isArray(tracksMeta) && tracksMeta[0] && tracksMeta[0].thumbnail)
+          || null;
+        coverBase64 = await fetchCoverBase64InBrowser(coverSrc);
       }
 
       updateDownloadTask({ detail: 'Server yt-dlp + FFmpeg sedang mengonversi…' });
@@ -340,6 +399,7 @@ export default function DownloaderPage() {
           customAlbum,
           tracksMeta: enrichedTracksMeta,
           clientStreamBase64,
+          coverBase64,
         }),
       });
 
@@ -371,7 +431,7 @@ export default function DownloaderPage() {
       downloadBlob(blob, decodedName, { quiet });
       return { filename: decodedName, size: blob.size };
     },
-    [options]
+    [options, serverRestricted]
   );
 
   // Unduh utama (Single Media atau Full Playlist ZIP)
@@ -403,6 +463,7 @@ export default function DownloaderPage() {
             });
             const inspectData = await inspectRes.json();
             if (inspectRes.ok && inspectData.status) {
+              setServerRestricted(Boolean(inspectData.serverNetworkRestricted || inspectData.engine === 'yt-dlp-hybrid'));
               activeInfo = inspectData.info;
               if ((inspectData.serverNetworkRestricted || inspectData.engine === 'yt-dlp-hybrid') && parsed.kind !== 'demo') {
                 updateDownloadTask({ detail: 'Mengambil detail media di browser…' });
@@ -441,6 +502,7 @@ export default function DownloaderPage() {
             streamUrl: !asZip && !isMulti ? firstEntry?.streamUrl || null : null,
             tracksMeta: asZip || isMulti ? finalEntries : firstEntry ? [firstEntry] : null,
             bundleAsZip: asZip || isMulti,
+            entry: firstEntry || null,
           });
 
           addToast(`Berhasil mengunduh: ${result.filename}`, 'success');
@@ -482,6 +544,7 @@ export default function DownloaderPage() {
               tracksMeta: [entry],
               bundleAsZip: false,
               playlistModeOverride: 'single',
+              entry,
             });
           },
           entry.title
@@ -521,6 +584,7 @@ export default function DownloaderPage() {
       setTrackStatusMap((prev) => ({ ...prev, [entry.index]: 'downloading' }));
 
       let trackSuccess = false;
+      let lastErr = null;
       for (let attempt = 1; attempt <= 2; attempt += 1) {
         try {
           const numPrefix = String(entry.index).padStart(2, '0');
@@ -534,10 +598,15 @@ export default function DownloaderPage() {
             bundleAsZip: false,
             playlistModeOverride: 'single',
             quiet: true,
+            entry,
+            // Percobaan 2: paksa ambil stream lewat browser (Piped) bila
+            // server tak bisa mengakses sumber langsung.
+            forceBrowserStream: attempt > 1,
           });
           trackSuccess = true;
           break;
-        } catch {
+        } catch (err) {
+          lastErr = err;
           if (attempt < 2) {
             await new Promise((r) => setTimeout(r, 300));
           }
@@ -547,9 +616,18 @@ export default function DownloaderPage() {
       if (trackSuccess) {
         successCount += 1;
         setTrackStatusMap((prev) => ({ ...prev, [entry.index]: 'done' }));
+        setTrackErrors((prev) => {
+          const next = { ...prev };
+          delete next[entry.index];
+          return next;
+        });
       } else {
         failCount += 1;
         setTrackStatusMap((prev) => ({ ...prev, [entry.index]: 'error' }));
+        setTrackErrors((prev) => ({
+          ...prev,
+          [entry.index]: lastErr?.message || 'Gagal mengunduh track ini',
+        }));
         if (!options.ignoreErrors) {
           addToast(`Antrean dihentikan pada track #${entry.index}`, 'error');
           break;
@@ -1676,7 +1754,9 @@ export default function DownloaderPage() {
                               ) : st === 'downloading' ? (
                                 <span className="nv-tag is-warn">Mengunduh...</span>
                               ) : st === 'error' ? (
-                                <span className="nv-tag is-bad">Gagal</span>
+                                <span className="nv-tag is-bad" title={trackErrors[entry.index] || 'Gagal mengunduh'}>
+                                  Gagal
+                                </span>
                               ) : (
                                 <span className="nv-tag">Siap</span>
                               )}
