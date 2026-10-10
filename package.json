@@ -12,10 +12,13 @@
     "lint": "next lint",
     "test": "node --test tests/*.test.mjs",
     "test:ocr": "node --test tests/ktpOcr.test.mjs",
-    "test:exports": "node --test tests/simDocumentExports.test.mjs tests/collectiveSimExports.test.mjs"
+    "test:exports": "node --test tests/simDocumentExports.test.mjs tests/collectiveSimExports.test.mjs",
+    "ytdlp": "node scripts/ytdlp-cli.mjs"
   },
   "dependencies": {
     "@e965/xlsx": "0.20.3",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@ffprobe-installer/ffprobe": "^2.1.2",
     "@tesseract.js-data/ind": "1.0.0",
     "docx": "9.9.0",
     "exceljs": "4.4.0",
