@@ -2,11 +2,11 @@ export const featuredTools = [
   // ================= POPULER =================
   {
     slug: 'downloader',
-    title: 'All-In-One Downloader',
-    desc: 'Download video & audio dari TikTok, IG, YT, FB, Twitter, Spotify.',
+    title: 'All-In-One Downloader (yt-dlp)',
+    desc: 'Download lagu (MP3 320kbps, FLAC, WAV, M4A), full playlist tanpa henti, video 4K/HD, dan subtitle berbasis yt-dlp.',
     icon: 'download',
     group: ['populer', 'fun', 'kerja'],
-    keywords: 'download downloader tiktok instagram youtube twitter facebook spotify pinterest mp3 mp4 video musik unduh',
+    keywords: 'download downloader ytdlp yt-dlp playlist full album lagu musik mp3 flac wav m4a opus mp4 mkv 4k subtitle lirik tiktok instagram youtube soundcloud twitter facebook spotify unduh',
     href: '/downloader',
   },
   {

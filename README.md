@@ -140,6 +140,20 @@ siap impor WhatsApp, suara game dibangkitkan WebAudio (tanpa file audio).
 
 ---
 
+## All-In-One Downloader (`yt-dlp` + `FFmpeg` Engine)
+
+Alat **All-In-One Downloader** (`/tools/downloader` dan `/downloader`) ditenagai mesin `yt-dlp` + `FFmpeg` + `mutagen`:
+
+- **Unduh Lagu & Musik Kualitas Studio:** Ekstrak audio ke `MP3` (320kbps/256kbps/192kbps/128kbps), `FLAC` (Lossless), `WAV` (Studio PCM), `M4A` (AAC), `OPUS`, atau `OGG Vorbis` lengkap dengan tag ID3 (Judul, Artis, Album, Nomor Track) dan sampul album tertanam.
+- **Full Playlist & Batch Tanpa Error:** Unduh seluruh playlist/album sekaligus sebagai arsip `.ZIP` (dilengkapi daftar putar `.M3U8`, rekap `.CSV`, dan `Metadata.json`) atau satu per satu melalui antrean anti-error (`--ignore-errors`).
+- **Video HD/4K & Media Lainnya:** Unduh video `MP4`, `MKV`, atau `WebM` dari 360p hingga 4K (2160p), serta ekstraksi khusus untuk subtitle/lirik (`.SRT`), cover/thumbnail (`.JPG`), dan metadata (`.JSON`).
+- **CLI Terminal Bawaan (`npm run ytdlp`):** Selain antarmuka web, tersedia juga CLI terminal langsung:
+  ```bash
+  npm run ytdlp -- --url "demo:playlist" --mode audio --format mp3 --zip
+  ```
+
+---
+
 ## OCR KTP dan rekap SIM kolektif
 
 Alat **Rekap SIM Kolektif** menerima banyak foto KTP sekaligus, membaca saran nama/NIK/data KTP
@@ -224,7 +238,7 @@ file `n` yang terduplikasi), `engines` Node di `package.json` diselaraskan denga
 ## Pengujian
 
 ```bash
-npm test          # 166 tes unit: logika hitung, validasi, ekspor, penyimpanan lokal, keamanan, katalog
+npm test          # 175 tes unit & integrasi: logika hitung, validasi, ekspor, yt-dlp, penyimpanan lokal, keamanan, katalog
 npm run build     # build produksi
 ```
 
