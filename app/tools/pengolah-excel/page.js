@@ -584,7 +584,7 @@ export default function PengolahExcelPage() {
       <div className="nv-stack npx-stack">
         <div className="nv-notice is-info npx-privacy-note" role="note">
           <strong>Data diproses di browser kamu</strong>
-          <div className="nv-notice-body">File tidak diunggah oleh tool ini. Tetap ikuti aturan klasifikasi dan keamanan internal PLN, serta verifikasi hasil sebelum dipakai sebagai laporan resmi.</div>
+          <div className="nv-notice-body">File tidak diunggah oleh tool ini. Nawa Editor bukan layanan resmi PLN dan tidak terafiliasi dengannya. Ikuti kebijakan keamanan organisasi Anda dan verifikasi hasil sebelum dipakai untuk laporan.</div>
         </div>
 
         <section className={`npx-upload${dragging ? ' is-dragging' : ''}`} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={handleDrop} aria-labelledby="npx-upload-title">
@@ -602,7 +602,7 @@ export default function PengolahExcelPage() {
               <Icon name="sparkles" size={14} /> Coba data contoh
             </button>
           </div>
-          <p className="npx-drop-hint">atau seret file ke area ini. Untuk uji coba, tersedia data operasional fiktif—bukan data PLN asli.</p>
+          <p className="npx-drop-hint">atau seret file ke area ini. Untuk uji coba, tersedia data operasional fiktif—bukan data organisasi nyata.</p>
           {loading ? <p className="npx-status" role="status">Membaca spreadsheet…</p> : null}
           {loadError ? <p className="npx-load-error" role="alert">{loadError}</p> : null}
         </section>
