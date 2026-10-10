@@ -33,6 +33,18 @@ export default function LocalDataPanel({ title, store, items, setItems, corrupt 
     addToast('Cadangan JSON diunduh. Simpan di tempat aman.', 'success');
   };
 
+  const exportCorrupt = () => {
+    try {
+      const raw = window.localStorage.getItem(store.key);
+      if (!raw) throw new Error('File data lama tidak ditemukan di penyimpanan browser.');
+      const stamp = new Date().toISOString().slice(0, 10);
+      downloadText(raw, `${safeFileName(fileBase)}-data-lama-${stamp}.json`, 'application/json;charset=utf-8');
+      addToast('Salinan mentah data lama diunduh. File ini mungkin tidak dapat diimpor kembali.', 'info', 6000);
+    } catch (error) {
+      addToast(error?.message || 'Data lama tidak bisa diekspor dari browser ini.', 'error', 6000);
+    }
+  };
+
   const importFile = async (event) => {
     const file = event.target.files?.[0];
     event.target.value = '';
@@ -91,9 +103,11 @@ export default function LocalDataPanel({ title, store, items, setItems, corrupt 
       </div>
 
       {corrupt ? (
-        <p className="nv-notice is-bad" role="alert">
-          Data tersimpan tidak bisa dibaca dan tidak diubah otomatis. Ekspor file lama bila ada, lalu hapus data ini untuk mulai ulang.
-        </p>
+        <div className="nv-notice is-bad" role="alert">
+          <strong>Data lama tidak bisa dibaca</strong>
+          <span>Data belum ditimpa. Unduh salinan mentah bila ingin menyimpannya, lalu hapus data rusak untuk mulai kembali.</span>
+          <div><button type="button" className="btn btn-ghost btn-sm" onClick={exportCorrupt}>Unduh salinan mentah</button></div>
+        </div>
       ) : null}
 
       <div className="nv-data-panel-actions">

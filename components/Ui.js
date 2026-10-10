@@ -19,7 +19,7 @@ export function Field({ id, label, hint, error, children, className = '' }) {
   );
 }
 
-export function TextField({ id, label, value, onChange, hint, error, placeholder = '', type = 'text', maxLength, inputMode, autoComplete = 'off', required = false, className = '' }) {
+export function TextField({ id, label, value, onChange, hint, error, placeholder = '', type = 'text', maxLength, min, max, step, inputMode, autoComplete = 'off', required = false, className = '' }) {
   return (
     <Field id={id} label={label} hint={hint} error={error} className={className}>
       {({ hintId, errorId, invalid }) => (
@@ -30,6 +30,9 @@ export function TextField({ id, label, value, onChange, hint, error, placeholder
           value={value ?? ''}
           placeholder={placeholder}
           maxLength={maxLength}
+          min={min}
+          max={max}
+          step={step}
           inputMode={inputMode}
           autoComplete={autoComplete}
           required={required}

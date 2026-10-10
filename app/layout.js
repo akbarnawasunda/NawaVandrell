@@ -1,13 +1,17 @@
 import './globals.css';
 import './nv-tools.css';
 import './sim-tool.css';
+import './spreadsheet-tool.css';
+import './workbench.css';
+import './glass-theme.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
 import TopBar from '@/components/TopBar';
 import CommandPalette from '@/components/CommandPalette';
+import RecentToolsTracker from '@/components/RecentToolsTracker';
 import { SITE_ORIGIN } from '@/lib/seo';
 
-const siteDescription = 'Kumpulan alat harian, dokumen, dan game ringan yang berjalan cepat di browser. Gratis, tanpa akun.';
+const siteDescription = 'Workbench kerja dan kumpulan alat praktis untuk kantor, toko, sekolah, UMKM, dan kebutuhan harian. Gratis, tanpa akun; data lokal di browser.';
 
 export const metadata = {
   metadataBase: new URL(SITE_ORIGIN),
@@ -67,6 +71,7 @@ export default function RootLayout({ children }) {
         <a className="skip-link" href="#main-content">Lewati ke konten</a>
         <ToastProvider>
           <TopBar />
+          <RecentToolsTracker />
           <main id="main-content" tabIndex="-1">{children}</main>
           <CommandPalette />
           <footer className="site-footer">
