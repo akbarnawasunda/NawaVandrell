@@ -17,6 +17,7 @@ import {
   removeBlankRows,
   removeDuplicateRows,
   renameTableColumn,
+  replaceTableValues,
   splitTableColumn,
   summarizeBy,
   summarizeNumericColumn,
@@ -62,6 +63,12 @@ function formatCell(value) {
   if (typeof value === 'number') return numberFormat.format(value);
   if (typeof value === 'boolean') return value ? 'Ya' : 'Tidak';
   return cellToText(value);
+}
+
+function sameSourceValue(value, sourceValue) {
+  if (value instanceof Date && sourceValue instanceof Date) return value.getTime() === sourceValue.getTime();
+  if (value === null || value === undefined) return sourceValue === null || sourceValue === undefined || sourceValue === '';
+  return Object.is(value, sourceValue);
 }
 
 function formatBytes(value) {
@@ -111,6 +118,7 @@ export default function PengolahExcelPage() {
   const [page, setPage] = useState(0);
   const [sort, setSort] = useState({ column: -1, direction: 'asc' });
   const [nameColumn, setNameColumn] = useState(0);
+  const [nameMode, setNameMode] = useState('title');
   const [splitColumn, setSplitColumn] = useState(0);
   const [valueColumn, setValueColumn] = useState(0);
   const [groupColumn, setGroupColumn] = useState(-1);
@@ -118,6 +126,11 @@ export default function PengolahExcelPage() {
   const [customDelimiter, setCustomDelimiter] = useState('');
   const [renameValue, setRenameValue] = useState('');
   const [duplicateColumn, setDuplicateColumn] = useState(-1);
+  const [replaceColumn, setReplaceColumn] = useState(0);
+  const [findValue, setFindValue] = useState('');
+  const [replacementValue, setReplacementValue] = useState('');
+  const [replaceMode, setReplaceMode] = useState('exact');
+  const [replaceCaseSensitive, setReplaceCaseSensitive] = useState(false);
   const [exporting, setExporting] = useState(false);
 
   const table = activeSheet ? tables[activeSheet] || null : null;
@@ -131,11 +144,39 @@ export default function PengolahExcelPage() {
   const groupedSummary = useMemo(() => table && table.columns.length
     ? summarizeBy(table.rows, groupColumn, safeValueColumn)
     : [], [table, groupColumn, safeValueColumn]);
+  const namePreview = useMemo(() => {
+    if (!table || !table.columns.length) return { changed: 0, examples: [] };
+    const examples = [];
+    let changed = 0;
+    for (const row of table.rows) {
+      const before = row[nameColumn];
+      const after = normalizeName(before, nameMode);
+      if (Object.is(before, after)) continue;
+      changed += 1;
+      if (examples.length < 3) examples.push({ before: cellToText(before), after: cellToText(after) });
+    }
+    return { changed, examples };
+  }, [table, nameColumn, nameMode]);
+  const duplicatePreview = useMemo(() => table
+    ? removeDuplicateRows(table.rows, duplicateColumn >= 0 ? duplicateColumn : null)
+    : { rows: [], keptIndexes: [], duplicateIndexes: [], removed: 0 }, [table, duplicateColumn]);
+  const replacePreview = useMemo(() => table
+    ? replaceTableValues(table, {
+      find: findValue,
+      replace: replacementValue,
+      columnIndex: replaceColumn >= 0 ? replaceColumn : null,
+      mode: replaceMode,
+      caseSensitive: replaceCaseSensitive,
+    })
+    : { table: null, changed: 0, examples: [] }, [table, findValue, replacementValue, replaceColumn, replaceMode, replaceCaseSensitive]);
   const filteredRows = useMemo(() => {
     if (!table) return [];
     const term = search.trim().toLocaleLowerCase('id-ID');
-    const items = table.rows.map((row, index) => ({ row, index })).filter(({ row }) => (
-      !term || row.some((value) => cellToText(value).toLocaleLowerCase('id-ID').includes(term))
+    const items = table.rows.map((row, index) => ({ row, index })).filter(({ row, index }) => (
+      !term || row.some((value, columnIndex) => (
+        cellToText(value).toLocaleLowerCase('id-ID').includes(term)
+        || displayTableCell(value, index, columnIndex).toLocaleLowerCase('id-ID').includes(term)
+      ))
     ));
     if (sort.column >= 0 && sort.column < table.columns.length) {
       items.sort((left, right) => {
@@ -144,33 +185,63 @@ export default function PengolahExcelPage() {
       });
     }
     return items;
-  }, [table, search, sort]);
+  }, [table, search, sort, activeSheet]);
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
   const visibleRows = filteredRows.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
   const emptyRows = table ? table.rows.filter((row) => row.every((value) => value === null || value === undefined || String(value).trim() === '')).length : 0;
   const emptyCells = table ? table.rows.reduce((total, row) => total + table.columns.filter((_, index) => row[index] === null || row[index] === undefined || (typeof row[index] === 'string' && row[index].trim() === '')).length, 0) : 0;
 
+  function displayTableCell(value, rowIndex, columnIndex, sourceTable = table) {
+    const sheet = workbookRef.current?.Sheets?.[activeSheet];
+    const XLSX = xlsxRef.current;
+    if (!sheet || !XLSX || !sourceTable?.sourceRange) return formatCell(value);
+    const sourceRow = rowIndex === null
+      ? (sourceTable.sourceHasHeader ? sourceTable.sourceRange.startRow : sourceTable.sourceRowIndexes?.[0])
+      : sourceTable.sourceRowIndexes?.[rowIndex];
+    const sourceColumn = sourceTable.sourceColumnIndexes?.[columnIndex];
+    if (!Number.isInteger(sourceRow) || !Number.isInteger(sourceColumn)) return formatCell(value);
+    const sourceCell = sheet[XLSX.utils.encode_cell({ r: sourceRow, c: sourceColumn })];
+    if (typeof sourceCell?.w === 'string' && sourceCell.w && sameSourceValue(value, sourceCell.v ?? '')) return sourceCell.w;
+    return formatCell(value);
+  }
+
   function resetColumnSelections(nextTable) {
     const namesIndex = likelyNameColumn(nextTable.columns);
     const nextNumericColumns = numericColumnIndexes(nextTable);
     setNameColumn(namesIndex);
+    setNameMode('title');
     setSplitColumn(0);
     setValueColumn(nextNumericColumns[0] ?? 0);
     setGroupColumn(-1);
     setDuplicateColumn(-1);
+    setReplaceColumn(namesIndex);
+    setFindValue('');
+    setReplacementValue('');
+    setReplaceMode('exact');
+    setReplaceCaseSensitive(false);
     setRenameValue('');
   }
 
   function extractTable(workbook, XLSX, sheetName, headerMode = true) {
     const worksheet = workbook?.Sheets?.[sheetName];
     if (!worksheet) throw new Error(`Sheet “${sheetName}” tidak bisa dibaca.`);
-    const matrix = XLSX.utils.sheet_to_json(worksheet, {
-      header: 1,
-      defval: '',
-      raw: true,
-      blankrows: true,
+    if (!worksheet['!ref']) return matrixToTable([], headerMode);
+    const range = XLSX.utils.decode_range(worksheet['!ref']);
+    const matrix = [];
+    for (let rowIndex = range.s.r; rowIndex <= range.e.r; rowIndex += 1) {
+      const row = [];
+      for (let columnIndex = range.s.c; columnIndex <= range.e.c; columnIndex += 1) {
+        const cell = worksheet[XLSX.utils.encode_cell({ r: rowIndex, c: columnIndex })];
+        row.push(cell?.t === 'e' ? (cell.w || cell.v || '') : (cell?.v ?? ''));
+      }
+      matrix.push(row);
+    }
+    return matrixToTable(matrix, headerMode, {
+      startRow: range.s.r,
+      startColumn: range.s.c,
+      endRow: range.e.r,
+      endColumn: range.e.c,
     });
-    return matrixToTable(matrix, headerMode);
   }
 
   function installWorkbook(workbook, XLSX, fileName, fileSize = 0, sample = false) {
@@ -212,7 +283,7 @@ export default function PengolahExcelPage() {
     try {
       const imported = await import('@e965/xlsx');
       const XLSX = imported.default || imported;
-      const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', cellDates: true });
+      const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', cellDates: true, cellNF: true, cellStyles: true });
       installWorkbook(workbook, XLSX, file.name, file.size);
     } catch (error) {
       console.error('Tidak bisa membuka spreadsheet:', error);
@@ -289,8 +360,21 @@ export default function PengolahExcelPage() {
 
   function runNameCleanup() {
     if (!table?.columns.length) return;
-    const next = transformColumn(table, nameColumn, normalizeName);
+    const next = transformColumn(table, nameColumn, (value) => normalizeName(value, nameMode));
     commitTable(next, `Nama pada kolom “${table.columns[nameColumn]}” sudah dirapikan.`);
+  }
+
+  function runReplaceValues() {
+    if (!table || !findValue.trim()) {
+      addToast('Isi nilai yang ingin dicari terlebih dahulu.', 'warning');
+      return;
+    }
+    if (!replacePreview.changed) {
+      addToast('Tidak ada nilai yang cocok untuk diganti.', 'info');
+      return;
+    }
+    const target = replaceColumn >= 0 ? ` di kolom “${table.columns[replaceColumn]}”` : ' pada semua kolom teks';
+    commitTable(replacePreview.table, `${replacePreview.changed} nilai disamakan${target}.`);
   }
 
   function runRemoveBlankRows() {
@@ -300,7 +384,11 @@ export default function PengolahExcelPage() {
       addToast('Tidak ada baris kosong untuk dihapus.', 'info');
       return;
     }
-    commitTable({ ...table, rows: result.rows }, `${result.removed} baris kosong dihapus.`);
+    commitTable({
+      ...table,
+      rows: result.rows,
+      sourceRowIndexes: table.sourceRowIndexes ? result.keptIndexes.map((index) => table.sourceRowIndexes[index]) : undefined,
+    }, `${result.removed} baris kosong dihapus.`);
   }
 
   function runRemoveDuplicates() {
@@ -311,7 +399,11 @@ export default function PengolahExcelPage() {
       return;
     }
     const criterion = duplicateColumn >= 0 ? ` berdasarkan “${table.columns[duplicateColumn]}”` : '';
-    commitTable({ ...table, rows: result.rows }, `${result.removed} baris duplikat dihapus${criterion}.`);
+    commitTable({
+      ...table,
+      rows: result.rows,
+      sourceRowIndexes: table.sourceRowIndexes ? result.keptIndexes.map((index) => table.sourceRowIndexes[index]) : undefined,
+    }, `${result.removed} baris duplikat dihapus${criterion}.`);
   }
 
   function runSplitColumn() {
@@ -333,13 +425,14 @@ export default function PengolahExcelPage() {
     setValueColumn((value) => adjust(value));
     setGroupColumn((value) => (value >= 0 ? adjust(value) : value));
     setDuplicateColumn((value) => (value >= 0 ? adjust(value) : value));
+    setReplaceColumn((value) => (value >= 0 ? adjust(value) : value));
     setSplitColumn(splitColumn);
   }
 
   function runRenameColumn() {
     if (!table) return;
     const next = renameTableColumn(table, splitColumn, renameValue);
-    if (next === table || next.columns[splitColumn] === table.columns[splitColumn]) {
+    if (next === table) {
       addToast('Masukkan nama kolom baru yang berbeda.', 'warning');
       return;
     }
@@ -547,10 +640,10 @@ export default function PengolahExcelPage() {
                     </div>
                     <div className="npx-table-wrap" tabIndex={0} role="region" aria-label="Pratinjau tabel, geser untuk melihat kolom lainnya">
                       <table className="npx-table">
-                        <thead><tr><th scope="col" className="npx-row-number">#</th>{table.columns.map((column, index) => <th scope="col" key={`${index}-${column}`}><button type="button" className="npx-sort-button" onClick={() => handleSort(index)} aria-label={`Urutkan berdasarkan ${column}`} aria-pressed={sort.column === index}>{column}<span aria-hidden="true">{sort.column === index ? (sort.direction === 'asc' ? ' ↑' : ' ↓') : ' ↕'}</span></button></th>)}</tr></thead>
+                        <thead><tr><th scope="col" className="npx-row-number">#</th>{table.columns.map((column, index) => <th scope="col" key={`${index}-${column}`}><button type="button" className="npx-sort-button" onClick={() => handleSort(index)} aria-label={`Urutkan berdasarkan ${column}`} aria-pressed={sort.column === index}>{displayTableCell(column, null, index)}<span aria-hidden="true">{sort.column === index ? (sort.direction === 'asc' ? ' ↑' : ' ↓') : ' ↕'}</span></button></th>)}</tr></thead>
                         <tbody>
                           {visibleRows.length ? visibleRows.map(({ row, index }) => (
-                            <tr key={`${activeSheet}-${index}`}><th scope="row" className="npx-row-number">{index + 1}</th>{table.columns.map((_, columnIndex) => <td key={columnIndex} title={cellToText(row[columnIndex])}>{formatCell(row[columnIndex])}</td>)}</tr>
+                            <tr key={`${activeSheet}-${index}`}><th scope="row" className="npx-row-number">{index + 1}</th>{table.columns.map((_, columnIndex) => <td key={columnIndex} title={displayTableCell(row[columnIndex], index, columnIndex)}>{displayTableCell(row[columnIndex], index, columnIndex)}</td>)}</tr>
                           )) : <tr><td className="npx-empty-table" colSpan={table.columns.length + 1}>Tidak ada baris yang cocok dengan pencarian.</td></tr>}
                         </tbody>
                       </table>
@@ -559,7 +652,7 @@ export default function PengolahExcelPage() {
                       <span>Halaman {Math.min(page + 1, totalPages)} dari {totalPages}</span>
                       <div><button type="button" className="btn btn-ghost btn-sm" onClick={() => setPage((current) => Math.max(0, current - 1))} disabled={page === 0}>Sebelumnya</button><button type="button" className="btn btn-ghost btn-sm" onClick={() => setPage((current) => Math.min(totalPages - 1, current + 1))} disabled={page >= totalPages - 1}>Berikutnya</button></div>
                     </div>
-                    <p className="npx-export-hint">Ekspor mencakup semua baris pada sheet aktif, bukan hanya hasil pencarian.</p>
+                    <p className="npx-export-hint">Ekspor mencakup semua baris, bukan hanya hasil pencarian. Format sel dipertahankan; jika struktur baris/kolom diubah, rumus pada sheet aktif dijadikan nilai agar referensinya tidak keliru.</p>
                   </section>
 
                   <aside className="npx-side-column">
@@ -600,8 +693,22 @@ export default function PengolahExcelPage() {
                       <div className="npx-action-block">
                         <h3>Rapikan teks dan nama</h3>
                         <label className="npx-compact-field"><span>Kolom nama</span><select className="select" value={nameColumn} onChange={(event) => setNameColumn(Number(event.target.value))}>{table.columns.map((column, index) => <option key={index} value={index}>{column}</option>)}</select></label>
-                        <div className="npx-button-row"><ActionButton icon="sparkles" onClick={runNameCleanup} disabled={!table.rows.length}>Rapikan nama</ActionButton><ActionButton icon="check" onClick={runCleanWhitespace} disabled={!table.rows.length}>Rapikan spasi</ActionButton></div>
-                        <p className="npx-help">Nama menggunakan kapitalisasi wajar (contoh “rINA pUTRI” → “Rina Putri”); singkatan umum seperti PLN dan ULP dipertahankan.</p>
+                        <label className="npx-compact-field"><span>Format nama</span><select className="select" value={nameMode} onChange={(event) => setNameMode(event.target.value)}><option value="title">Kapitalisasi wajar (Rina Putri)</option><option value="preserve">Rapikan spasi saja—pertahankan huruf</option><option value="upper">HURUF BESAR</option><option value="lower">huruf kecil</option></select></label>
+                        <div className="npx-name-preview" aria-live="polite"><strong>{numberFormat.format(namePreview.changed)} nilai akan berubah</strong>{namePreview.examples.length ? <ul>{namePreview.examples.map((example, index) => <li key={`${index}-${example.before}`}><span>{example.before || '—'}</span><b aria-hidden="true">→</b><span>{example.after || '—'}</span></li>)}</ul> : <small>Tidak ada perubahan yang diperlukan dengan format ini.</small>}</div>
+                        <div className="npx-button-row"><ActionButton icon="sparkles" onClick={runNameCleanup} disabled={!namePreview.changed}>Terapkan format nama</ActionButton><ActionButton icon="check" onClick={runCleanWhitespace} disabled={!table.rows.length}>Rapikan spasi semua kolom</ActionButton></div>
+                        <p className="npx-help">Periksa pratinjau sebelum menerapkan. Singkatan umum seperti PLN, ULP, dan SUTT dipertahankan.</p>
+                      </div>
+
+                      <div className="npx-action-block">
+                        <h3>Samakan nilai yang berbeda</h3>
+                        <label className="npx-compact-field"><span>Kolom target</span><select className="select" value={replaceColumn} onChange={(event) => setReplaceColumn(Number(event.target.value))}><option value={-1}>Semua kolom teks</option>{table.columns.map((column, index) => <option key={index} value={index}>{column}</option>)}</select></label>
+                        <label className="npx-compact-field"><span>Cari nilai</span><input className="input" value={findValue} onChange={(event) => setFindValue(event.target.value)} maxLength={500} placeholder="Contoh: ULP Cibiru" /></label>
+                        <label className="npx-compact-field"><span>Ganti menjadi</span><input className="input" value={replacementValue} onChange={(event) => setReplacementValue(event.target.value)} maxLength={500} placeholder="Contoh: ULP Cibiru Kota" /></label>
+                        <label className="npx-compact-field"><span>Jenis pencarian</span><select className="select" value={replaceMode} onChange={(event) => setReplaceMode(event.target.value)}><option value="exact">Nilai sama persis</option><option value="contains">Mengandung teks</option></select></label>
+                        <label className="npx-checkbox"><input type="checkbox" checked={replaceCaseSensitive} onChange={(event) => setReplaceCaseSensitive(event.target.checked)} />Bedakan huruf besar dan kecil</label>
+                        <div className="npx-name-preview" aria-live="polite"><strong>{numberFormat.format(replacePreview.changed)} nilai akan diganti</strong>{replacePreview.examples.length ? <ul>{replacePreview.examples.map((example, index) => <li key={`${index}-${example.before}`}><span>{example.before || '—'}</span><b aria-hidden="true">→</b><span>{example.after || '—'}</span></li>)}</ul> : <small>Isi nilai pencarian untuk melihat pratinjau perubahan.</small>}</div>
+                        <ActionButton icon="edit" onClick={runReplaceValues} disabled={!findValue.trim() || !replacePreview.changed}>Terapkan penggantian</ActionButton>
+                        <p className="npx-help">Untuk merapikan ejaan/label yang tidak seragam. Pencarian persis mengabaikan kapital dan merapikan spasi; pratinjau menunjukkan jumlah dan contoh sebelum diterapkan.</p>
                       </div>
 
                       <div className="npx-action-block">
@@ -623,7 +730,8 @@ export default function PengolahExcelPage() {
                         <h3>Hapus baris tak perlu</h3>
                         <ActionButton icon="close" onClick={runRemoveBlankRows} disabled={!emptyRows}>Hapus {numberFormat.format(emptyRows)} baris kosong</ActionButton>
                         <label className="npx-compact-field"><span>Duplikat berdasarkan</span><select className="select" value={duplicateColumn} onChange={(event) => setDuplicateColumn(Number(event.target.value))}><option value={-1}>Seluruh isi baris</option>{table.columns.map((column, index) => <option key={index} value={index}>{column}</option>)}</select></label>
-                        <ActionButton icon="trash" onClick={runRemoveDuplicates} disabled={!table.rows.length}>Hapus duplikat</ActionButton>
+                        <p className="npx-help" aria-live="polite">{duplicatePreview.removed ? `${numberFormat.format(duplicatePreview.removed)} kandidat duplikat ditemukan; baris pertama akan dipertahankan.` : 'Belum ada duplikat yang ditemukan.'}{duplicateColumn >= 0 ? ' Pada satu kolom, kapital, aksen, spasi, dan tanda baca diabaikan.' : ''}</p>
+                        <ActionButton icon="trash" onClick={runRemoveDuplicates} disabled={!duplicatePreview.removed}>Hapus {numberFormat.format(duplicatePreview.removed)} duplikat</ActionButton>
                       </div>
 
                       <div className="npx-recovery-actions">

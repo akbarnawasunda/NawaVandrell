@@ -127,6 +127,13 @@
 .npx-button-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .npx-button-row .btn { flex: 1 1 auto; }
 .npx-help { margin: -2px 0 0; color: var(--text-faint); font-size: 10.5px; line-height: 1.5; }
+.npx-name-preview { display: grid; gap: 6px; padding: 9px 10px; border: 1px solid #e4ece7; border-radius: 10px; background: #f8fbf9; }
+.npx-name-preview > strong { color: #087653; font-size: 11px; }
+.npx-name-preview > small { color: var(--text-faint); font-size: 10px; }
+.npx-name-preview ul { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.npx-name-preview li { display: grid; grid-template-columns: minmax(0,1fr) auto minmax(0,1fr); align-items: center; gap: 7px; color: var(--text-dim); font-size: 10px; }
+.npx-name-preview li span { overflow: hidden; text-overflow: ellipsis; white-space: pre; }
+.npx-name-preview li b { color: #087653; font-size: 11px; }
 .npx-recovery-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; padding-top: 12px; border-top: 1px solid var(--border); }
 .npx-recovery-actions .btn { flex: 1 1 auto; }
 
