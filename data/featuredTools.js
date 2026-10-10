@@ -84,6 +84,14 @@ export const featuredTools = [
 
   // ================= KERJA / DEVELOPER =================
   {
+    slug: 'pengolah-excel',
+    title: 'Pengolah Data Excel',
+    desc: 'Pisahkan kolom, rapikan nama dan spasi, hapus duplikat, hitung rata-rata atau total per unit, lalu ekspor ke Excel. Data diproses di browser.',
+    icon: 'chart',
+    group: ['kerja', 'dokumen'],
+    keywords: 'excel spreadsheet xlsx xls csv olah data pisahkan kolom split bersihkan rapikan nama pegawai unit ulp kwh rata rata average mean total sum min max rekap operasional laporan tabel duplikat data PLN',
+  },
+  {
     slug: 'json-formatter',
     title: 'Rapikan JSON',
     desc: 'Format, minify, dan cek posisi error JSON dengan detail.',

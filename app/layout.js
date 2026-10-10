@@ -1,6 +1,7 @@
 import './globals.css';
 import './nv-tools.css';
 import './sim-tool.css';
+import './spreadsheet-tool.css';
 import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
 import TopBar from '@/components/TopBar';
