@@ -61,10 +61,12 @@ export default function DownloaderPage() {
 
   // Status mesin server yt-dlp + FFmpeg
   const [runtimeInfo, setRuntimeInfo] = useState({
-    ready: true,
-    ytdlpVersion: '2026.08.19',
-    ffmpegAvailable: true,
-    ffprobeAvailable: true,
+    loading: true,
+    ready: false,
+    ytdlpVersion: null,
+    ffmpegAvailable: false,
+    ffprobeAvailable: false,
+    setupHint: null,
   });
 
   // Input & mode batch
@@ -103,11 +105,15 @@ export default function DownloaderPage() {
     fetch('/api/ytdlp?action=status', { cache: 'no-store' })
       .then((r) => r.json())
       .then((d) => {
-        if (mounted && d?.runtime) {
-          setRuntimeInfo(d.runtime);
+        if (mounted) {
+          setRuntimeInfo({ loading: false, ...(d?.runtime || {}) });
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (mounted) {
+          setRuntimeInfo((prev) => ({ ...prev, loading: false }));
+        }
+      });
 
     try {
       const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
@@ -655,11 +661,13 @@ export default function DownloaderPage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <span className={`nv-tag ${runtimeInfo.ready ? 'is-ok' : 'is-warn'}`}>
-                <Icon name="check" size={13} />
-                {runtimeInfo.ready
-                  ? `Mesin Server Aktif: yt-dlp v${runtimeInfo.ytdlpVersion || '2026.08.19'}`
-                  : 'Mode Terbantu yt-dlp'}
+              <span className={`nv-tag ${runtimeInfo.ready ? 'is-ok' : runtimeInfo.loading ? '' : 'is-warn'}`}>
+                <Icon name={runtimeInfo.ready ? 'check' : runtimeInfo.loading ? 'clock' : 'warning'} size={13} />
+                {runtimeInfo.loading
+                  ? 'Memeriksa mesin server...'
+                  : runtimeInfo.ready
+                    ? `Mesin Server Aktif: yt-dlp v${runtimeInfo.ytdlpVersion || '?'}`
+                    : 'Mode Terbantu yt-dlp (mesin server belum siap)'}
               </span>
               <span className={`nv-tag ${runtimeInfo.ffmpegAvailable ? 'is-ok' : ''}`}>
                 <Icon name="music" size={13} />
@@ -674,6 +682,12 @@ export default function DownloaderPage() {
               Format aktif: <strong style={{ color: 'var(--accent-soft)' }}>{activeFormatBadge}</strong>
             </span>
           </div>
+
+          {!runtimeInfo.loading && !runtimeInfo.ready && runtimeInfo.setupHint ? (
+            <p className="hint" style={{ margin: 0 }}>
+              {runtimeInfo.setupHint}
+            </p>
+          ) : null}
 
           {/* Preset Cepat 1-Klik */}
           <div>

@@ -1,0 +1,2 @@
+Binari yt-dlp hasil `npm run setup:ytdlp` ditaruh di sini (bin/yt-dlp).
+Berkas binari sengaja tidak masuk Git (lihat .gitignore) dan diunduh ulang saat install/build.
