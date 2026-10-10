@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { UnsafeUrlError } from '@/lib/safeUrl.mjs';
-import { ensureYtdlpRuntime, inspectWithYtdlp, downloadWithYtdlp } from '@/lib/ytdlpServer.mjs';
+import { ensureYtdlpRuntime, inspectWithYtdlp, downloadWithYtdlp, MediaEngineError, isNetworkErrorText } from '@/lib/ytdlpServer.mjs';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -19,6 +19,28 @@ function jsonFail(message, status = 400, extra = {}) {
   );
 }
 
+/**
+ * Mengubah galat menjadi respons JSON. Galat berkode (MediaEngineError) memakai status dan kode
+ * yang tepat; galat lain dipetakan seperti sebelumnya (jaringan dibatasi → 502, lainnya → 400).
+ */
+function mapErrorResponse(err) {
+  if (err instanceof UnsafeUrlError) {
+    return jsonFail(err.message, 400);
+  }
+  if (err instanceof MediaEngineError) {
+    return jsonFail(err.message, err.status || 400, { code: err.code, ...err.extra });
+  }
+  const msg = String(err.stderr || err.message || 'Gagal memproses permintaan yt-dlp.');
+  const isNetwork = isNetworkErrorText(msg);
+  return jsonFail(
+    isNetwork
+      ? 'Koneksi keluar server dibatasi untuk domain ini. Unduhan dari browser (stream publik) tetap bisa dipakai bila tersedia.'
+      : msg.split('\n').filter(Boolean).pop() || 'Gagal memproses media.',
+    isNetwork ? 502 : 400,
+    { networkRestricted: isNetwork }
+  );
+}
+
 function buildBinaryResponse(result) {
   const headers = new Headers();
   headers.set('Content-Type', result.mimeType || 'application/octet-stream');
@@ -32,6 +54,9 @@ function buildBinaryResponse(result) {
   headers.set('Cache-Control', 'no-store');
   headers.set('X-Ytdlp-Filename', encodedName);
   headers.set('X-Ytdlp-File-Count', String(result.fileCount || 1));
+  headers.set('X-Nawa-Preview', result.isPreview ? '1' : '0');
+  headers.set('X-Nawa-Demo', result.demo ? '1' : '0');
+  headers.set('X-Nawa-Skipped', String(result.skippedCount || 0));
   return new NextResponse(result.buffer, { status: 200, headers });
 }
 
@@ -81,18 +106,7 @@ export async function GET(req) {
 
     return jsonFail(`Aksi "${action}" tidak dikenal.`, 400);
   } catch (err) {
-    if (err instanceof UnsafeUrlError) {
-      return jsonFail(err.message, 400);
-    }
-    const msg = String(err.stderr || err.message || 'Gagal memproses permintaan yt-dlp.');
-    const isNetwork = /SSL_ERROR_SYSCALL|Connection reset|timed out|Unable to download webpage|Name or service not known|Network is unreachable|TransportError/i.test(msg);
-    return jsonFail(
-      isNetwork
-        ? 'Koneksi keluar server dibatasi untuk domain ini di lingkungan sandbox. Gunakan Mode Unduh Browser atau Unduh Skrip Otomatis yt-dlp di bawah.'
-        : msg.split('\n').filter(Boolean).pop() || 'Gagal memproses media.',
-      isNetwork ? 502 : 400,
-      { networkRestricted: isNetwork }
-    );
+    return mapErrorResponse(err);
   }
 }
 
@@ -124,17 +138,6 @@ export async function POST(req) {
 
     return jsonFail(`Aksi "${action}" tidak dikenal.`, 400);
   } catch (err) {
-    if (err instanceof UnsafeUrlError) {
-      return jsonFail(err.message, 400);
-    }
-    const msg = String(err.stderr || err.message || 'Gagal memproses permintaan yt-dlp.');
-    const isNetwork = /SSL_ERROR_SYSCALL|Connection reset|timed out|Unable to download webpage|Name or service not known|Network is unreachable|TransportError/i.test(msg);
-    return jsonFail(
-      isNetwork
-        ? 'Koneksi keluar server dibatasi untuk domain ini di lingkungan sandbox. Gunakan Mode Unduh Browser atau Unduh Skrip Otomatis yt-dlp di bawah.'
-        : msg.split('\n').filter(Boolean).pop() || 'Gagal memproses media.',
-      isNetwork ? 502 : 400,
-      { networkRestricted: isNetwork }
-    );
+    return mapErrorResponse(err);
   }
 }

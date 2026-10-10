@@ -4,18 +4,21 @@
   "private": true,
   "description": "Nawa Editor — alat harian praktis, dokumen, dan game ringan, semua di satu tempat.",
   "scripts": {
-    "predev": "node scripts/copy-ocr-assets.mjs && node scripts/setup-ytdlp.mjs",
+    "predev": "node scripts/copy-ocr-assets.mjs && node scripts/setup-ytdlp.mjs && node scripts/setup-ffmpeg.mjs",
     "dev": "next dev",
-    "prebuild": "node scripts/copy-ocr-assets.mjs && node scripts/setup-ytdlp.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs && node scripts/setup-ytdlp.mjs && node scripts/setup-ffmpeg.mjs",
     "build": "next build",
-    "postinstall": "node scripts/setup-ytdlp.mjs",
+    "postinstall": "node scripts/setup-ytdlp.mjs && node scripts/setup-ffmpeg.mjs",
     "setup:ytdlp": "node scripts/setup-ytdlp.mjs",
     "start": "next start",
     "lint": "next lint",
     "test": "node --test tests/*.test.mjs",
     "test:ocr": "node --test tests/ktpOcr.test.mjs",
     "test:exports": "node --test tests/simDocumentExports.test.mjs tests/collectiveSimExports.test.mjs",
-    "ytdlp": "node scripts/ytdlp-cli.mjs"
+    "ytdlp": "node scripts/ytdlp-cli.mjs",
+    "setup:ffmpeg": "node scripts/setup-ffmpeg.mjs",
+    "test:ytdlp": "node --test tests/ytdlp.test.mjs tests/ffmpegRuntime.test.mjs tests/ytdlpStreams.test.mjs",
+    "smoke:ytdlp": "node scripts/smoke-ytdlp-api.mjs"
   },
   "dependencies": {
     "@e965/xlsx": "0.20.3",

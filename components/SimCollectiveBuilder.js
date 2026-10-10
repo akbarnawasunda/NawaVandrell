@@ -1198,7 +1198,7 @@ export default function SimCollectiveBuilder() {
                         </td>
                         <td data-label="FOTO KTP" className="sim-roster-photo-cell">
                           {person.photoData ? (
-                            <div className="sim-photo-preview-frame"><img className="sim-roster-photo" src={person.photoData} alt={`Foto KTP orang ke-${index + 1}`} /></div>
+                            <div className="sim-photo-preview-frame"><img className="sim-roster-photo" src={person.photoData} alt={`Foto KTP orang ke-${index + 1}`} loading="lazy" decoding="async" /></div>
                           ) : <div className="sim-photo-missing"><Icon name="image" size={16} /><span>Foto belum ada</span></div>}
                           <div className="sim-photo-actions sim-screen-only">
                             <button type="button" className="sim-photo-action sim-photo-adjust" onClick={() => setPhotoEditorId(person.id)} disabled={!person.photoData || processing || Boolean(retryingPersonId)} aria-label={`Atur posisi foto KTP orang ke-${index + 1}`}>

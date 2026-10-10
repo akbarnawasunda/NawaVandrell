@@ -271,42 +271,57 @@ test('integrasi penuh: yt-dlp + FFmpeg memeriksa dan mengunduh lagu MP3, video M
   assert.match(subRes.filename, /\.srt$/);
   assert.ok(subRes.buffer.toString('utf8').includes('Senja turun perlahan'));
 
-  // 6. Unduhan URL eksternal & playlist tetap tuntas tanpa error (Zero-Error Hybrid Pipeline)
+  // 6. URL eksternal TIDAK boleh dipalsukan. Bila yt-dlp tidak bisa mencapai sumber (mis. jaringan
+  //    sandbox dibatasi), inspeksi menandai metadata sebagai belum terverifikasi, dan unduhan
+  //    mengembalikan galat nyata. Tidak ada file demo/sintetis yang diberi nama lagu pengguna.
   const extPlaylistInspect = await inspectWithYtdlp('https://www.youtube.com/playlist?list=PL1234567890');
   assert.equal(extPlaylistInspect.status, true);
   assert.equal(extPlaylistInspect.info.isPlaylist, true);
-  assert.ok(extPlaylistInspect.info.entries.length >= 3);
+  if (extPlaylistInspect.engine === 'yt-dlp-hybrid') {
+    assert.equal(extPlaylistInspect.info.unverified, true, 'Metadata kerangka harus ditandai belum terverifikasi');
+    assert.ok(!extPlaylistInspect.info.entries.some((e) => /Senja|Langkah Baru|Nusantara Harmoni/.test(e.title)),
+      'Kerangka metadata tidak boleh memakai judul lagu demo');
+  }
 
-  const extPlaylistZip = await downloadWithYtdlp({
-    url: 'https://www.youtube.com/playlist?list=PL1234567890',
-    mode: 'audio',
-    audioFormat: 'mp3',
-    playlistMode: 'full',
-    bundleAsZip: true,
-    customTitle: 'Koleksi Lagu Nusantara',
-    tracksMeta: [
-      { index: 1, title: 'Evaluasi', uploader: 'Hindia', album: 'Menari Dengan Bayangan', duration: 4 },
-      { index: 2, title: 'Secukupnya', uploader: 'Hindia', album: 'Menari Dengan Bayangan', duration: 4 },
-    ],
-  });
-  assert.equal(extPlaylistZip.isZip, true);
-  assert.equal(extPlaylistZip.fileCount, 2);
-  assert.match(extPlaylistZip.filename, /Koleksi Lagu Nusantara\.zip$/);
+  await assert.rejects(
+    downloadWithYtdlp({
+      url: 'https://www.youtube.com/playlist?list=PL1234567890',
+      mode: 'audio',
+      audioFormat: 'mp3',
+      playlistMode: 'full',
+      bundleAsZip: true,
+      customTitle: 'Koleksi Lagu Nusantara',
+      tracksMeta: [
+        { index: 1, title: 'Evaluasi', uploader: 'Hindia', album: 'Menari Dengan Bayangan', duration: 4 },
+        { index: 2, title: 'Secukupnya', uploader: 'Hindia', album: 'Menari Dengan Bayangan', duration: 4 },
+      ],
+    }),
+    (err) => {
+      assert.ok(!/aset media|demo/i.test(err.message), `Galat tidak boleh berasal dari jalur demo: ${err.message}`);
+      return true;
+    },
+    'Playlist publik yang tidak terjangkau harus gagal dengan galat nyata, bukan file sintetis'
+  );
 
   const extSearchInspect = await inspectWithYtdlp('Hindia Evaluasi');
   assert.equal(extSearchInspect.status, true);
   assert.ok(extSearchInspect.info.entries.length >= 1);
 
-  const extSingleMp3 = await downloadWithYtdlp({
-    url: 'ytsearch1:Hindia Evaluasi',
-    mode: 'audio',
-    audioFormat: 'mp3',
-    customTitle: 'Hindia - Evaluasi',
-    customUploader: 'Hindia',
-  });
-  assert.equal(extSingleMp3.isZip, false);
-  assert.match(extSingleMp3.filename, /Hindia - Evaluasi\.mp3$/);
-  assert.ok(extSingleMp3.size > 5000);
+  // Unduhan pencarian/URL publik: bila sumber tidak terjangkau -> galat nyata; bila terjangkau -> berkas nyata.
+  try {
+    const extSingleMp3 = await downloadWithYtdlp({
+      url: 'ytsearch1:Hindia Evaluasi',
+      mode: 'audio',
+      audioFormat: 'mp3',
+      customTitle: 'Hindia - Evaluasi',
+      customUploader: 'Hindia',
+    });
+    assert.equal(extSingleMp3.demo, false);
+    assert.ok(!/Album Harmoni Nusantara|Nawa Studio/.test(extSingleMp3.buffer.toString('latin1', 0, 4096)),
+      'Berkas hasil unduhan publik tidak boleh membawa metadata demo');
+  } catch (err) {
+    assert.ok(!/aset media|demo/i.test(err.message), `Galat tidak boleh berasal dari jalur demo: ${err.message}`);
+  }
 
   // 7. Proteksi SSRF menolak alamat privat/internal
   await assert.rejects(
