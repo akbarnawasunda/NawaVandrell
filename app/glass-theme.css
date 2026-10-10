@@ -269,6 +269,17 @@ body {
   .workbench-hero-card { background: linear-gradient(145deg, rgba(103, 98, 217, 0.78), rgba(76, 96, 173, 0.70)); }
 }
 
+/* Performa mobile: backdrop-filter mahal bila dipasang pada banyak kontrol kecil atau area tabel yang di-scroll.
+   Di layar kecil, blur hanya dipertahankan pada panel/kartu utama; kontrol kecil memakai permukaan semi-transparan. */
+@media (max-width: 680px) {
+  :root { --glass-blur: 10px; }
+  .input, .textarea, .select, .btn-ghost, .chip, .tile, .nv-tag, .nv-icon-button,
+  .workbench-show-all, .cmdk-item-icon, .admin-row-input, .nv-table-wrap {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
 @media (max-width: 720px) {
   .topbar-links.is-open { background: rgba(247, 249, 255, 0.92); }
 }

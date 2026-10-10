@@ -67,7 +67,21 @@ export default function DownloaderPage() {
     ffmpegAvailable: false,
     ffprobeAvailable: false,
     setupHint: null,
+    downloadEnabled: undefined,
+    diagnosis: [],
   });
+
+  // Unduhan audio/video butuh yt-dlp DAN FFmpeg di server. Bila salah satu tidak siap,
+  // seluruh aksi unduh dinonaktifkan dengan alasan yang bisa ditindaklanjuti (bukan error demo).
+  const downloadBlocked = !runtimeInfo.loading && runtimeInfo.downloadEnabled !== true;
+  const downloadBlockedReason = (() => {
+    if (!downloadBlocked) return '';
+    const bad = (runtimeInfo.diagnosis || []).filter((d) => d.level === 'error');
+    if (bad.length === 0) {
+      return 'Status mesin unduh server tidak bisa dibaca. Unduhan dinonaktifkan sementara; coba muat ulang halaman.';
+    }
+    return bad.map((d) => [d.message, d.action].filter(Boolean).join(' ')).join(' ');
+  })();
 
   // Input & mode batch
   const [inputMode, setInputMode] = useState('single'); // 'single' | 'batch'
@@ -295,6 +309,9 @@ export default function DownloaderPage() {
       bundleAsZip = false,
       playlistModeOverride = null,
     }) => {
+      if (downloadBlocked) {
+        throw new Error(downloadBlockedReason || 'Unduhan dinonaktifkan di server.');
+      }
       let clientStreamBase64 = null;
       let enrichedTracksMeta = tracksMeta;
 
@@ -355,12 +372,16 @@ export default function DownloaderPage() {
       downloadBlob(blob, decodedName);
       return { filename: decodedName, size: blob.size };
     },
-    [options]
+    [options, downloadBlocked, downloadBlockedReason]
   );
 
   // Unduh utama (Single Media atau Full Playlist ZIP)
   const handleMainDownload = useCallback(
     async ({ asZip = false } = {}) => {
+      if (downloadBlocked) {
+        setErrorMsg(downloadBlockedReason);
+        return;
+      }
       const parsed = parseMediaInput(effectiveRawInput);
       if (!parsed.valid) {
         addToast(parsed.error || 'Masukkan link atau kata kunci dulu', 'warning');
@@ -429,6 +450,8 @@ export default function DownloaderPage() {
       selectedIndices,
       triggerServerDownload,
       addToast,
+      downloadBlocked,
+      downloadBlockedReason,
     ]
   );
 
@@ -669,9 +692,13 @@ export default function DownloaderPage() {
                     ? `Mesin Server Aktif: yt-dlp v${runtimeInfo.ytdlpVersion || '?'}`
                     : 'Mode Terbantu yt-dlp (mesin server belum siap)'}
               </span>
-              <span className={`nv-tag ${runtimeInfo.ffmpegAvailable ? 'is-ok' : ''}`}>
+              <span className={`nv-tag ${runtimeInfo.ffmpegAvailable ? 'is-ok' : runtimeInfo.loading ? '' : 'is-warn'}`}>
                 <Icon name="music" size={13} />
-                {runtimeInfo.ffmpegAvailable ? 'FFmpeg Audio/Video Muxer Siap' : 'FFmpeg Standar'}
+                {runtimeInfo.loading
+                  ? 'Memeriksa FFmpeg...'
+                  : runtimeInfo.ffmpegAvailable
+                    ? `FFmpeg Siap${runtimeInfo.ffmpegVersion ? ` (${String(runtimeInfo.ffmpegVersion).split(' ')[0]})` : ''}`
+                    : 'FFmpeg belum tersedia'}
               </span>
               <span className="nv-tag">
                 <Icon name="repeat" size={13} />
@@ -682,6 +709,15 @@ export default function DownloaderPage() {
               Format aktif: <strong style={{ color: 'var(--accent-soft)' }}>{activeFormatBadge}</strong>
             </span>
           </div>
+
+          {downloadBlocked ? (
+            <div className="nv-notice is-bad" role="status" data-testid="download-blocked">
+              <strong>
+                <Icon name="warning" size={16} /> Unduhan dinonaktifkan di server ini
+              </strong>
+              <div className="nv-notice-body">{downloadBlockedReason}</div>
+            </div>
+          ) : null}
 
           {!runtimeInfo.loading && !runtimeInfo.ready && runtimeInfo.setupHint ? (
             <p className="hint" style={{ margin: 0 }}>
@@ -836,7 +872,7 @@ export default function DownloaderPage() {
                   type="button"
                   className="btn btn-ghost"
                   onClick={() => handleMainDownload({ asZip: detectedPlaylist })}
-                  disabled={inspecting || downloadingMain || !urlInput.trim()}
+                  disabled={inspecting || downloadingMain || !urlInput.trim() || downloadBlocked}
                 >
                   <Icon name="download" size={16} />
                   {downloadingMain ? 'Mengunduh...' : 'Unduh Langsung'}
@@ -892,7 +928,7 @@ export default function DownloaderPage() {
                   type="button"
                   className="btn btn-ghost"
                   onClick={() => handleMainDownload({ asZip: true })}
-                  disabled={inspecting || downloadingMain || parsedInput.items.length === 0}
+                  disabled={inspecting || downloadingMain || parsedInput.items.length === 0 || downloadBlocked}
                 >
                   <Icon name="download" size={16} />
                   Unduh Semua Sekaligus (.ZIP)
@@ -930,7 +966,7 @@ export default function DownloaderPage() {
                 Uji Coba Instan (1-Klik Playlist, Lagu & Video):
               </span>
               <span className="hint" style={{ margin: 0 }}>
-                Klik salah satu untuk langsung menguji ekstraksi lagu MP3/FLAC, video MP4, atau Full Playlist ZIP
+                Contoh DEMO bawaan (`demo:*`, berlabel demo di nama berkas). Bukan media dari internet; butuh FFmpeg server
               </span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -1338,6 +1374,8 @@ export default function DownloaderPage() {
                 <img
                   src={mediaInfo.thumbnail}
                   alt={mediaInfo.title}
+                  loading="lazy"
+                  decoding="async"
                   style={{
                     width: 112,
                     height: 112,
@@ -1369,6 +1407,11 @@ export default function DownloaderPage() {
                 <p style={{ margin: 0, color: 'var(--text-dim)', fontSize: 14 }}>
                   Channel / Artis: <strong>{mediaInfo.uploader}</strong>
                 </p>
+                {mediaInfo.unverified ? (
+                  <p className="hint" role="note" style={{ margin: 0 }}>
+                    Metadata belum terverifikasi dari sumber: judul, durasi, dan daftar item bisa berbeda. Unduhan dicoba langsung ke server dan galatnya ditampilkan apa adanya.
+                  </p>
+                ) : null}
 
                 {mediaInfo.availableQualities?.length > 0 ? (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
@@ -1431,7 +1474,7 @@ export default function DownloaderPage() {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    disabled={downloadingMain || queueRunning}
+                    disabled={downloadingMain || queueRunning || downloadBlocked}
                     onClick={() => handleMainDownload({ asZip: true })}
                   >
                     <Icon name="download" size={16} />
@@ -1446,7 +1489,7 @@ export default function DownloaderPage() {
                     <button
                       type="button"
                       className="btn btn-ghost"
-                      disabled={downloadingMain || selectedIndices.size === 0}
+                      disabled={downloadingMain || selectedIndices.size === 0 || downloadBlocked}
                       onClick={handleRunSequentialQueue}
                     >
                       <Icon name="repeat" size={16} />
@@ -1471,7 +1514,7 @@ export default function DownloaderPage() {
                   <button
                     type="button"
                     className="btn btn-primary"
-                    disabled={downloadingMain}
+                    disabled={downloadingMain || downloadBlocked}
                     onClick={() => handleMainDownload({ asZip: false })}
                   >
                     <Icon name="download" size={16} />
@@ -1483,7 +1526,7 @@ export default function DownloaderPage() {
                   <button
                     type="button"
                     className="btn btn-ghost"
-                    disabled={downloadingMain}
+                    disabled={downloadingMain || downloadBlocked}
                     onClick={() => handleMainDownload({ asZip: true })}
                   >
                     <Icon name="file" size={16} />
@@ -1606,6 +1649,8 @@ export default function DownloaderPage() {
                                   <img
                                     src={entry.thumbnail}
                                     alt=""
+                                    loading="lazy"
+                                    decoding="async"
                                     style={{
                                       width: 38,
                                       height: 38,
@@ -1664,7 +1709,7 @@ export default function DownloaderPage() {
                                 <button
                                   type="button"
                                   className="btn btn-ghost btn-sm"
-                                  disabled={st === 'downloading' || downloadingMain}
+                                  disabled={st === 'downloading' || downloadingMain || downloadBlocked}
                                   onClick={() => handleDownloadSingleTrack(entry)}
                                 >
                                   <Icon name="download" size={14} />
