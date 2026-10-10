@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const THEMES = [
   { id: 'emerald', label: 'Emerald', from: '#065F46', to: '#0A0A0B', text: '#ECFDF5', accent: '#34D399' },
@@ -135,14 +136,7 @@ export default function TextToImagePage() {
         addToast('Gagal bikin gambar', 'error');
         return;
       }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `nawa-editor-quote-${ratio}.png`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      downloadBlob(blob, `nawa-editor-quote-${ratio}.png`);
       addToast('Gambar tersimpan 📥', 'success');
     }, 'image/png');
   };

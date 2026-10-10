@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const SIZE = 512;
 
@@ -40,7 +41,6 @@ function wrapLines(ctx, text, maxWidth) {
 export default function TextStickerPage() {
   const { addToast } = useToast();
   const canvasRef = useRef(null);
-  const urlsRef = useRef([]);
 
   const [text, setText] = useState('mending push dulu,\nbaru ngopi.');
   const [presetId, setPresetId] = useState('brat');
@@ -48,8 +48,6 @@ export default function TextStickerPage() {
   const [color, setColor] = useState('#213304');
   const [size, setSize] = useState(72);
   const [font, setFont] = useState('Arial, Helvetica, sans-serif');
-
-  useEffect(() => () => urlsRef.current.forEach((u) => URL.revokeObjectURL(u)), []);
 
   const applyPreset = (p) => {
     setPresetId(p.id);
@@ -134,14 +132,7 @@ export default function TextStickerPage() {
       addToast('Gagal export', 'error');
       return;
     }
-    const url = URL.createObjectURL(blob);
-    urlsRef.current.push(url);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `stiker-${presetId}.${blob.type === 'image/webp' ? 'webp' : 'png'}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    downloadBlob(blob, `stiker-${presetId}.${blob.type === 'image/webp' ? 'webp' : 'png'}`);
     addToast('Stiker tersimpan', 'success');
   };
 

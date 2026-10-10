@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const SIZE = 512;
 const MAX_UPLOAD = 25 * 1024 * 1024;
@@ -129,12 +130,7 @@ export default function StickerMakerPage() {
 
   const download = () => {
     if (!sticker) return;
-    const a = document.createElement('a');
-    a.href = sticker.url;
-    a.download = filename();
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    downloadBlob(sticker.blob, filename());
     addToast('Stiker tersimpan', 'success');
   };
 

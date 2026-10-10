@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ToolShell, { CopyButton } from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const MAGIC = 'NAWA1:';
 
@@ -174,12 +175,7 @@ export default function StegoPage() {
 
   const download = () => {
     if (!result) return;
-    const a = document.createElement('a');
-    a.href = result.url;
-    a.download = 'foto-anti-kepo.png';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    downloadBlob(result.blob, 'foto-anti-kepo.png');
     addToast('PNG tersimpan', 'success');
   };
 

@@ -7,6 +7,7 @@ import LocalDataPanel from '@/components/LocalDataPanel';
 import { Metric, NumberField, Notice, Section, SectionHead, SelectField, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
+import { runDownloadTask } from '@/lib/downloadTask.mjs';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { formatDateId, todayIso } from '@/lib/format.mjs';
 import { createLocalCollection, newId } from '@/lib/localData.mjs';
@@ -131,16 +132,19 @@ export default function DaftarHadirPage() {
     downloadText(rosterCsv(active), `${safeFileName(active.nama || 'daftar-hadir')}.csv`, 'text/csv;charset=utf-8');
   };
 
-  const downloadXlsx = async () => {
+  const downloadXlsx = () => {
     if (!active?.peserta.length) return;
-    try {
+    const fname = `${safeFileName(active.nama || 'daftar-hadir')}.xlsx`;
+    runDownloadTask('Menyiapkan file Excel daftar hadir…', async () => {
       const blob = await rosterXlsxBlob(active);
-      downloadBlob(blob, `${safeFileName(active.nama || 'daftar-hadir')}.xlsx`);
-      addToast('Excel daftar hadir diunduh.', 'success');
-    } catch (error) {
-      console.error('Gagal membuat Excel daftar hadir:', error);
-      addToast('Excel belum bisa dibuat. Coba lagi.', 'error');
-    }
+      downloadBlob(blob, fname);
+    }, fname).then(
+      () => addToast('Excel daftar hadir diunduh.', 'success'),
+      (error) => {
+        console.error('Gagal membuat Excel daftar hadir:', error);
+        addToast('Excel belum bisa dibuat. Coba lagi.', 'error');
+      },
+    );
   };
 
   const printWith = (mode) => {

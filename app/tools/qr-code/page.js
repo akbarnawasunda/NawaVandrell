@@ -5,6 +5,7 @@ import ToolShell from '@/components/ToolShell';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const COLOR_PRESETS = [
   { name: 'Emerald', fg: '#10b981', bg: '#040408' },
@@ -35,12 +36,14 @@ export default function QRCodePage() {
       addToast('QR belum siap', 'warning');
       return;
     }
-    const url = canvas.toDataURL('image/png');
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'nawa-qrcode.png';
-    a.click();
-    addToast('QR Code ter-download!', 'success');
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        addToast('Gagal membuat gambar QR', 'error');
+        return;
+      }
+      downloadBlob(blob, 'nawa-qrcode.png');
+      addToast('QR Code ter-download!', 'success');
+    }, 'image/png');
   };
 
   const copyImage = async () => {

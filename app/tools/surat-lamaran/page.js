@@ -6,6 +6,7 @@ import Icon from '@/components/icons';
 import { Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
+import { runDownloadTask } from '@/lib/downloadTask.mjs';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { todayIso } from '@/lib/format.mjs';
 import { createLocalCollection } from '@/lib/localData.mjs';
@@ -84,19 +85,22 @@ export default function SuratPage() {
     downloadText(letterPlainText(doc), `${safeFileName(template.label)}.txt`, 'text/plain;charset=utf-8');
   };
 
-  const downloadDocx = async () => {
+  const downloadDocx = () => {
     if (!doc) {
       addToast('Lengkapi data wajib dulu.', 'warning');
       return;
     }
-    try {
+    const fname = `${safeFileName(template.label)}.docx`;
+    runDownloadTask('Menyiapkan file DOCX surat…', async () => {
       const blob = await createLetterDocxBlob(doc);
-      downloadBlob(blob, `${safeFileName(template.label)}.docx`);
-      addToast('DOCX diunduh.', 'success');
-    } catch (error) {
-      console.error('Gagal membuat DOCX surat:', error);
-      addToast('DOCX belum bisa dibuat. Coba lagi.', 'error');
-    }
+      downloadBlob(blob, fname);
+    }, fname).then(
+      () => addToast('DOCX diunduh.', 'success'),
+      (error) => {
+        console.error('Gagal membuat DOCX surat:', error);
+        addToast('DOCX belum bisa dibuat. Coba lagi.', 'error');
+      },
+    );
   };
 
   const printPdf = () => {

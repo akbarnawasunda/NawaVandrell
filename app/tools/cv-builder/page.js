@@ -7,6 +7,7 @@ import LocalDataPanel from '@/components/LocalDataPanel';
 import { Metric, Notice, Section, SectionHead, TextAreaField, TextField } from '@/components/Ui';
 import { useToast } from '@/context/ToastContext';
 import { downloadBlob, downloadText, safeFileName } from '@/lib/fileDownload.mjs';
+import { runDownloadTask } from '@/lib/downloadTask.mjs';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { formatMonthId } from '@/lib/format.mjs';
 import { createLocalCollection } from '@/lib/localData.mjs';
@@ -167,19 +168,22 @@ export default function CvBuilderPage() {
     downloadText(cvPlainText(cv), `${safeFileName(cv.nama || 'cv')}-cv.txt`, 'text/plain;charset=utf-8');
   };
 
-  const downloadDocx = async () => {
+  const downloadDocx = () => {
     if (!cv.nama) {
       addToast('Isi nama lengkap dulu agar nama file dan dokumen jelas.', 'warning');
       return;
     }
-    try {
+    const fname = `${safeFileName(cv.nama)}-cv.docx`;
+    runDownloadTask('Menyiapkan file DOCX CV…', async () => {
       const blob = await createCvDocxBlob(cv);
-      downloadBlob(blob, `${safeFileName(cv.nama)}-cv.docx`);
-      addToast('DOCX diunduh.', 'success');
-    } catch (error) {
-      console.error('Gagal membuat DOCX CV:', error);
-      addToast('DOCX belum bisa dibuat. Coba lagi.', 'error');
-    }
+      downloadBlob(blob, fname);
+    }, fname).then(
+      () => addToast('DOCX diunduh.', 'success'),
+      (error) => {
+        console.error('Gagal membuat DOCX CV:', error);
+        addToast('DOCX belum bisa dibuat. Coba lagi.', 'error');
+      },
+    );
   };
 
   const printPdf = () => {

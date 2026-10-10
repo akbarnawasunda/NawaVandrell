@@ -5,6 +5,7 @@ import ToolShell, { CopyButton } from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
 import { downloadText, downloadBlob } from '@/lib/fileDownload.mjs';
+import { updateDownloadTask, runDownloadTask } from '@/lib/downloadTask.mjs';
 import {
   SUPPORTED_PLATFORMS,
   DOWNLOAD_MODES,
@@ -228,49 +229,58 @@ export default function DownloaderPage() {
       setPlayingTrack(null);
 
       try {
-        const res = await fetch('/api/ytdlp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'inspect',
-            url: rawTarget,
-            options,
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok || !data.status) {
-          throw new Error(data.error || 'Gagal memeriksa media.');
-        }
+        const shortTarget = rawTarget.length > 80 ? `${rawTarget.slice(0, 77)}…` : rawTarget;
+        await runDownloadTask(
+          'Memeriksa media…',
+          async () => {
+            const res = await fetch('/api/ytdlp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'inspect',
+                url: rawTarget,
+                options,
+              }),
+            });
+            const data = await res.json();
+            if (!res.ok || !data.status) {
+              throw new Error(data.error || 'Gagal memeriksa media.');
+            }
 
-        let info = data.info;
+            let info = data.info;
 
-        // Jika server kontainer dibatasi jaringan keluar, jalankan resolver sisi browser untuk mengambil daftar lagu/stream nyata
-        if ((data.serverNetworkRestricted || data.engine === 'yt-dlp-hybrid') && parsed.kind !== 'demo') {
-          const browserResolved = await resolveMediaInBrowser(rawTarget, info);
-          if (browserResolved) {
-            info = browserResolved;
-          }
-        }
+            // Jika server kontainer dibatasi jaringan keluar, jalankan resolver sisi browser untuk mengambil daftar lagu/stream nyata
+            if ((data.serverNetworkRestricted || data.engine === 'yt-dlp-hybrid') && parsed.kind !== 'demo') {
+              updateDownloadTask({ detail: 'Mengambil detail media di browser…' });
+              const browserResolved = await resolveMediaInBrowser(rawTarget, info);
+              if (browserResolved) {
+                info = browserResolved;
+              }
+            }
 
-        setMediaInfo(info);
+            setMediaInfo(info);
 
-        const allIdx = new Set((info.entries || []).map((e) => e.index));
-        setSelectedIndices(allIdx);
+            const allIdx = new Set((info.entries || []).map((e) => e.index));
+            setSelectedIndices(allIdx);
 
-        saveToHistory({
-          url: rawTarget,
-          title: info.title || rawTarget,
-          uploader: info.uploader || '',
-          isPlaylist: Boolean(info.isPlaylist),
-          trackCount: info.trackCount || 1,
-          timestamp: new Date().toISOString(),
-        });
+            saveToHistory({
+              url: rawTarget,
+              title: info.title || rawTarget,
+              uploader: info.uploader || '',
+              isPlaylist: Boolean(info.isPlaylist),
+              trackCount: info.trackCount || 1,
+              timestamp: new Date().toISOString(),
+            });
 
-        addToast(
-          info.isPlaylist
-            ? `Playlist berhasil dimuat (${info.trackCount} item siap diunduh)!`
-            : `Media "${info.title}" siap diunduh!`,
-          'success'
+            addToast(
+              info.isPlaylist
+                ? `Playlist berhasil dimuat (${info.trackCount} item siap diunduh)!`
+                : `Media "${info.title}" siap diunduh!`,
+              'success'
+            );
+          },
+          shortTarget,
+          'Media berhasil dimuat — kamu bisa langsung mengunduhnya.'
         );
       } catch (err) {
         const msg = err.message || 'Gagal memuat informasi media.';
@@ -294,13 +304,16 @@ export default function DownloaderPage() {
       tracksMeta = null,
       bundleAsZip = false,
       playlistModeOverride = null,
+      quiet = false,
     }) => {
       let clientStreamBase64 = null;
       let enrichedTracksMeta = tracksMeta;
 
       if (streamUrl && !bundleAsZip) {
+        updateDownloadTask({ detail: 'Mengambil stream media dari sumber…' });
         clientStreamBase64 = await fetchStreamBase64InBrowser(streamUrl);
       } else if (bundleAsZip && Array.isArray(tracksMeta) && tracksMeta.length > 0) {
+        updateDownloadTask({ detail: 'Mengumpulkan stream playlist dari sumber…' });
         enrichedTracksMeta = await Promise.all(
           tracksMeta.map(async (tr, idx) => {
             if (idx < 6 && tr?.streamUrl && !tr.streamBase64) {
@@ -312,6 +325,7 @@ export default function DownloaderPage() {
         );
       }
 
+      updateDownloadTask({ detail: 'Server yt-dlp + FFmpeg sedang mengonversi…' });
       const res = await fetch('/api/ytdlp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -338,6 +352,7 @@ export default function DownloaderPage() {
         throw new Error(errText);
       }
 
+      if (!quiet) updateDownloadTask({ detail: 'Mengambil file hasil dari server…' });
       const blob = await res.blob();
       const headerName = res.headers.get('X-Ytdlp-Filename');
       const decodedName = headerName
@@ -352,7 +367,8 @@ export default function DownloaderPage() {
                 : options.videoFormat
           );
 
-      downloadBlob(blob, decodedName);
+      // quiet = alur antrean berurutan yang sudah punya bar progres + tombol hentikan di halaman.
+      downloadBlob(blob, decodedName, { quiet });
       return { filename: decodedName, size: blob.size };
     },
     [options]
@@ -369,51 +385,66 @@ export default function DownloaderPage() {
 
       setDownloadingMain(true);
       setErrorMsg('');
+      const shortTarget = effectiveRawInput.length > 80 ? `${effectiveRawInput.slice(0, 77)}…` : effectiveRawInput;
       try {
-        // Bila user belum klik "Cek & Muat Media", periksa metadata otomatis terlebih dahulu
-        let activeInfo = mediaInfo;
-        if (!activeInfo || activeInfo.sourceUrl !== parsed.primaryUrl) {
-          const inspectRes = await fetch('/api/ytdlp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'inspect',
-              url: effectiveRawInput,
-              options,
-            }),
-          });
-          const inspectData = await inspectRes.json();
-          if (inspectRes.ok && inspectData.status) {
-            activeInfo = inspectData.info;
-            if ((inspectData.serverNetworkRestricted || inspectData.engine === 'yt-dlp-hybrid') && parsed.kind !== 'demo') {
-              const browserResolved = await resolveMediaInBrowser(effectiveRawInput, activeInfo);
-              if (browserResolved) activeInfo = browserResolved;
+        await runDownloadTask('Mengunduh media…', async () => {
+          // Bila user belum klik "Cek & Muat Media", periksa metadata otomatis terlebih dahulu
+          let activeInfo = mediaInfo;
+          if (!activeInfo || activeInfo.sourceUrl !== parsed.primaryUrl) {
+            updateDownloadTask({ detail: 'Mengecek informasi media dulu…' });
+            const inspectRes = await fetch('/api/ytdlp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                action: 'inspect',
+                url: effectiveRawInput,
+                options,
+              }),
+            });
+            const inspectData = await inspectRes.json();
+            if (inspectRes.ok && inspectData.status) {
+              activeInfo = inspectData.info;
+              if ((inspectData.serverNetworkRestricted || inspectData.engine === 'yt-dlp-hybrid') && parsed.kind !== 'demo') {
+                updateDownloadTask({ detail: 'Mengambil detail media di browser…' });
+                const browserResolved = await resolveMediaInBrowser(effectiveRawInput, activeInfo);
+                if (browserResolved) activeInfo = browserResolved;
+              }
+              setMediaInfo(activeInfo);
+              setSelectedIndices(new Set((activeInfo.entries || []).map((e) => e.index)));
             }
-            setMediaInfo(activeInfo);
-            setSelectedIndices(new Set((activeInfo.entries || []).map((e) => e.index)));
           }
-        }
 
-        const isMulti = Boolean(activeInfo?.isPlaylist && options.playlistMode !== 'single');
-        const chosenEntries = activeInfo?.entries?.filter((e) => selectedIndices.has(e.index));
-        const finalEntries =
-          chosenEntries && chosenEntries.length > 0
-            ? chosenEntries
-            : activeInfo?.entries || [];
+          const isMulti = Boolean(activeInfo?.isPlaylist && options.playlistMode !== 'single');
+          const chosenEntries = activeInfo?.entries?.filter((e) => selectedIndices.has(e.index));
+          const finalEntries =
+            chosenEntries && chosenEntries.length > 0
+              ? chosenEntries
+              : activeInfo?.entries || [];
 
-        const firstEntry = finalEntries[0] || null;
+          const firstEntry = finalEntries[0] || null;
 
-        const result = await triggerServerDownload({
-          targetUrl: effectiveRawInput,
-          customTitle: activeInfo?.title || firstEntry?.title || '',
-          customUploader: activeInfo?.uploader || firstEntry?.uploader || '',
-          customAlbum: firstEntry?.album || activeInfo?.title || '',
-          streamUrl: !asZip && !isMulti ? firstEntry?.streamUrl || null : null,
-          tracksMeta: asZip || isMulti ? finalEntries : firstEntry ? [firstEntry] : null,
-          bundleAsZip: asZip || isMulti,
-        });
+          // Perjelas judul overlay setelah metadata diketahui (progress per file tak diketahui
+          // oleh server, jadi bar tetap indeterminate — durasi berjalan jadi acuan).
+          const bundle = asZip || isMulti;
+          const mediaTitle = activeInfo?.title || firstEntry?.title || 'media';
+          updateDownloadTask(
+            bundle
+              ? { label: `Mengemas ${finalEntries.length || activeInfo?.trackCount || '?'} item playlist ke ZIP…` }
+              : { label: `Mengunduh "${mediaTitle}"…` }
+          );
 
-        addToast(`Berhasil mengunduh: ${result.filename}`, 'success');
+          const result = await triggerServerDownload({
+            targetUrl: effectiveRawInput,
+            customTitle: activeInfo?.title || firstEntry?.title || '',
+            customUploader: activeInfo?.uploader || firstEntry?.uploader || '',
+            customAlbum: firstEntry?.album || activeInfo?.title || '',
+            streamUrl: !asZip && !isMulti ? firstEntry?.streamUrl || null : null,
+            tracksMeta: asZip || isMulti ? finalEntries : firstEntry ? [firstEntry] : null,
+            bundleAsZip: asZip || isMulti,
+          });
+
+          addToast(`Berhasil mengunduh: ${result.filename}`, 'success');
+        }, shortTarget);
       } catch (err) {
         const msg = err.message || 'Gagal mengunduh media.';
         setErrorMsg(msg);
@@ -436,19 +467,25 @@ export default function DownloaderPage() {
   const handleDownloadSingleTrack = useCallback(
     async (entry) => {
       setTrackStatusMap((prev) => ({ ...prev, [entry.index]: 'downloading' }));
+      const numPrefix = String(entry.index).padStart(2, '0');
+      const customTitle = `${numPrefix} - ${entry.title}`;
       try {
-        const numPrefix = String(entry.index).padStart(2, '0');
-        const customTitle = `${numPrefix} - ${entry.title}`;
-        await triggerServerDownload({
-          targetUrl: entry.url || effectiveRawInput,
-          customTitle,
-          customUploader: entry.uploader || mediaInfo?.uploader || '',
-          customAlbum: entry.album || mediaInfo?.title || '',
-          streamUrl: entry.streamUrl || null,
-          tracksMeta: [entry],
-          bundleAsZip: false,
-          playlistModeOverride: 'single',
-        });
+        await runDownloadTask(
+          `Mengunduh track #${numPrefix}…`,
+          async () => {
+            await triggerServerDownload({
+              targetUrl: entry.url || effectiveRawInput,
+              customTitle,
+              customUploader: entry.uploader || mediaInfo?.uploader || '',
+              customAlbum: entry.album || mediaInfo?.title || '',
+              streamUrl: entry.streamUrl || null,
+              tracksMeta: [entry],
+              bundleAsZip: false,
+              playlistModeOverride: 'single',
+            });
+          },
+          entry.title
+        );
         setTrackStatusMap((prev) => ({ ...prev, [entry.index]: 'done' }));
         addToast(`Track #${entry.index} "${entry.title}" berhasil diunduh`, 'success');
       } catch (err) {
@@ -496,6 +533,7 @@ export default function DownloaderPage() {
             tracksMeta: [entry],
             bundleAsZip: false,
             playlistModeOverride: 'single',
+            quiet: true,
           });
           trackSuccess = true;
           break;

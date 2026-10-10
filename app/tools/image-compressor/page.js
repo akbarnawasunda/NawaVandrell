@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import ToolShell from '@/components/ToolShell';
 import { useToast } from '@/context/ToastContext';
 import Icon from '@/components/icons';
+import { downloadBlob } from '@/lib/fileDownload.mjs';
 
 const MAX_UPLOAD = 25 * 1024 * 1024;
 
@@ -110,12 +111,7 @@ export default function ImageCompressorPage() {
 
   const download = () => {
     if (!result) return;
-    const a = document.createElement('a');
-    a.href = result.url;
-    a.download = `kompres-${(source?.file?.name || 'foto').replace(/\.[^.]+$/, '')}.${ext}`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    downloadBlob(result.blob, `kompres-${(source?.file?.name || 'foto').replace(/\.[^.]+$/, '')}.${ext}`);
     addToast('Foto tersimpan', 'success');
   };
 

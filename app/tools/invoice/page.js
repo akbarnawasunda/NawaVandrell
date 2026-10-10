@@ -8,6 +8,7 @@ import { ErrorList, Metric, NumberField, Notice, Section, SectionHead, SelectFie
 import { useToast } from '@/context/ToastContext';
 import { printNvDocument } from '@/lib/printDoc.mjs';
 import { downloadBlob, safeFileName } from '@/lib/fileDownload.mjs';
+import { runDownloadTask } from '@/lib/downloadTask.mjs';
 import { formatDateId, formatRupiah, toAmount, todayIso } from '@/lib/format.mjs';
 import { createLocalCollection, newId } from '@/lib/localData.mjs';
 import {
@@ -220,15 +221,18 @@ export default function InvoicePage() {
     printNvDocument();
   };
 
-  const downloadXlsx = async () => {
-    try {
+  const downloadXlsx = () => {
+    const fname = `${safeFileName(doc.nomor || documentTitle(doc.jenis))}.xlsx`;
+    runDownloadTask('Menyiapkan file Excel faktur…', async () => {
       const blob = await createInvoiceXlsxBlob(doc);
-      downloadBlob(blob, `${safeFileName(doc.nomor || documentTitle(doc.jenis))}.xlsx`);
-      addToast('File Excel diunduh.', 'success');
-    } catch (error) {
-      console.error('Gagal membuat Excel dokumen:', error);
-      addToast('Excel belum bisa dibuat. Coba lagi.', 'error');
-    }
+      downloadBlob(blob, fname);
+    }, fname).then(
+      () => addToast('File Excel diunduh.', 'success'),
+      (error) => {
+        console.error('Gagal membuat Excel dokumen:', error);
+        addToast('Excel belum bisa dibuat. Coba lagi.', 'error');
+      },
+    );
   };
 
   if (!ready) {

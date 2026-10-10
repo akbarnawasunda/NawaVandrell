@@ -5,6 +5,7 @@ import Script from 'next/script';
 import { ToastProvider } from '@/context/ToastContext';
 import TopBar from '@/components/TopBar';
 import CommandPalette from '@/components/CommandPalette';
+import DownloadOverlay from '@/components/DownloadOverlay';
 import { SITE_ORIGIN } from '@/lib/seo';
 
 const siteDescription = 'Kumpulan alat harian, dokumen, dan game ringan yang berjalan cepat di browser. Gratis, tanpa akun.';
@@ -69,6 +70,7 @@ export default function RootLayout({ children }) {
           <TopBar />
           <main id="main-content" tabIndex="-1">{children}</main>
           <CommandPalette />
+          <DownloadOverlay />
           <footer className="site-footer">
             <div className="site-footer-main">
               <a href="/" className="footer-brand">
