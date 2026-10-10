@@ -59,4 +59,9 @@
   <url><loc>https://nawaeditor.vercel.app/tools/daftar-hadir</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://nawaeditor.vercel.app/tools/rutinitas</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
   <url><loc>https://nawaeditor.vercel.app/tools/sensor-data</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://nawaeditor.vercel.app/tools/papan-tugas</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nawaeditor.vercel.app/tools/notulen-rapat</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nawaeditor.vercel.app/tools/jadwal-shift</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nawaeditor.vercel.app/tools/rekap-nilai</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nawaeditor.vercel.app/tools/stok-inventaris</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

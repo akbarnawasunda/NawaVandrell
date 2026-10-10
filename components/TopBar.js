@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import Icon from './icons';
 
 const navigation = [
-  { href: '/#tools', label: 'Alat' },
+  { href: '/', label: 'Workbench' },
+  { href: '/#tools', label: 'Semua alat' },
   { href: '/games', label: 'Game' },
   { href: '/leaderboard', label: 'Peringkat' },
 ];

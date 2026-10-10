@@ -308,6 +308,51 @@ export const featuredTools = [
   },
 
   {
+    slug: 'papan-tugas',
+    title: 'Papan Tugas Harian',
+    desc: 'Susun prioritas, tenggat, dan tindak lanjut. Filter pekerjaan selesai, ekspor CSV, dan simpan lokal.',
+    icon: 'clipboard',
+    group: ['kerja', 'kantor'],
+    keywords: 'tugas kerja to-do todo task tracker administrasi kantor BUMN follow up prioritas tenggat deadline harian pekerjaan checklist',
+  },
+
+  {
+    slug: 'notulen-rapat',
+    title: 'Notulen & Tindak Lanjut Rapat',
+    desc: 'Catat agenda, keputusan, PIC, dan tenggat tindak lanjut. Cetak notulen atau ekspor aksi ke CSV.',
+    icon: '🗒️',
+    group: ['kerja', 'kantor', 'dokumen'],
+    keywords: 'notulen rapat meeting agenda keputusan action item tindak lanjut pic kantor BUMN administrasi berita acara rapat',
+  },
+
+  {
+    slug: 'jadwal-shift',
+    title: 'Jadwal Shift & Roster Tim',
+    desc: 'Buat roster 7 hari dengan rotasi yang merata, tukar penugasan manual, dan unduh jadwal CSV.',
+    icon: '🗓️',
+    group: ['kerja', 'operasional'],
+    keywords: 'jadwal shift roster jadwal kerja karyawan toko ritel minimarket alfamart indomaret operasional piket giliran jadwal tim',
+  },
+
+  {
+    slug: 'rekap-nilai',
+    title: 'Rekap Nilai Kelas',
+    desc: 'Kelola daftar siswa, bobot asesmen, nilai akhir berbobot, dan status ketuntasan. Ekspor rekap CSV.',
+    icon: '🎓',
+    group: ['belajar', 'sekolah'],
+    keywords: 'rekap nilai rapor guru sekolah kelas siswa murid nilai akhir asesmen tugas uts uas bobot ketuntasan lulus remedial',
+  },
+
+  {
+    slug: 'stok-inventaris',
+    title: 'Stok & Inventaris',
+    desc: 'Catat barang, batas stok minimum, nilai persediaan, dan mutasi masuk/keluar. Ekspor daftar ke CSV.',
+    icon: '📦',
+    group: ['operasional', 'umkm'],
+    keywords: 'stok inventaris inventory persediaan barang gudang stok opname retail toko minimarket sekolah kantor ATK barang masuk keluar',
+  },
+
+  {
     slug: 'sensor-data',
     title: 'Sensor Data Sebelum Dibagikan',
     desc: 'Cari dan sensor NIK, NPWP, nomor telepon, dan email di dalam teks sebelum dibagikan. Diproses di perangkat.',
@@ -341,6 +386,9 @@ export const toolCategories = [
   { id: 'all', label: 'Semua' },
   { id: 'populer', label: 'Populer' },
   { id: 'kerja', label: 'Buat Kerja' },
+  { id: 'kantor', label: 'Kantor' },
+  { id: 'operasional', label: 'Operasional' },
+  { id: 'sekolah', label: 'Sekolah' },
   { id: 'umkm', label: 'UMKM' },
   { id: 'uang', label: 'Keuangan' },
   { id: 'dokumen', label: 'Dokumen' },
