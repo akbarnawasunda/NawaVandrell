@@ -116,7 +116,7 @@
 .nv-danger-button { color: var(--danger); }
 
 /* Lembar cetak (PDF lewat dialog cetak browser) */
-.nv-print-sheet { background: #fff; color: #111; border-radius: 14px; padding: 28px; font-size: 14px; line-height: 1.5; }
+.nv-print-sheet { background: #fff; color: #111; border-radius: 12px; padding: 28px; font-size: 14px; line-height: 1.5; }
 .nv-print-sheet h1, .nv-print-sheet h2, .nv-print-sheet h3 { color: #111; font-family: Arial, Helvetica, sans-serif; }
 .nv-print-sheet table { width: 100%; border-collapse: collapse; }
 .nv-print-sheet th, .nv-print-sheet td { border: 1px solid #bbb; padding: 7px 9px; text-align: left; vertical-align: top; color: #111; }
@@ -272,7 +272,7 @@
 }
 
 /* Timer fokus */
-.nv-timer { display: grid; gap: 14px; justify-items: center; padding: 22px 16px; border-radius: 18px; border: 1px solid var(--border); background: var(--surface); text-align: center; box-shadow: var(--shadow); }
+.nv-timer { display: grid; gap: 14px; justify-items: center; padding: 22px 16px; border-radius: 16px; border: 1px solid var(--border); background: var(--surface); text-align: center; box-shadow: var(--shadow); }
 .nv-timer-display { margin: 0; font-size: clamp(56px, 13vw, 96px); font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--text); line-height: 1; }
 .nv-timer-bar { width: min(100%, 420px); }
 .nv-timer-actions { justify-content: center; }

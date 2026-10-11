@@ -262,7 +262,7 @@ export default function ColorPickerPage() {
               }}
             >
               {data.contrastWhite.toFixed(1)}:1
-              <div style={{ fontSize: 10.5, fontWeight: 600, opacity: 0.8 }}>
+              <div style={{ fontSize: 10.5, fontWeight: 700, color: data.contrastWhite >= 4.5 ? '#036b4e' : '#a04a08' }}>
                 {data.contrastWhite >= 4.5 ? 'lolos AA' : 'kurang'}
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function ColorPickerPage() {
               }}
             >
               {data.contrastBlack.toFixed(1)}:1
-              <div style={{ fontSize: 10.5, fontWeight: 600, opacity: 0.8 }}>
+              <div style={{ fontSize: 10.5, fontWeight: 700, color: data.contrastBlack >= 4.5 ? '#6ee7b7' : '#fcd34d' }}>
                 {data.contrastBlack >= 4.5 ? 'lolos AA' : 'kurang'}
               </div>
             </div>

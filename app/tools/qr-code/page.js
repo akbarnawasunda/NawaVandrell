@@ -125,8 +125,9 @@ export default function QRCodePage() {
 
           <div style={{ display: 'flex', gap: 10 }}>
             <div style={{ flex: 1 }}>
-              <small style={{ color: 'var(--text-faint)' }}>Warna QR (Foreground)</small>
+              <label className="label" htmlFor="qr-fg-color">Warna QR (Foreground)</label>
               <input
+                id="qr-fg-color"
                 type="color"
                 value={fgColor}
                 onChange={(e) => setFgColor(e.target.value)}
@@ -141,8 +142,9 @@ export default function QRCodePage() {
               />
             </div>
             <div style={{ flex: 1 }}>
-              <small style={{ color: 'var(--text-faint)' }}>Warna Background</small>
+              <label className="label" htmlFor="qr-bg-color">Warna Background</label>
               <input
+                id="qr-bg-color"
                 type="color"
                 value={bgColor}
                 onChange={(e) => setBgColor(e.target.value)}

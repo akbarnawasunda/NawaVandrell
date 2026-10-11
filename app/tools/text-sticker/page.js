@@ -219,8 +219,8 @@ export default function TextStickerPage() {
         ) : null}
 
         <div className="field">
-          <label className="label">Ukuran teks: {size}px</label>
-          <input type="range" min="24" max="120" value={size} onChange={(e) => setSize(Number(e.target.value))} style={{ width: '100%' }} />
+          <label className="label" htmlFor="sticker-size">Ukuran teks: {size}px</label>
+          <input id="sticker-size" type="range" min="24" max="120" value={size} onChange={(e) => setSize(Number(e.target.value))} style={{ width: '100%' }} />
         </div>
 
         <div style={{ display: 'grid', gap: 9 }}>

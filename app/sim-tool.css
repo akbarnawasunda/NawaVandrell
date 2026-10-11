@@ -12,7 +12,7 @@
   --sim-line-strong: #c9cfd8;
   --sim-ink: #181b21;
   --sim-muted: #4d5563;
-  --sim-subtle: #8a93a0;
+  --sim-subtle: #626b79;
   --sim-mint: #4f46e5;
   --sim-blue: #0270a8;
   width: 100%;
@@ -27,7 +27,7 @@
   min-height: 42px;
   padding: 0 11px;
   border: 1px solid transparent;
-  border-radius: 11px;
+  border-radius: 10px;
   color: var(--sim-muted);
   font-size: 13px;
   font-weight: 650;
@@ -43,10 +43,10 @@
   height: 48px;
   flex: 0 0 auto;
   border: 1px solid rgba(79,70,229,.25);
-  border-radius: 15px;
-  background: linear-gradient(145deg, rgba(79,70,229,.15), rgba(79,70,229,.08));
+  border-radius: 16px;
+  background: rgba(79,70,229,.11);
   color: var(--sim-mint) !important;
-  box-shadow: 0 8px 24px rgba(79,70,229,.1);
+  box-shadow: var(--shadow);
 }
 .sim-collective-shell .tool-head p { max-width: 760px; margin: 9px 0 0 61px; color: var(--sim-muted); font-size: 15px; line-height: 1.65; }
 .sim-collective-intro {
@@ -55,10 +55,9 @@
   margin: 0 0 16px;
   padding: clamp(20px, 3vw, 30px);
   border: 1px solid rgba(153, 180, 218, .2);
-  border-radius: 23px;
+  border-radius: 16px;
   background: var(--sim-panel);
   }
-.sim-collective-intro::after { position: absolute; right: -48px; bottom: -102px; width: 245px; height: 245px; border: 1px solid rgba(21,25,34,.045); border-radius: 50%; content: ''; pointer-events: none; }
 .sim-collective-intro-top { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .sim-collective-eyebrow { display: flex; align-items: center; gap: 9px; margin: 0; color: #4d5563; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
 .sim-live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--sim-mint); box-shadow: 0 0 0 4px rgba(79,70,229,.11), 0 0 17px rgba(79,70,229,.55); }
@@ -93,14 +92,14 @@
 .sim-workflow-steps strong { color: #181b21; font-size: 13px; font-weight: 750; }
 .sim-workflow-steps small { margin-top: 4px; color: #4d5563; font-size: 11px; }
 .sim-workflow-steps > i { width: clamp(14px, 4vw, 56px); height: 1px; flex: 0 1 56px; background: rgba(191,207,229,.28); }
-.sim-privacy-note { display: flex; align-items: flex-start; gap: 13px; margin: 0 0 18px; padding: 15px 17px; border: 1px solid rgba(2,112,168,.2); border-radius: 15px; background: rgba(2,112,168,.045); color: #4d5563; }
-.sim-privacy-icon { display: grid; place-items: center; width: 37px; height: 37px; flex: 0 0 auto; border: 1px solid rgba(2,112,168,.16); border-radius: 11px; background: rgba(2,112,168,.1); color: #4338ca; }
+.sim-privacy-note { display: flex; align-items: flex-start; gap: 13px; margin: 0 0 18px; padding: 15px 17px; border: 1px solid rgba(2,112,168,.2); border-radius: 16px; background: rgba(2,112,168,.045); color: #4d5563; }
+.sim-privacy-icon { display: grid; place-items: center; width: 37px; height: 37px; flex: 0 0 auto; border: 1px solid rgba(2,112,168,.16); border-radius: 10px; background: rgba(2,112,168,.1); color: #4338ca; }
 .sim-privacy-note p { margin: 2px 0 0; font-size: 13px; line-height: 1.6; }
 .sim-privacy-note strong { color: #181b21; }
-.sim-upload-card { display: block; padding: clamp(17px, 2.3vw, 25px); margin-bottom: 19px; border: 1px solid var(--sim-line); border-radius: 21px; background: var(--sim-panel); }
+.sim-upload-card { display: block; padding: clamp(17px, 2.3vw, 25px); margin-bottom: 19px; border: 1px solid var(--sim-line); border-radius: 16px; background: var(--sim-panel); }
 .sim-upload-card-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 19px; }
 .sim-upload-card-heading > div:nth-child(2) { flex: 1; }
-.sim-step-large { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid rgba(79,70,229,.27); border-radius: 14px; background: linear-gradient(145deg, rgba(79,70,229,.16), rgba(79,70,229,.055)); color: #4338ca; font-size: 12px; font-weight: 900; }
+.sim-step-large { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid rgba(79,70,229,.27); border-radius: 12px; background: rgba(79,70,229,.1); color: #4338ca; font-size: 12px; font-weight: 900; }
 .sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { margin: 0; color: #181b21; font-size: 19px; font-weight: 800; letter-spacing: -.025em; }
 .sim-upload-card-heading p, .sim-roster-section-heading p, .sim-export-panel-heading p { margin: 5px 0 0; color: #4d5563; font-size: 13px; line-height: 1.55; }
 .sim-local-badge { display: inline-flex; align-items: center; gap: 7px; min-height: 35px; padding: 0 11px; border: 1px solid rgba(79,70,229,.23); border-radius: 999px; background: rgba(79,70,229,.075); color: #4338ca; font-size: 10px; font-weight: 850; letter-spacing: .1em; white-space: nowrap; }
@@ -113,29 +112,29 @@
 .sim-ocr-mode-note strong { color: #4338ca; }
 .sim-file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; clip-path: inset(50%); }
 .sim-file-input:focus-visible + .sim-drop-zone { outline: 3px solid var(--sim-mint); outline-offset: 4px; }
-.sim-drop-zone { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; align-items: center; gap: 16px; min-height: 132px; padding: 19px 21px; border: 1px dashed rgba(171,194,222,.38); border-radius: 17px; background: #fafbfc; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
+.sim-drop-zone { display: grid; grid-template-columns: 56px minmax(0,1fr) auto; align-items: center; gap: 16px; min-height: 132px; padding: 19px 21px; border: 1px dashed rgba(171,194,222,.38); border-radius: 16px; background: #fafbfc; transition: border-color .18s ease, background .18s ease, transform .18s ease; }
 .sim-drop-zone.is-dragging { transform: translateY(-2px); border-color: #4338ca; background: rgba(79,70,229,.07); }
 .sim-drop-zone.is-processing { border-style: solid; border-color: rgba(79,70,229,.38); }
-.sim-drop-icon { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid rgba(79,70,229,.26); border-radius: 17px; background: rgba(79,70,229,.11); color: #4338ca; }
+.sim-drop-icon { display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid rgba(79,70,229,.26); border-radius: 16px; background: rgba(79,70,229,.11); color: #4338ca; }
 .sim-drop-copy { min-width: 0; }
 .sim-drop-copy strong, .sim-drop-copy span { display: block; }
 .sim-drop-copy strong { color: #181b21; font-size: 16px; font-weight: 800; }
 .sim-drop-copy span { margin-top: 5px; color: #4d5563; font-size: 13px; line-height: 1.5; }
-.sim-drop-zone > small { grid-column: 1 / -1; color: #8a93a0; font-size: 11px; text-align: center; }
+.sim-drop-zone > small { grid-column: 1 / -1; color: var(--sim-subtle); font-size: 11px; text-align: center; }
 .sim-drop-actions { display: flex; align-items: center; gap: 9px; }
 .sim-drop-actions .btn { min-height: 46px; height: auto; padding: 0 15px; border-radius: 12px; font-size: 12px; white-space: nowrap; }
 .sim-upload-button { border-color: #3730a3; background: #4f46e5; color: #fff; box-shadow: none; }
 .sim-upload-button:hover:not(:disabled) { border-color: #312e81; background: #4338ca; }
 .sim-upload-button:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
 .sim-add-row-button, .sim-cancel-button { min-height: 46px; }
-.sim-batch-progress { margin-top: 15px; padding: 15px 16px; border: 1px solid var(--sim-line); border-radius: 14px; background: rgba(21,25,34,.035); }
+.sim-batch-progress { margin-top: 15px; padding: 15px 16px; border: 1px solid var(--sim-line); border-radius: 12px; background: rgba(21,25,34,.035); }
 .sim-batch-progress-text { display: flex; justify-content: space-between; gap: 12px; color: #4d5563; font-size: 12px; line-height: 1.5; }
 .sim-batch-progress-text strong { flex: 0 0 auto; color: #181b21; font-variant-numeric: tabular-nums; }
 .sim-batch-progress progress { display: block; width: 100%; height: 8px; margin-top: 11px; overflow: hidden; border: 0; border-radius: 99px; accent-color: #4338ca; }
 /* panel kontrol daftar kini tergabung di judul seksi (.sim-heading-tools) */
 .sim-nik-toggle { display: inline-flex; align-items: center; gap: 9px; min-height: 44px; color: #4d5563; font-size: 12px; font-weight: 650; cursor: pointer; }
 .sim-nik-toggle input { width: 19px; height: 19px; accent-color: var(--sim-mint); }
-.sim-clear-button { min-height: 42px; height: auto; padding: 0 14px; border-radius: 11px; font-size: 12px; }
+.sim-clear-button { min-height: 42px; height: auto; padding: 0 14px; border-radius: 10px; font-size: 12px; }
 .sim-roster-section { min-width: 0; }
 .sim-roster-section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 2px 13px; }
 .sim-roster-section-heading > div:first-child { display: flex; align-items: center; gap: 13px; }
@@ -147,18 +146,18 @@
 .sim-roster-search { display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 48px; padding: 0 10px 0 13px; border: 1px solid rgba(176,195,219,.24); border-radius: 12px; background: #ffffff; color: #aebed0; }
 .sim-roster-search:focus-within { border-color: var(--sim-mint); box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
 .sim-roster-search input { width: 100%; min-width: 0; height: 44px; padding: 0; border: 0; outline: 0; background: transparent; color: #181b21; font: inherit; font-size: 13px; }
-.sim-roster-search input::placeholder { color: #8a93a0; opacity: 1; }
+.sim-roster-search input::placeholder { color: var(--sim-subtle); opacity: 1; }
 .sim-roster-search input::-webkit-search-cancel-button { cursor: pointer; }
-.sim-roster-search > button { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 9px; background: transparent; color: #4d5563; font-size: 22px; cursor: pointer; }
+.sim-roster-search > button { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 auto; border: 0; border-radius: 8px; background: transparent; color: #4d5563; font-size: 22px; cursor: pointer; }
 .sim-roster-search > button:hover { background: rgba(21,25,34,.08); }
-.sim-roster-filter-group { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px; border: 1px solid rgba(176,195,219,.14); border-radius: 13px; background: rgba(0,0,0,.16); }
-.sim-roster-filter-group button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 40px; flex: 1 1 auto; padding: 0 11px; border: 1px solid transparent; border-radius: 9px; background: transparent; color: #4d5563; font: inherit; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .16s ease, color .16s ease, border-color .16s ease; }
+.sim-roster-filter-group { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 4px; border: 1px solid rgba(176,195,219,.14); border-radius: 12px; background: rgba(0,0,0,.16); }
+.sim-roster-filter-group button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 40px; flex: 1 1 auto; padding: 0 11px; border: 1px solid transparent; border-radius: 8px; background: transparent; color: #4d5563; font: inherit; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: background .16s ease, color .16s ease, border-color .16s ease; }
 .sim-roster-filter-group button b { color: #f7f9fc; font-size: 11px; font-variant-numeric: tabular-nums; }
 .sim-roster-filter-group button:hover { background: rgba(21,25,34,.06); color: #181b21; }
 .sim-roster-filter-group button.is-active { border-color: rgba(79,70,229,.3); background: rgba(79,70,229,.09); color: #3730a3; }
 .sim-roster-filter-group button.is-active b { color: #3730a3; }
-.sim-roster-filter-status { grid-column: 1 / -1; margin: 0 2px; color: #8a93a0; font-size: 11px; line-height: 1.45; }
-.sim-collective-document { width: 100%; max-width: 100%; margin: 0 auto; padding: clamp(15px, 2vw, 22px); overflow: hidden; border: 1px solid #d7e0e9; border-radius: 17px; background: #fff; color: #111827; box-shadow: 0 18px 48px rgba(16,24,40,.12); }
+.sim-roster-filter-status { grid-column: 1 / -1; margin: 0 2px; color: var(--sim-subtle); font-size: 11px; line-height: 1.45; }
+.sim-collective-document { width: 100%; max-width: 100%; margin: 0 auto; padding: clamp(15px, 2vw, 22px); overflow: hidden; border: 1px solid #d7e0e9; border-radius: 16px; background: #fff; color: #111827; box-shadow: 0 18px 48px rgba(16,24,40,.12); }
 .sim-collective-title { margin: 0 0 6px; color: #101828; font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 800; text-align: center; line-height: 1.3; }
 .sim-collective-disclaimer { margin: 0 0 16px; color: #4d5563; font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: 750; text-align: center; letter-spacing: .035em; line-height: 1.5; }
 .sim-table-scroll { position: relative; max-height: min(74vh, 900px); overflow: auto; border: 1px solid #dfe5ec; border-radius: 10px; scrollbar-color: #a5b2c3 transparent; }
@@ -184,8 +183,8 @@
 .sim-collective-table.has-nik th:nth-child(6) { width: 270px; }
 .sim-collective-table th:last-child, .sim-collective-table .sim-screen-only-col { width: 48px; }
 .sim-roster-number { color: #4d5563; text-align: center; font-weight: 750; font-variant-numeric: tabular-nums; }
-.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 44px; height: 44px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 9px; outline: none; background: #fff; color: #172033; font: inherit; font-size: 13px; color-scheme: light; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
-.sim-roster-input:hover { border-color: #8a93a0; }
+.sim-roster-input { display: block; width: 100%; min-width: 0; min-height: 44px; height: 44px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; outline: none; background: #fff; color: #172033; font: inherit; font-size: 13px; color-scheme: light; transition: border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+.sim-roster-input:hover { border-color: var(--sim-subtle); }
 .sim-roster-input:focus { border-color: #078768; box-shadow: 0 0 0 3px rgba(4,120,87,.13); }
 .sim-name-input { min-height: 46px; height: 46px; font-size: 15px; font-weight: 750; }
 .sim-roster-select { padding-right: 7px; cursor: pointer; }
@@ -204,16 +203,16 @@
 .sim-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; min-width: 430px; margin-top: 8px; padding: 14px; border: 1px solid #dce4ed; border-radius: 12px; background: #f6f8fb; }
 .sim-detail-field { display: grid; align-content: start; gap: 6px; min-width: 0; color: #344256; font-size: 11px; }
 .sim-detail-field > span:first-child { font-weight: 750; }
-.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; min-height: 44px; padding: 9px 10px; border: 1px solid #c8d2df; border-radius: 9px; background: #fff; color: #121b28; font: inherit; font-size: 12px; color-scheme: light; }
+.sim-detail-field input, .sim-detail-field textarea { width: 100%; min-width: 0; min-height: 44px; padding: 9px 10px; border: 1px solid #c8d2df; border-radius: 8px; background: #fff; color: #121b28; font: inherit; font-size: 12px; color-scheme: light; }
 .sim-detail-field input:focus, .sim-detail-field textarea:focus { border-color: #078768; outline: 3px solid rgba(4,120,87,.13); }
 .sim-detail-field textarea { resize: vertical; }
 .sim-detail-field-wide { grid-column: 1 / -1; }
 .sim-nik-input-wrap { position: relative; display: block; }
 .sim-nik-input-wrap input { padding-right: 82px; }
-.sim-nik-input-wrap button { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); min-height: 34px; padding: 4px 8px; border: 0; border-radius: 7px; background: #eaf2ff; color: #175bbb; font-size: 10px; font-weight: 750; cursor: pointer; }
+.sim-nik-input-wrap button { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); min-height: 34px; padding: 4px 8px; border: 0; border-radius: 6px; background: #eaf2ff; color: #175bbb; font-size: 10px; font-weight: 750; cursor: pointer; }
 .sim-ocr-quality-note, .sim-ocr-conflict-note { grid-column: 1 / -1; margin: 0; color: #4d5563; font-size: 11px; line-height: 1.55; }
 .sim-ocr-conflict-note { color: #9a570a; }
-.sim-retry-ocr { grid-column: 1 / -1; justify-self: start; min-height: 42px; padding: 0 13px; border: 1px solid #cfe1fb; border-radius: 9px; background: #eff6ff; color: #174f9e; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
+.sim-retry-ocr { grid-column: 1 / -1; justify-self: start; min-height: 42px; padding: 0 13px; border: 1px solid #cfe1fb; border-radius: 8px; background: #eff6ff; color: #174f9e; font: inherit; font-size: 11px; font-weight: 750; cursor: pointer; }
 .sim-retry-ocr:hover:not(:disabled) { border-color: #9dc5f8; background: #e2efff; }
 .sim-retry-ocr:disabled { opacity: .6; cursor: wait; }
 .sim-roster-photo-cell { text-align: center; }
@@ -221,7 +220,7 @@
 .sim-roster-photo { display: block; width: 100%; height: 100%; object-fit: contain; }
 .sim-photo-missing { display: flex; justify-content: center; align-items: center; gap: 8px; min-height: 64px; color: #4d5563; font-size: 11px; }
 .sim-photo-actions { display: flex; justify-content: center; gap: 7px; margin-top: 8px; }
-.sim-photo-action { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 9px; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 750; cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease; }
+.sim-photo-action { position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 38px; padding: 0 10px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 750; cursor: pointer; transition: border-color .15s ease, background .15s ease, color .15s ease; }
 .sim-photo-action:hover:not(.is-busy) { border-color: #4338ca; background: #edfbf6; color: #076c51; }
 .sim-photo-action:focus-within { outline: 3px solid rgba(16,185,129,.2); outline-offset: 2px; }
 .sim-photo-action:disabled { opacity: .55; cursor: not-allowed; }
@@ -229,19 +228,19 @@
 .sim-photo-adjust { border-color: #a8e8d7; background: #eefbf7; color: #076c51; }
 .sim-remove-person { display: grid; place-items: center; width: 38px; height: 38px; margin: auto; border: 1px solid #f1c9c8; border-radius: 10px; background: #fff; color: #a33131; font-size: 23px; line-height: 1; cursor: pointer; transition: border-color .15s ease, background .15s ease, transform .15s ease; }
 .sim-remove-person:hover { transform: translateY(-1px); border-color: #edaaa8; background: #fff4f3; }
-.sim-export-panel { display: grid; grid-template-columns: minmax(0,1fr); gap: 15px; margin-top: 17px; padding: 20px; border: 1px solid var(--sim-line); border-radius: 19px; background: var(--sim-panel); }
+.sim-export-panel { display: grid; grid-template-columns: minmax(0,1fr); gap: 15px; margin-top: 17px; padding: 20px; border: 1px solid var(--sim-line); border-radius: 16px; background: var(--sim-panel); }
 .sim-export-panel-heading { display: flex; align-items: center; gap: 13px; }
 .sim-export-panel-heading p { margin-top: 4px; }
 .sim-export-actions { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; margin: 0; }
-.sim-export-card { display: grid; grid-template-columns: 43px minmax(0,1fr) 18px; align-items: center; gap: 10px; min-width: 0; min-height: 72px; padding: 10px 12px; border: 1px solid var(--sim-line-strong); border-radius: 13px; background: rgba(21,25,34,.035); color: var(--sim-ink); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease; }
+.sim-export-card { display: grid; grid-template-columns: 43px minmax(0,1fr) 18px; align-items: center; gap: 10px; min-width: 0; min-height: 72px; padding: 10px 12px; border: 1px solid var(--sim-line-strong); border-radius: 12px; background: rgba(21,25,34,.035); color: var(--sim-ink); text-align: left; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease; }
 .sim-export-card:hover:not(:disabled) { transform: translateY(-2px); border-color: rgba(79,70,229,.5); background: rgba(79,70,229,.07); box-shadow: 0 8px 23px rgba(0,0,0,.14); }
 .sim-export-card:focus-visible { outline: 3px solid var(--sim-mint); outline-offset: 3px; }
 .sim-export-card:disabled { opacity: .56; cursor: wait; }
-.sim-export-card.is-primary { border-color: rgba(79,70,229,.44); background: linear-gradient(135deg, rgba(79,70,229,.14), rgba(79,70,229,.045)); }
+.sim-export-card.is-primary { border-color: rgba(79,70,229,.44); background: rgba(79,70,229,.08); }
 .sim-export-card > span:nth-child(2) { display: grid; min-width: 0; }
 .sim-export-card strong { overflow: hidden; color: #181b21; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .sim-export-card small { margin-top: 4px; color: #6b7280; font-size: 10px; }
-.sim-export-card > svg { color: #8a93a0; }
+.sim-export-card > svg { color: var(--sim-subtle); }
 .sim-export-format { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(21,25,34,.16); border-radius: 12px; background: rgba(21,25,34,.05); color: #334155; font-size: 10px; font-weight: 900; letter-spacing: .025em; }
 .sim-format-pdf { color: #d92d20; background: rgba(239,68,68,.12); }
 .sim-format-docx { color: #0b5f9e; background: rgba(2,112,168,.1); }
@@ -249,17 +248,17 @@
 .sim-format-csv { color: #92400e; background: rgba(234,179,8,.12); }
 .sim-format-json { color: #6d28d9; background: rgba(139,92,246,.13); }
 .sim-export-hint { margin: 0; color: #6b7280; font-size: 11px; line-height: 1.6; }
-.sim-roster-empty { display: grid; justify-items: center; padding: clamp(26px,4vw,44px) 22px; border: 1px solid var(--sim-line); border-radius: 20px; background: var(--sim-panel); text-align: center; }
+.sim-roster-empty { display: grid; justify-items: center; padding: clamp(26px,4vw,44px) 22px; border: 1px solid var(--sim-line); border-radius: 16px; background: var(--sim-panel); text-align: center; }
 .sim-empty-illustration { position: relative; display: grid; place-items: center; width: 100px; height: 83px; margin-bottom: 11px; }
-.sim-empty-illustration > span { z-index: 1; display: grid; place-items: center; width: 61px; height: 61px; border: 1px solid rgba(79,70,229,.28); border-radius: 19px; background: linear-gradient(145deg, rgba(79,70,229,.2), rgba(79,70,229,.11)); color: #4338ca; box-shadow: 0 9px 25px rgba(16,185,129,.09); }
-.sim-empty-illustration > i { position: absolute; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid rgba(21,25,34,.23); border-radius: 9px; background: #ffffff; color: #d0d9e5; font-size: 9px; font-style: normal; font-weight: 800; }
+.sim-empty-illustration > span { z-index: 1; display: grid; place-items: center; width: 61px; height: 61px; border: 1px solid rgba(79,70,229,.28); border-radius: 16px; background: rgba(79,70,229,.13); color: #4338ca; }
+.sim-empty-illustration > i { position: absolute; display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid rgba(21,25,34,.23); border-radius: 8px; background: #ffffff; color: var(--sim-subtle); font-size: 9px; font-style: normal; font-weight: 800; }
 .sim-empty-illustration > i:nth-of-type(1) { top: 0; left: 0; transform: rotate(-9deg); }
 .sim-empty-illustration > i:nth-of-type(2) { top: 0; right: 0; transform: rotate(9deg); }
 .sim-empty-illustration > i:nth-of-type(3) { bottom: 0; left: 37px; }
 .sim-roster-empty h2 { margin: 3px 0 0; color: #181b21; font-size: 21px; letter-spacing: -.02em; }
 .sim-roster-empty p { max-width: 650px; margin: 9px 0 18px; color: #4d5563; font-size: 14px; line-height: 1.65; }
 .sim-roster-empty .btn { min-height: 48px; height: auto; padding: 0 18px; font-size: 13px; }
-.sim-collective-footer { display: flex; justify-content: space-between; gap: 14px; margin: 15px 2px 0; color: #8a93a0; font-size: 11px; line-height: 1.6; }
+.sim-collective-footer { display: flex; justify-content: space-between; gap: 14px; margin: 15px 2px 0; color: var(--sim-subtle); font-size: 11px; line-height: 1.6; }
 .sim-collective-footer > span { display: inline-flex; align-items: flex-start; gap: 7px; }
 .sim-collective-footer svg { flex: 0 0 auto; margin-top: 2px; color: #b45309; }
 .sim-roster-no-results { display: grid; justify-items: center; gap: 7px; padding: 28px 16px; color: #334155; text-align: center; }
@@ -268,17 +267,17 @@
 .sim-roster-no-results p { margin: 0 0 4px; color: #4d5563; font-size: 12px; }
 .sim-roster-no-results .btn { min-height: 42px; height: auto; padding: 0 13px; border-color: #cbd5e1; color: #26364a; font-size: 11px; }
 .sim-photo-editor-backdrop { position: fixed; z-index: 120; inset: 0; display: grid; place-items: center; padding: 20px; overflow-y: auto; background: rgba(14,20,34,.62); }
-.sim-photo-editor { width: min(100%, 680px); max-height: calc(100vh - 40px); overflow: auto; padding: clamp(17px,3vw,25px); border: 1px solid rgba(21,25,34,.25); border-radius: 22px; background: #ffffff; color: #181b21; box-shadow: 0 28px 100px rgba(16,24,40,.28); }
+.sim-photo-editor { width: min(100%, 680px); max-height: calc(100vh - 40px); overflow: auto; padding: clamp(17px,3vw,25px); border: 1px solid rgba(21,25,34,.25); border-radius: 16px; background: #ffffff; color: #181b21; box-shadow: 0 28px 100px rgba(16,24,40,.28); }
 .sim-photo-editor:focus { outline: none; }
 .sim-photo-editor-header { display: flex; align-items: center; gap: 13px; }
-.sim-photo-editor-icon { display: grid; place-items: center; width: 47px; height: 47px; flex: 0 0 auto; border: 1px solid rgba(79,70,229,.25); border-radius: 15px; background: rgba(79,70,229,.12); color: #4338ca; }
+.sim-photo-editor-icon { display: grid; place-items: center; width: 47px; height: 47px; flex: 0 0 auto; border: 1px solid rgba(79,70,229,.25); border-radius: 16px; background: rgba(79,70,229,.12); color: #4338ca; }
 .sim-photo-editor-header > div:nth-child(2) { flex: 1; }
 .sim-photo-editor-header p { margin: 0 0 4px; color: #6b7280; font-size: 10px; font-weight: 850; letter-spacing: .12em; }
 .sim-photo-editor-header h2 { color: #181b21; font-size: clamp(18px,2.5vw,22px); }
 .sim-photo-close { display: grid; place-items: center; width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid var(--sim-line-strong); border-radius: 12px; background: rgba(21,25,34,.045); color: #181b21; font-size: 25px; cursor: pointer; }
 .sim-photo-editor-help { margin: 13px 0 15px; color: #4d5563; font-size: 13px; line-height: 1.6; }
 .sim-photo-editor-help strong { color: #181b21; }
-.sim-photo-canvas-wrap { display: grid; place-items: center; min-height: 200px; overflow: hidden; border: 1px solid rgba(21,25,34,.23); border-radius: 14px; background: repeating-conic-gradient(#f8fafc 0% 25%, #e9edf2 0% 50%) 50% / 20px 20px; }
+.sim-photo-canvas-wrap { display: grid; place-items: center; min-height: 200px; overflow: hidden; border: 1px solid rgba(21,25,34,.23); border-radius: 12px; background: repeating-conic-gradient(#f8fafc 0% 25%, #e9edf2 0% 50%) 50% / 20px 20px; }
 .sim-photo-editor-canvas { display: block; width: 100%; max-height: 390px; object-fit: contain; cursor: grab; touch-action: none; user-select: none; }
 .sim-photo-editor-canvas:active { cursor: grabbing; }
 .sim-photo-loading { padding: 44px; color: #6b7280; font-size: 13px; text-align: center; }
@@ -295,7 +294,7 @@
 .sim-photo-editor-error { margin: 11px 0 0; color: #d92d20; font-size: 12px; }
 .sim-photo-editor-footer { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(21,25,34,.18); }
 .sim-photo-editor-footer > div { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-.sim-photo-editor-footer .btn { min-height: 44px; height: auto; padding: 0 14px; border-radius: 11px; font-size: 12px; }
+.sim-photo-editor-footer .btn { min-height: 44px; height: auto; padding: 0 14px; border-radius: 10px; font-size: 12px; }
 .sim-photo-reset { color: #181b21; }
 .sim-visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; margin: -1px !important; overflow: hidden !important; clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important; }
 .sim-collective-shell button:focus-visible, .sim-collective-shell input:focus-visible, .sim-collective-shell select:focus-visible, .sim-collective-shell textarea:focus-visible { outline: 3px solid #89f0d4; outline-offset: 3px; }
@@ -342,7 +341,7 @@
   .sim-collective-table caption { display: none; }
   .sim-collective-table thead { display: none; }
   .sim-collective-table tbody { display: grid; gap: 13px; }
-  .sim-collective-table tbody tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px 13px; padding: 15px; border: 1px solid #dce3eb; border-radius: 15px; background: #fff !important; box-shadow: 0 6px 20px rgba(16,24,40,.06); }
+  .sim-collective-table tbody tr { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px 13px; padding: 15px; border: 1px solid #dce3eb; border-radius: 16px; background: #fff !important; box-shadow: 0 6px 20px rgba(16,24,40,.06); }
   .sim-collective-table tbody tr.sim-filtered-out { display: none; }
   .sim-collective-table td, .sim-collective-table th, .sim-collective-table td:first-child { display: block; width: auto !important; min-width: 0; padding: 0; border: 0; }
   .sim-collective-table td::before { display: block; margin: 0 0 6px; content: attr(data-label); color: #4d5563; font-family: var(--font-body); font-size: 10px; font-weight: 800; letter-spacing: .065em; }
@@ -362,11 +361,11 @@
   .sim-remove-person { width: 42px; height: 42px; }
   .sim-roster-input { min-height: 46px; height: 46px; padding: 9px 11px; font-size: 14px; }
   .sim-name-input { height: 49px; font-size: 16px; }
-  .sim-collective-document { padding: 14px; border-radius: 14px; }
+  .sim-collective-document { padding: 14px; border-radius: 12px; }
   .sim-collective-footer { flex-direction: column; gap: 7px; }
 }
 @media (max-width: 520px) {
-  .sim-collective-intro { padding: 18px; border-radius: 18px; }
+  .sim-collective-intro { padding: 18px; border-radius: 16px; }
   .sim-collective-intro > p { margin-top: 13px; font-size: 16px; }
   .sim-workflow-steps { gap: 6px; margin-top: 18px; }
   .sim-workflow-steps > div { gap: 6px; }
@@ -377,7 +376,7 @@
   .sim-readable-toggle { min-height: 40px; gap: 6px; padding: 0 9px; font-size: 10px; }
   .sim-privacy-note { gap: 10px; padding: 12px; }
   .sim-privacy-note p { font-size: 12px; }
-  .sim-upload-card { padding: 14px; border-radius: 17px; }
+  .sim-upload-card { padding: 14px; border-radius: 16px; }
   .sim-upload-card-heading { align-items: flex-start; gap: 9px; }
   .sim-step-large { width: 38px; height: 38px; border-radius: 12px; }
   .sim-upload-card-heading h2, .sim-roster-section-heading h2, .sim-export-panel-heading h2 { font-size: 17px; }
@@ -396,7 +395,7 @@
   .sim-roster-count-number { min-width: 43px; height: 43px; font-size: 18px; }
   .sim-roster-section-heading { align-items: flex-start; }
   .sim-roster-section-heading > div:first-child { gap: 9px; }
-  .sim-roster-filter-bar { padding: 10px; border-radius: 13px; }
+  .sim-roster-filter-bar { padding: 10px; border-radius: 12px; }
   .sim-roster-filter-group { gap: 3px; }
   .sim-roster-filter-group button { min-width: 0; min-height: 42px; gap: 5px; padding: 0 7px; font-size: 10px; }
   .sim-roster-filter-status { font-size: 10px; }
@@ -411,7 +410,7 @@
   .sim-export-card small { font-size: 9px; }
   .sim-export-hint { font-size: 10px; }
   .sim-photo-editor-backdrop { padding: 8px; }
-  .sim-photo-editor { max-height: calc(100dvh - 16px); padding: 14px; border-radius: 17px; }
+  .sim-photo-editor { max-height: calc(100dvh - 16px); padding: 14px; border-radius: 16px; }
   .sim-photo-editor-header h2 { font-size: 17px; }
   .sim-photo-editor-canvas { max-height: 260px; }
   .sim-photo-editor-footer { align-items: stretch; flex-wrap: wrap; }

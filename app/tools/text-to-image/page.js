@@ -193,6 +193,7 @@ export default function TextToImagePage() {
                   borderRadius: 10,
                   border: theme === t.id ? '2px solid var(--accent)' : '1px solid var(--border)',
                   background: `linear-gradient(135deg, ${t.from}, ${t.to})`,
+                  backgroundColor: t.from,
                   color: t.text,
                   cursor: 'pointer',
                   font: 'inherit',
