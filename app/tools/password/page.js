@@ -31,12 +31,12 @@ function shuffle(arr) {
 }
 
 function strengthOf(pw, poolSize) {
-  if (!pw) return { score: 0, label: '—', color: '#3f3f46' };
+  if (!pw) return { score: 0, label: '—', color: 'var(--text-dim)' };
   const bits = pw.length * Math.log2(poolSize || 1);
-  if (bits < 36) return { score: 25, label: 'Lemah', color: '#f87171' };
-  if (bits < 60) return { score: 50, label: 'Cukup', color: '#fbbf24' };
-  if (bits < 90) return { score: 75, label: 'Kuat', color: '#34d399' };
-  return { score: 100, label: 'Sangat Kuat', color: '#10b981' };
+  if (bits < 36) return { score: 25, label: 'Lemah', color: 'var(--danger)' };
+  if (bits < 60) return { score: 50, label: 'Cukup', color: 'var(--warn)' };
+  if (bits < 90) return { score: 75, label: 'Kuat', color: 'var(--ok)' };
+  return { score: 100, label: 'Sangat Kuat', color: 'var(--ok)' };
 }
 
 export default function PasswordPage() {

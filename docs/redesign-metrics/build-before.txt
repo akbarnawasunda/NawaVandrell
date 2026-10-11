@@ -1,0 +1,117 @@
+
+> nawaeditor@4.0.0 prebuild
+> node scripts/copy-ocr-assets.mjs && node scripts/setup-ytdlp.mjs && node scripts/setup-ffmpeg.mjs
+
+Prepared 5 local OCR assets in public/ocr (KTP images are not included).
+[setup:ytdlp] Siap: bin/yt-dlp v2026.08.19 (sudah terpasang, dilewati).
+[setup:ffmpeg] Siap: bin/ffmpeg (N-47683-g0e8eb07980-static https://johnvansickle.com/ffmpeg/ ) sudah terpasang, dilewati.
+
+> nawaeditor@4.0.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/71) ...
+   Generating static pages (17/71) 
+   Generating static pages (35/71) 
+   Generating static pages (53/71) 
+ ✓ Generating static pages (71/71)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    9.04 kB         112 kB
+├ ○ /_not-found                          876 B          88.4 kB
+├ ƒ /admin                               4.1 kB         98.4 kB
+├ ƒ /admin/login                         1.16 kB        95.4 kB
+├ ƒ /api/admin/logout                    0 B                0 B
+├ ƒ /api/admin/player                    0 B                0 B
+├ ƒ /api/admin/stats                     0 B                0 B
+├ ƒ /api/admin/verify                    0 B                0 B
+├ ƒ /api/download-proxy                  0 B                0 B
+├ ƒ /api/games                           0 B                0 B
+├ ƒ /api/leaderboard                     0 B                0 B
+├ ƒ /api/quiz                            0 B                0 B
+├ ƒ /api/quiz/check                      0 B                0 B
+├ ƒ /api/quiz/reveal                     0 B                0 B
+├ ƒ /api/tool-proxy                      0 B                0 B
+├ ƒ /api/tools-proxy                     0 B                0 B
+├ ƒ /api/ytdlp                           0 B                0 B
+├ ○ /downloader                          181 B           125 kB
+├ ○ /games                               2.87 kB         106 kB
+├ ○ /games/angka-enigma                  269 B           109 kB
+├ ○ /games/asahotak                      319 B           109 kB
+├ ○ /games/emoji-story                   269 B           109 kB
+├ ○ /games/islamic                       319 B           109 kB
+├ ○ /games/kata-sambung                  270 B           109 kB
+├ ○ /games/logic-gate                    3.89 kB         107 kB
+├ ○ /games/math-rush                     266 B           109 kB
+├ ○ /games/memory-matrix                 270 B           109 kB
+├ ƒ /games/quiz/[slug]                   181 B           108 kB
+├ ○ /games/siapakahaku                   270 B           108 kB
+├ ○ /games/susunkata                     267 B           109 kB
+├ ○ /games/tebakkimia                    264 B           108 kB
+├ ○ /games/tebaklirik                    266 B           108 kB
+├ ○ /games/tebaktebakan                  321 B           109 kB
+├ ○ /games/tekateki                      319 B           109 kB
+├ ○ /games/typing-blitz                  270 B           109 kB
+├ ○ /leaderboard                         2.49 kB         105 kB
+├ ○ /privacy                             181 B          96.4 kB
+├ ○ /terms                               181 B          96.4 kB
+├ ○ /tools/alay                          980 B           109 kB
+├ ○ /tools/base64                        2.46 kB         105 kB
+├ ○ /tools/cicilan-tabungan              6.62 kB         110 kB
+├ ○ /tools/color-picker                  3.52 kB         106 kB
+├ ○ /tools/cv-builder                    6.08 kB         119 kB
+├ ○ /tools/daftar-hadir                  7.14 kB         115 kB
+├ ○ /tools/downloader                    182 B           125 kB
+├ ○ /tools/flashcard                     6.49 kB         115 kB
+├ ○ /tools/fokus                         6.35 kB         114 kB
+├ ○ /tools/funfact                       995 B           109 kB
+├ ○ /tools/gradient                      2.9 kB          106 kB
+├ ○ /tools/hash                          2.42 kB         105 kB
+├ ○ /tools/hpp-harga                     4.6 kB          113 kB
+├ ○ /tools/image-compressor              3.67 kB         107 kB
+├ ○ /tools/invoice                       8.97 kB         117 kB
+├ ○ /tools/jadwal-shift                  2.94 kB         116 kB
+├ ○ /tools/json-formatter                2.91 kB         106 kB
+├ ○ /tools/kalkulator-gaji               9.52 kB         112 kB
+├ ○ /tools/latihan-wawancara             6.45 kB         114 kB
+├ ○ /tools/lorem-ipsum                   913 B           109 kB
+├ ○ /tools/notulen-rapat                 2.87 kB         116 kB
+├ ○ /tools/papan-tugas                   2.38 kB         116 kB
+├ ○ /tools/password                      3.05 kB         106 kB
+├ ○ /tools/pelacak-lamaran               7.56 kB         116 kB
+├ ○ /tools/pembagi-tagihan               4.22 kB         112 kB
+├ ○ /tools/pengolah-excel                16.1 kB         119 kB
+├ ○ /tools/qr-code                       8.49 kB         111 kB
+├ ○ /tools/random-gallery                5.02 kB         108 kB
+├ ○ /tools/regex-tester                  3.27 kB         106 kB
+├ ○ /tools/rekap-nilai                   3.42 kB         117 kB
+├ ○ /tools/roasting                      936 B           109 kB
+├ ○ /tools/rutinitas                     5.95 kB         114 kB
+├ ○ /tools/sensor-data                   4.86 kB         108 kB
+├ ○ /tools/sim-application               25.6 kB         133 kB
+├ ○ /tools/sim-individual                9.77 kB         117 kB
+├ ○ /tools/stego                         3.7 kB          107 kB
+├ ○ /tools/sticker-maker                 3.7 kB          107 kB
+├ ○ /tools/stok-inventaris               2.81 kB         116 kB
+├ ○ /tools/surat-lamaran                 5.78 kB         119 kB
+├ ○ /tools/text-case                     2.72 kB         106 kB
+├ ○ /tools/text-sticker                  3.73 kB         107 kB
+├ ○ /tools/text-to-image                 3.71 kB         107 kB
+├ ○ /tools/uuid                          2.66 kB         106 kB
+└ ○ /tools/wa-direct                     2.73 kB         106 kB
++ First Load JS shared by all            87.5 kB
+  ├ chunks/2117-aa243c5f94221470.js      31.7 kB
+  ├ chunks/fd9d1056-1d39ca79501153aa.js  53.6 kB
+  └ other shared chunks (total)          2.15 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

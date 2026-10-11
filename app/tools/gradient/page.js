@@ -101,6 +101,7 @@ export default function GradientPage() {
               />
               <input
                 className="input"
+                aria-label="Warna awal (kode hex)"
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
                 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}
@@ -137,6 +138,7 @@ export default function GradientPage() {
             />
             <input
               className="input"
+              aria-label="Warna akhir (kode hex)"
               value={to}
               onChange={(e) => setTo(e.target.value)}
               style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}
@@ -175,6 +177,7 @@ export default function GradientPage() {
                   borderRadius: 10,
                   border: '1px solid var(--border)',
                   background: `linear-gradient(${p.angle}deg, ${p.from}, ${p.to})`,
+                  backgroundColor: p.from,
                   cursor: 'pointer',
                   fontSize: 11,
                   fontWeight: 800,
@@ -182,7 +185,7 @@ export default function GradientPage() {
                   textShadow: '0 1px 3px rgba(0,0,0,0.6)',
                 }}
               >
-                {p.name}
+                <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 999, background: 'rgba(16, 24, 40, 0.55)', color: '#fff' }}>{p.name}</span>
               </button>
             ))}
           </div>

@@ -102,7 +102,7 @@ export default function UuidPage() {
                   }}
                   style={{
                     textAlign: 'left',
-                    background: 'rgba(255,255,255,0.03)',
+                    background: 'var(--surface)',
                     border: '1px solid var(--border)',
                     borderRadius: 8,
                     padding: '8px 11px',
